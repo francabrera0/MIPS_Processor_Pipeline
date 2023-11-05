@@ -10,7 +10,11 @@
 !.gitignore
 
 !*.srcs/**/*.v
-!*.xpr
+!*.srcs/**/*.xdc
+!*.srcs/**/*.xci
 
 !*.py
 !*.md
+
+
+
