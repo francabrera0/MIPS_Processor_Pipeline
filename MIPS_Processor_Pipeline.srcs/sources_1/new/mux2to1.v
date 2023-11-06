@@ -4,12 +4,12 @@ module mux2to1
 )
 (
     //Inputs
-    input [DATA_LEN-1:0] i_muxInputA,
-    input [DATA_LEN-1:0] i_muxInputB,
-    input                i_muxSelector,
+    input wire [DATA_LEN-1:0] i_muxInputA,
+    input wire [DATA_LEN-1:0] i_muxInputB,
+    input wire                i_muxSelector,
 
     //Outputs
-    output [DATA_LEN-1:0] o_muxOutput
+    output wire [DATA_LEN-1:0] o_muxOutput
 );
 
 localparam INPUTA = 1'b0;
