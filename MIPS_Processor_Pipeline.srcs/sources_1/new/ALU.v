@@ -1,7 +1,7 @@
 `timescale 1ns / 1ns
 
 
-module ALU_module #(
+module ALU #(
     parameter DATA_LEN  = 32,
     parameter OP_LEN    = 6
 )

@@ -22,8 +22,18 @@ module executionStage(
     output wire o_zero
 );
 
-assign o_branchPC = i_nextPC + (i_inmediatoEx << 2);
+    assign o_branchPC = i_nextPC + (i_inmediatoEx << 2);
 
-assign o_d2 = i_d2;
+    assign o_d2 = i_d2;
+
+    ALU_module #(
+        .DATA_LEN(32)    
+    ) SumRes
+    (
+        .i_operandA(i_d1),
+        .i_operandB(),
+        .o_result(o_aluResult),
+        .o_zero(o_zero)
+    );
 
 endmodule
