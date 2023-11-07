@@ -26,7 +26,10 @@ module executionStage(
 
     assign o_d2 = i_d2;
     
+    wire [31:0] aluOperand2;
     wire [5:0] aluCtlTOALU;
+    
+    //Falta mux para elejir operando2
     
     ALUControl #(
         .DATA_LEN(32)    
@@ -42,10 +45,12 @@ module executionStage(
     ) ALU
     (
         .i_operandA(i_d1),
-        .i_operandB(),
+        .i_operandB(aluOperand2),
         .i_opSelector(aluCtlTOALU),
         .o_result(o_aluResult),
         .o_zero(o_zero)
     );
+    
+    //Falta mux para elejir write register
 
 endmodule
