@@ -13,7 +13,7 @@ module programCounterIncrement
 reg [DATA_LEN-1:0] r_incrementedProgramCounter;
 
 always @(*) begin
-    r_incrementedProgramCounter = i_programCounter + 1;
+    r_incrementedProgramCounter = i_programCounter + 4;
 end
 
 //Assigns
