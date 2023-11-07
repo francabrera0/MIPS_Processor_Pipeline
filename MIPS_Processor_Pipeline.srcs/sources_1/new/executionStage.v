@@ -33,9 +33,7 @@ module executionStage #(
     
     //Falta mux para elejir operando2
     
-    ALUControl #(
-        .DATA_LEN(32)    
-    ) ALUControl
+    ALUControl ALUControl
     (
         .i_funct(i_inmediatoEx[5:0]),
         .i_aluOP(i_aluOP),
@@ -49,7 +47,7 @@ module executionStage #(
         .i_operandA(i_d1),
         .i_operandB(aluOperand2),
         .i_opSelector(aluCtlTOALU),
-        .o_result(o_aluResult),
+        .o_aluResult(o_aluResult),
         .o_zero(o_zero)
     );
     
