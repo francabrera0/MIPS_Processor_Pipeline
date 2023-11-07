@@ -15,9 +15,15 @@ module executionStage(
     input wire i_regDst,
     //Data outputs
     output wire [31:0] o_branchPC,
+    output wire [31:0] o_d2,
     output wire [31:0] o_aluResult,
     output wire [31:0] o_writeRegister,
     //Control outputs
     output wire o_zero
 );
+
+assign o_branchPC = i_nextPC + (i_inmediatoEx << 2);
+
+assign o_d2 = i_d2;
+
 endmodule
