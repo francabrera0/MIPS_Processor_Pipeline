@@ -25,13 +25,25 @@ module executionStage(
     assign o_branchPC = i_nextPC + (i_inmediatoEx << 2);
 
     assign o_d2 = i_d2;
-
+    
+    wire [5:0] aluCtlTOALU;
+    
+    ALUControl #(
+        .DATA_LEN(32)    
+    ) ALUControl
+    (
+        .i_funct(i_inmediatoEx[5:0]),
+        .i_aluOP(i_aluOP),
+        .o_opSelector(aluCtlTOALU)
+    );
+    
     ALU #(
         .DATA_LEN(32)    
     ) ALU
     (
         .i_operandA(i_d1),
         .i_operandB(),
+        .i_opSelector(aluCtlTOALU),
         .o_result(o_aluResult),
         .o_zero(o_zero)
     );
