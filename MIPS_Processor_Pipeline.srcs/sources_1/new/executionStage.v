@@ -26,9 +26,9 @@ module executionStage(
 
     assign o_d2 = i_d2;
 
-    ALU_module #(
+    ALU #(
         .DATA_LEN(32)    
-    ) SumRes
+    ) ALU
     (
         .i_operandA(i_d1),
         .i_operandB(),
