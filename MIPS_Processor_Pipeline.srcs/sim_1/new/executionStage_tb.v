@@ -1,8 +1,8 @@
 `timescale 1ns / 1ps
 
 module executionStage_tb;
-    localparam DATA_LEN = 8;
-    localparam REGISTER_BITS = 8;
+    localparam DATA_LEN = 32;
+    localparam REGISTER_BITS = 5;
 
     reg [DATA_LEN-1:0] i_nextPC;
     reg [DATA_LEN-1:0] i_d1;
@@ -45,18 +45,23 @@ module executionStage_tb;
         .o_zero(o_zero)
     );
     
-     initial begin
+    reg [31:0] seed;
+    
+    initial begin
+        seed = 100;
+        i_inmediatoEx[DATA_LEN-1:16] = {16{1'b0}};
+    
         //Load instruction control signals
         i_regDst = 1'b0;
         i_aluOP = 2'b00;
         i_aluSrc = 1'b1;
         //Load instruction data
-        i_nextPC = 8'b10001100;
-        i_d1 = 8'b10001100;
-        i_d2 = 8'b10001100;
-        i_inmediatoEx = 8'b00011000;
-        i_rt = 5'b10001;
-        i_rd = 5'b10000;
+        i_nextPC = $random(seed);
+        i_d1 = $random(seed);
+        i_d2 = $random(seed);
+        i_inmediatoEx[15:0] = $random(seed);
+        i_rt = $random(seed);
+        i_rd =$random(seed);
         
         #10
         

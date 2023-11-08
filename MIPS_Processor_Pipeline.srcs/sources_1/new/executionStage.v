@@ -1,6 +1,5 @@
 `timescale 1ns / 1ps
 
-
 module executionStage #(
     parameter DATA_LEN  = 32,
     parameter REGISTER_BITS = 5
