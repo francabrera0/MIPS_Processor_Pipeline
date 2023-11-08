@@ -1,5 +1,3 @@
-`timescale 1ns / 1ps
-
 module instructionFetchStage
 #(
     parameter DATA_LEN = 32,
