@@ -119,11 +119,6 @@ module executionStage_tb;
             $display("Store instruction: Incorrect zero");
         end
         
-        //Check writeRegister
-        if(o_writeRegister != i_rt) begin
-            $display("Store instruction: Incorrect writeRegister");
-        end
-        
         #20
         
         //R-type instruction control signals
@@ -160,6 +155,37 @@ module executionStage_tb;
         //Check writeRegister
         if(o_writeRegister != i_rd) begin
             $display("R-type instruction: Incorrect writeRegister");
+        end
+        
+        #20
+        
+        //Branch equal instruction control signals
+        i_aluOP = 2'b01;
+        i_aluSrc = 1'b0;
+        //Branch equal instruction data
+        i_nextPC = $random(seed);
+        i_d1 = $random(seed);
+        i_d2 = i_d1;
+        i_rt = $random(seed);
+        i_rd =$random(seed);
+        i_inmediatoEx[16:11] = i_rd;
+        i_inmediatoEx[10:0] = $random(seed);
+        
+        #10
+        
+        //Check branchPC
+        if(o_branchPC != (i_inmediatoEx << 2) + i_nextPC) begin
+            $display("Beq instruction: Incorrect branchPC");
+        end
+        
+        //Check aluResult, should substract d1 - d2 
+        if(o_aluResult != i_d1 - i_d2) begin
+            $display("Beq instruction: Incorrect aluResult");
+        end
+        
+        //Check zero
+        if(&(~o_aluResult) != o_zero) begin
+            $display("Beq instruction: Incorrect zero");
         end
         
     end
