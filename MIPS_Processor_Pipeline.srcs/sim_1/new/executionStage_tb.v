@@ -59,9 +59,10 @@ module executionStage_tb;
         i_nextPC = $random(seed);
         i_d1 = $random(seed);
         i_d2 = $random(seed);
-        i_inmediatoEx[15:0] = $random(seed);
         i_rt = $random(seed);
-        i_rd =$random(seed);
+        i_rd = $random(seed);      
+        i_inmediatoEx[16:11] = i_rd;
+        i_inmediatoEx[10:0] = $random(seed);
         
         #10
         
@@ -84,6 +85,81 @@ module executionStage_tb;
         //Check writeRegister
         if(o_writeRegister != i_rt) begin
             $display("Load instruction: Incorrect writeRegister");
+        end
+        
+        #20
+        
+        //Store instruction control signals
+        i_aluOP = 2'b00;
+        i_aluSrc = 1'b1;
+        //Store instruction data
+        i_nextPC = $random(seed);
+        i_d1 = $random(seed);
+        i_d2 = $random(seed);
+        i_rt = $random(seed);
+        i_rd =$random(seed);
+        i_inmediatoEx[16:11] = i_rd;
+        i_inmediatoEx[10:0] = $random(seed);
+        
+        #10
+        
+        //Check branchPC
+        if(o_branchPC != (i_inmediatoEx << 2) + i_nextPC) begin
+            $display("Store instruction: Incorrect branchPC");
+        end
+        
+        //Check aluResult, should add d1 and inmediatoEx 
+        //This calculates the adrress where to store the data
+        if(o_aluResult != i_d1 + i_inmediatoEx) begin
+            $display("Store instruction: Incorrect aluResult");
+        end
+        
+        //Check zero
+        if(&(~o_aluResult) != o_zero) begin
+            $display("Store instruction: Incorrect zero");
+        end
+        
+        //Check writeRegister
+        if(o_writeRegister != i_rt) begin
+            $display("Store instruction: Incorrect writeRegister");
+        end
+        
+        #20
+        
+        //R-type instruction control signals
+        i_regDst = 1'b1;
+        i_aluOP = 2'b10;
+        i_aluSrc = 1'b0;
+        //R-type instruction data
+        i_nextPC = $random(seed);
+        i_d1 = $random(seed);
+        i_d2 = $random(seed);
+        i_rt = $random(seed);
+        i_rd =$random(seed);
+        i_inmediatoEx[16:11] = i_rd;
+        //Funct = AND
+        i_inmediatoEx[10:0] = 11'b00000100100;
+        
+        #10
+        
+        //Check branchPC
+        if(o_branchPC != (i_inmediatoEx << 2) + i_nextPC) begin
+            $display("R-type instruction: Incorrect branchPC");
+        end
+        
+        //Check aluResult, should d1 AND d2 
+        if(o_aluResult != i_d1 & i_d2) begin
+            $display("R-type instruction: Incorrect aluResult");
+        end
+        
+        //Check zero
+        if(&(~o_aluResult) != o_zero) begin
+            $display("R-type instruction: Incorrect zero");
+        end
+        
+        //Check writeRegister
+        if(o_writeRegister != i_rd) begin
+            $display("R-type instruction: Incorrect writeRegister");
         end
         
     end
