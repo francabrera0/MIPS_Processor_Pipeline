@@ -5,7 +5,7 @@ module executionStage #(
     parameter REGISTER_BITS = 5
 )(
     //Data inputs
-    input wire [DATA_LEN-1:0] i_nextPC,
+    input wire [DATA_LEN-1:0] i_incrementedPC,
     input wire [DATA_LEN-1:0] i_d1,
     input wire [DATA_LEN-1:0] i_d2,
     input wire [DATA_LEN-1:0] i_inmediatoEx,
@@ -23,7 +23,7 @@ module executionStage #(
     output wire o_zero
 );
     //Calculates branch program counter
-    assign o_branchPC = i_nextPC + (i_inmediatoEx << 2);
+    assign o_branchPC = i_incrementedPC + (i_inmediatoEx << 2);
     
     wire [DATA_LEN-1:0] aluOperand2;
     

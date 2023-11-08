@@ -4,7 +4,7 @@ module executionStage_tb;
     localparam DATA_LEN = 32;
     localparam REGISTER_BITS = 5;
 
-    reg [DATA_LEN-1:0] i_nextPC;
+    reg [DATA_LEN-1:0] i_incrementedPC;
     reg [DATA_LEN-1:0] i_d1;
     reg [DATA_LEN-1:0] i_d2;
     reg [DATA_LEN-1:0] i_inmediatoEx;
@@ -27,7 +27,7 @@ module executionStage_tb;
         .REGISTER_BITS(REGISTER_BITS)
     ) executionStage(
         //Data inputs
-        .i_nextPC(i_nextPC),
+        .i_incrementedPC(i_incrementedPC),
         .i_d1(i_d1),
         .i_d2(i_d2),
         .i_inmediatoEx(i_inmediatoEx),
@@ -56,7 +56,7 @@ module executionStage_tb;
         i_aluOP = 2'b00;
         i_aluSrc = 1'b1;
         //Load instruction data
-        i_nextPC = $random(seed);
+        i_incrementedPC = $random(seed);
         i_d1 = $random(seed);
         i_d2 = $random(seed);
         i_rt = $random(seed);
@@ -67,7 +67,7 @@ module executionStage_tb;
         #10
         
         //Check branchPC
-        if(o_branchPC != (i_inmediatoEx << 2) + i_nextPC) begin
+        if(o_branchPC != (i_inmediatoEx << 2) + i_incrementedPC) begin
             $display("Load instruction: Incorrect branchPC");
         end
         
@@ -93,7 +93,7 @@ module executionStage_tb;
         i_aluOP = 2'b00;
         i_aluSrc = 1'b1;
         //Store instruction data
-        i_nextPC = $random(seed);
+        i_incrementedPC = $random(seed);
         i_d1 = $random(seed);
         i_d2 = $random(seed);
         i_rt = $random(seed);
@@ -104,7 +104,7 @@ module executionStage_tb;
         #10
         
         //Check branchPC
-        if(o_branchPC != (i_inmediatoEx << 2) + i_nextPC) begin
+        if(o_branchPC != (i_inmediatoEx << 2) + i_incrementedPC) begin
             $display("Store instruction: Incorrect branchPC");
         end
         
@@ -126,7 +126,7 @@ module executionStage_tb;
         i_aluOP = 2'b10;
         i_aluSrc = 1'b0;
         //R-type instruction data
-        i_nextPC = $random(seed);
+        i_incrementedPC = $random(seed);
         i_d1 = $random(seed);
         i_d2 = $random(seed);
         i_rt = $random(seed);
@@ -138,7 +138,7 @@ module executionStage_tb;
         #10
         
         //Check branchPC
-        if(o_branchPC != (i_inmediatoEx << 2) + i_nextPC) begin
+        if(o_branchPC != (i_inmediatoEx << 2) + i_incrementedPC) begin
             $display("R-type instruction: Incorrect branchPC");
         end
         
@@ -163,7 +163,7 @@ module executionStage_tb;
         i_aluOP = 2'b01;
         i_aluSrc = 1'b0;
         //Branch equal instruction data
-        i_nextPC = $random(seed);
+        i_incrementedPC = $random(seed);
         i_d1 = $random(seed);
         i_d2 = i_d1;
         i_rt = $random(seed);
@@ -174,7 +174,7 @@ module executionStage_tb;
         #10
         
         //Check branchPC
-        if(o_branchPC != (i_inmediatoEx << 2) + i_nextPC) begin
+        if(o_branchPC != (i_inmediatoEx << 2) + i_incrementedPC) begin
             $display("Beq instruction: Incorrect branchPC");
         end
         
