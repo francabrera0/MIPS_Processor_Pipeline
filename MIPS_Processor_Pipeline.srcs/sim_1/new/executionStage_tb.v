@@ -13,11 +13,6 @@ module executionStage_tb;
     reg i_aluSrc;
     reg [1:0] i_aluOP;
     reg i_regDst;
-    reg i_regWrite;
-    reg i_memRead;
-    reg i_memWrite;
-    reg i_branch;
-    reg i_memToReg;
     //Data outputs
     wire [DATA_LEN-1:0] o_branchPC;
     wire [DATA_LEN-1:0] o_d2;
@@ -25,42 +20,81 @@ module executionStage_tb;
     wire [DATA_LEN-1:0] o_writeRegister;
     //Control outputs
     wire o_zero;
-    wire o_regWrite;
-    wire o_memRead;
-    wire o_memWrite;
-    wire o_branch;
-    wire o_memToReg;
 
 
     executionStage executionStage(
-    //Data inputs
-    .i_nextPC(i_nextPC),
-    .i_d1(i_d1),
-    .i_d2(i_d2),
-    .i_inmediatoEx(i_inmediatoEx),
-    .i_rt(i_rt),
-    .i_rd(i_rd),
-    //Control inputs
-    .i_aluSrc(i_aluSrc),
-    .i_aluOP(i_aluOP),
-    .i_regDst(i_regDst),
-    .i_regWrite(i_regWrite),
-    .i_memRead(i_memRead),
-    .i_memWrite(i_memWrite),
-    .i_branch(i_branch),
-    .i_memToReg(i_memToReg),
-    //Data outputs
-    .o_branchPC(o_branchPC),
-    .o_d2(o_d2),
-    .o_aluResult(o_aluResult),
-    .o_writeRegister(o_writeRegister),
-    //Control outputs
-    .o_zero(o_zero),
-    .o_regWrite(o_regWrite),
-    .o_memRead(o_memRead),
-    .o_memWrite(o_memWrite),
-    .o_branch(o_branch),
-    .o_memToReg(o_memToReg)
+        //Data inputs
+        .i_nextPC(i_nextPC),
+        .i_d1(i_d1),
+        .i_d2(i_d2),
+        .i_inmediatoEx(i_inmediatoEx),
+        .i_rt(i_rt),
+        .i_rd(i_rd),
+        //Control inputs
+        .i_aluSrc(i_aluSrc),
+        .i_aluOP(i_aluOP),
+        .i_regDst(i_regDst),
+        //Data outputs
+        .o_branchPC(o_branchPC),
+        .o_d2(o_d2),
+        .o_aluResult(o_aluResult),
+        .o_writeRegister(o_writeRegister),
+        //Control outputs
+        .o_zero(o_zero)
     );
+    
+     initial begin
+        funct = 6'b100011;
+        //Load or store instruction
+        aluOp = 2'b00;
+        
+        #10
+        
+        //Load or store instruction should add
+        if(aluCtl != 6'b100000) begin
+            $display("Load Store instruction not adding");
+        end
+        
+        #20
+        
+        funct = 6'b100011;
+        //Branch
+        aluOp = 2'b01;
+        
+        #10
+        
+        //Branch inistruction should substract
+        if(aluCtl != 6'b100010) begin
+            $display("Branch instruction not substracting");
+        end
+        
+        #20
+        
+        //NOR
+        funct = 6'b100111;
+        //R-type
+        aluOp = 2'b10;
+        
+        #10
+        
+        //R-type inistruction should foward funct
+        if(aluCtl != funct) begin
+            $display("R-type instruction not fordwaring funct");
+        end
+        
+        #20
+        
+        funct = 6'b100111;
+        //Invalid input
+        aluOp = 2'b11;
+        
+        #10
+        
+        //R-type inistruction should foward funct
+        if(aluCtl != 6'b000000) begin
+            $display("Invalid aluOp not outputing zero");
+        end
+    
+    end
 
 endmodule
