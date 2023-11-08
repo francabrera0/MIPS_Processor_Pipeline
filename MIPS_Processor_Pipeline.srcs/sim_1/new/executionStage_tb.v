@@ -15,7 +15,6 @@ module executionStage_tb;
     reg i_regDst;
     //Data outputs
     wire [DATA_LEN-1:0] o_branchPC;
-    wire [DATA_LEN-1:0] o_d2;
     wire [DATA_LEN-1:0] o_aluResult;
     wire [DATA_LEN-1:0] o_writeRegister;
     //Control outputs

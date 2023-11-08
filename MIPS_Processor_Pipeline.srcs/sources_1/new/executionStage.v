@@ -17,15 +17,11 @@ module executionStage #(
     input wire i_regDst,
     //Data outputs
     output wire [DATA_LEN-1:0] o_branchPC,
-    output wire [DATA_LEN-1:0] o_d2,
     output wire [DATA_LEN-1:0] o_aluResult,
     output wire [DATA_LEN-1:0] o_writeRegister,
     //Control outputs
     output wire o_zero
 );
-    //Foward data
-    assign o_d2 = i_d2;
-
     //Calculates branch program counter
     assign o_branchPC = i_nextPC + (i_inmediatoEx << 2);
     
