@@ -2,13 +2,14 @@
 
 module executionStage_tb;
     localparam DATA_LEN = 8;
+    localparam REGISTER_BITS = 8;
 
     reg [DATA_LEN-1:0] i_nextPC;
     reg [DATA_LEN-1:0] i_d1;
     reg [DATA_LEN-1:0] i_d2;
     reg [DATA_LEN-1:0] i_inmediatoEx;
-    reg [4:0] i_rt;
-    reg [4:0] i_rd;
+    reg [REGISTER_BITS-1:0] i_rt;
+    reg [REGISTER_BITS-1:0] i_rd;
     //Control inputs
     reg i_aluSrc;
     reg [1:0] i_aluOP;
@@ -16,12 +17,15 @@ module executionStage_tb;
     //Data outputs
     wire [DATA_LEN-1:0] o_branchPC;
     wire [DATA_LEN-1:0] o_aluResult;
-    wire [DATA_LEN-1:0] o_writeRegister;
+    wire [REGISTER_BITS-1:0] o_writeRegister;
     //Control outputs
     wire o_zero;
 
 
-    executionStage executionStage(
+    executionStage #(
+        .DATA_LEN(DATA_LEN),
+        .REGISTER_BITS(REGISTER_BITS)
+    ) executionStage(
         //Data inputs
         .i_nextPC(i_nextPC),
         .i_d1(i_d1),
@@ -35,7 +39,6 @@ module executionStage_tb;
         .i_regDst(i_regDst),
         //Data outputs
         .o_branchPC(o_branchPC),
-        .o_d2(o_d2),
         .o_aluResult(o_aluResult),
         .o_writeRegister(o_writeRegister),
         //Control outputs
@@ -43,57 +46,41 @@ module executionStage_tb;
     );
     
      initial begin
-        funct = 6'b100011;
-        //Load or store instruction
-        aluOp = 2'b00;
+        //Load instruction control signals
+        i_regDst = 1'b0;
+        i_aluOP = 2'b00;
+        i_aluSrc = 1'b1;
+        //Load instruction data
+        i_nextPC = 8'b10001100;
+        i_d1 = 8'b10001100;
+        i_d2 = 8'b10001100;
+        i_inmediatoEx = 8'b00011000;
+        i_rt = 5'b10001;
+        i_rd = 5'b10000;
         
         #10
         
-        //Load or store instruction should add
-        if(aluCtl != 6'b100000) begin
-            $display("Load Store instruction not adding");
+        //Check branchPC
+        if(o_branchPC != (i_inmediatoEx << 2) + i_nextPC) begin
+            $display("Load instruction: Incorrect branchPC");
         end
         
-        #20
-        
-        funct = 6'b100011;
-        //Branch
-        aluOp = 2'b01;
-        
-        #10
-        
-        //Branch inistruction should substract
-        if(aluCtl != 6'b100010) begin
-            $display("Branch instruction not substracting");
+        //Check aluResult, should add d1 and inmediatoEx 
+        //This calculates the adrress where there is the data to load
+        if(o_aluResult != i_d1 + i_inmediatoEx) begin
+            $display("Load instruction: Incorrect aluResult");
         end
         
-        #20
-        
-        //NOR
-        funct = 6'b100111;
-        //R-type
-        aluOp = 2'b10;
-        
-        #10
-        
-        //R-type inistruction should foward funct
-        if(aluCtl != funct) begin
-            $display("R-type instruction not fordwaring funct");
+        //Check zero
+        if(&(~o_aluResult) != o_zero) begin
+            $display("Load instruction: Incorrect zero");
         end
         
-        #20
-        
-        funct = 6'b100111;
-        //Invalid input
-        aluOp = 2'b11;
-        
-        #10
-        
-        //R-type inistruction should foward funct
-        if(aluCtl != 6'b000000) begin
-            $display("Invalid aluOp not outputing zero");
+        //Check writeRegister
+        if(o_writeRegister != i_rt) begin
+            $display("Load instruction: Incorrect writeRegister");
         end
-    
+        
     end
 
 endmodule

@@ -2,15 +2,16 @@
 
 
 module executionStage #(
-    parameter DATA_LEN  = 32
+    parameter DATA_LEN  = 32,
+    parameter REGISTER_BITS = 5
 )(
     //Data inputs
     input wire [DATA_LEN-1:0] i_nextPC,
     input wire [DATA_LEN-1:0] i_d1,
     input wire [DATA_LEN-1:0] i_d2,
     input wire [DATA_LEN-1:0] i_inmediatoEx,
-    input wire [4:0] i_rt,
-    input wire [4:0] i_rd,
+    input wire [REGISTER_BITS-1:0] i_rt,
+    input wire [REGISTER_BITS-1:0] i_rd,
     //Control inputs
     input wire i_aluSrc,
     input wire [1:0] i_aluOP,
@@ -18,7 +19,7 @@ module executionStage #(
     //Data outputs
     output wire [DATA_LEN-1:0] o_branchPC,
     output wire [DATA_LEN-1:0] o_aluResult,
-    output wire [DATA_LEN-1:0] o_writeRegister,
+    output wire [REGISTER_BITS-1:0] o_writeRegister,
     //Control outputs
     output wire o_zero
 );
@@ -60,7 +61,7 @@ module executionStage #(
     
     //Mux to select write register
     mux2to1 #(
-        .DATA_LEN(5)
+        .DATA_LEN(REGISTER_BITS)
     ) MUXWR
     (
         .i_muxInputA(i_rt),
