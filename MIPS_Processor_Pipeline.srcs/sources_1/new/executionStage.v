@@ -15,19 +15,35 @@ module executionStage #(
     input wire i_aluSrc,
     input wire [1:0] i_aluOP,
     input wire i_regDst,
+    input wire i_regWrite,
+    input wire i_memRead,
+    input wire i_memWrite,
+    input wire i_branch,
+    input wire i_memToReg,
     //Data outputs
     output wire [DATA_LEN-1:0] o_branchPC,
     output wire [DATA_LEN-1:0] o_d2,
     output wire [DATA_LEN-1:0] o_aluResult,
     output wire [DATA_LEN-1:0] o_writeRegister,
     //Control outputs
-    output wire o_zero
+    output wire o_zero,
+    output wire o_regWrite,
+    output wire o_memRead,
+    output wire o_memWrite,
+    output wire o_branch,
+    output wire o_memToReg
 );
+    //Foward data
+    assign o_d2 = i_d2;
+    //Foward control
+    assign o_regWrite = i_regWrite;
+    assign o_memRead = i_memRead;
+    assign o_memWrite = i_memWrite;
+    assign o_branch = i_branch;
+    assign o_memToReg = i_memToReg;
 
     //Calculates branch program counter
     assign o_branchPC = i_nextPC + (i_inmediatoEx << 2);
-
-    assign o_d2 = i_d2;
     
     wire [DATA_LEN-1:0] aluOperand2;
     
