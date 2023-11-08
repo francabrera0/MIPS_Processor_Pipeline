@@ -5,7 +5,7 @@ module programCounterIncrement_tb();
 localparam DATA_LEN = 32;
 
 reg [DATA_LEN-1:0] i_programCounter;
-wire [DATA_LEN-1:0] o_incrementedProgramCounter;
+wire [DATA_LEN-1:0] o_incrementedPC;
 
 
 programCounterIncrement #(
@@ -13,7 +13,7 @@ programCounterIncrement #(
 ) pcIncrement
 (
     .i_programCounter(i_programCounter),
-    .o_incrementedProgramCounter(o_incrementedProgramCounter)
+    .o_incrementedPC(o_incrementedPC)
 );
 
 reg [5:0] i;

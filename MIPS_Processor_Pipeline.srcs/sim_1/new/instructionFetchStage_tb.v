@@ -12,7 +12,7 @@ reg [PC_LEN-1:0] i_programCounterBranch;
 reg i_programCounterSrc;
 reg [DATA_LEN-1:0] i_instructionToWrite;
 reg i_writeMemory;
-wire [PC_LEN-1:0] o_incrementedProgramCounter;
+wire [PC_LEN-1:0] o_incrementedPC;
 wire [DATA_LEN-1:0] o_instruction;
 
 instructionFetchStage#(
@@ -27,7 +27,7 @@ instructionFetchStage#(
     .i_programCounterSrc(i_programCounterSrc),
     .i_instructionToWrite(i_instructionToWrite),
     .i_writeMemory(i_writeMemory),
-    .o_incrementedProgramCounter(o_incrementedProgramCounter),
+    .o_incrementedPC(o_incrementedPC),
     .o_instruction(o_instruction)
 );
 

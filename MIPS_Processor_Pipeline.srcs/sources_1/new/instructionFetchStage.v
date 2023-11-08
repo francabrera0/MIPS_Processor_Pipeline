@@ -14,7 +14,7 @@ module instructionFetchStage
     input wire i_writeMemory,
 
     //Outputs
-    output wire [PC_LEN-1:0] o_incrementedProgramCounter,
+    output wire [PC_LEN-1:0] o_incrementedPC,
     output wire [DATA_LEN-1:0] o_instruction
 );
 
@@ -39,7 +39,7 @@ programCounterIncrement#(
 ) programCounterIncrement
 (
     .i_programCounter(w_programCounterOut),
-    .o_incrementedProgramCounter(o_incrementedProgramCounter)
+    .o_incrementedPC(o_incrementedPC)
 );
 
 //Instruction memory instance
@@ -62,7 +62,7 @@ mux2to1#(
     .DATA_LEN(DATA_LEN)
 ) programCounterMux
 (
-    .i_muxInputA(o_incrementedProgramCounter),
+    .i_muxInputA(o_incrementedPC),
     .i_muxInputB(i_programCounterBranch),
     .i_muxSelector(i_programCounterSrc),
     .o_muxOutput(w_programCounterIn)
