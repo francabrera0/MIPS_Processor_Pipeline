@@ -17,7 +17,7 @@ always @(*)
                 //Branch equal instruction ALU should substract                
                 2'b01: o_opSelector = 6'b100010;
                 //R.type instruction
-                2'b10: o_opSelector = i_aluOP;
+                2'b10: o_opSelector = i_funct;
 
            
                 default : o_opSelector = 0;

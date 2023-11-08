@@ -80,7 +80,7 @@ module executionStage #(
     
     //Mux to select write register
     mux2to1 #(
-        .DATA_LEN(DATA_LEN)
+        .DATA_LEN(5)
     ) MUXWR
     (
         .i_muxInputA(i_rt),
