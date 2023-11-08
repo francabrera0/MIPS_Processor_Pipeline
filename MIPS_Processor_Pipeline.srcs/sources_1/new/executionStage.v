@@ -24,14 +24,25 @@ module executionStage #(
     output wire o_zero
 );
 
+    //Calculates branch program counter
     assign o_branchPC = i_nextPC + (i_inmediatoEx << 2);
 
     assign o_d2 = i_d2;
     
     wire [DATA_LEN-1:0] aluOperand2;
-    wire [5:0] aluCtlTOALU;
     
-    //Falta mux para elejir operando2
+    //Mux to select ALU second operand
+    mux2to1 #(
+        .DATA_LEN(DATA_LEN)
+    )MUXD2
+    (
+        .i_muxInputA(i_d2),
+        .i_muxInputB(i_inmediatoEx),
+        .i_muxSelector(i_aluSrc),
+        .o_muxOutput(aluOperand2)
+    );
+    
+    wire [5:0] aluCtlTOALU;
     
     ALUControl ALUControl
     (
@@ -51,6 +62,15 @@ module executionStage #(
         .o_zero(o_zero)
     );
     
-    //Falta mux para elejir write register
+    //Mux to select write register
+    mux2to1 #(
+        .DATA_LEN(DATA_LEN)
+    ) MUXWR
+    (
+        .i_muxInputA(i_rt),
+        .i_muxInputB(i_rd),
+        .i_muxSelector(i_regDst),
+        .o_muxOutput(o_writeRegister)
+    );
 
 endmodule
