@@ -7,6 +7,7 @@ module programCounter
     input wire i_clk,
     input wire i_reset,
     input wire [PC_LEN-1:0] i_programCounter,
+    input wire i_enable,
 
     //Outputs
     output wire [PC_LEN-1:0] o_programCounter
@@ -19,7 +20,7 @@ always @(posedge i_clk) begin
     if(i_reset) begin
         r_programCounter <= 0;
     end
-    else begin
+    else if(i_enable) begin
         r_programCounter <= i_programCounter;
     end
 end
