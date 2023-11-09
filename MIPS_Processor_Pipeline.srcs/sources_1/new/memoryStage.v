@@ -14,13 +14,13 @@ module memoryStage#(
     //Data outputs
     output wire [DATA_LEN-1:0] o_readData,
     //Control outputs
-    output wire o_pcSrc
+    output wire o_PCSrc
 );
     
     branchControl branchControl(
         .i_branch(i_branch),
         .i_zero(i_zero),
-        .o_pcSrc(o_pcSrc)
+        .o_PCSrc(o_PCSrc)
     );
     
     dataMemory #(

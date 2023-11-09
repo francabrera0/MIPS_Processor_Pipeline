@@ -29,7 +29,7 @@ module dataMemory_tb;
     reg [2:0] i = 0;
     
     initial begin
-        //Write 8 bytes
+        //Write 8 words
         for(i=0; i<7;i=i+1) begin
             #10
             i_address = i*4;
@@ -40,7 +40,7 @@ module dataMemory_tb;
         
         #10
         
-        //Read 8 bytes
+        //Read 8 words
         for(i=0; i<7;i=i+1) begin
             #10
             i_address = i*4;

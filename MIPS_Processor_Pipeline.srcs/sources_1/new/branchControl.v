@@ -5,9 +5,9 @@ module branchControl(
     input wire i_branch,
     input wire i_zero,
     //Control outputs
-    output wire o_pcSrc
+    output wire o_PCSrc
 );
 
-assign o_pcSrc = i_branch & i_zero;
+assign o_PCSrc = i_branch & i_zero;
 
 endmodule
