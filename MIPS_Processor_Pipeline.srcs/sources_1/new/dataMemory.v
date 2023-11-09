@@ -16,13 +16,15 @@ module dataMemory #(
 
 reg [DATA_LEN-1:0] memoryBlock [(2**SIZE_BITS)-1: 0];
 
+wire [DATA_LEN-3:0] alingnedAddress = i_address[DATA_LEN-1:2];
+
 always @(*) begin
     if(i_memWrite) begin
-        memoryBlock[i_address] = i_writeData;
+        memoryBlock[alingnedAddress] = i_writeData;
     end
     
     if(i_memRead) begin
-        o_readData = memoryBlock[i_address];
+        o_readData = memoryBlock[alingnedAddress];
     end
 end
 
