@@ -2,7 +2,8 @@
 
 module executionStage #(
     parameter DATA_LEN  = 32,
-    parameter REGISTER_BITS = 5
+    parameter REGISTER_BITS = 5,
+    parameter OP_LEN = 6
 )(
     //Data inputs
     input wire [DATA_LEN-1:0] i_incrementedPC,
@@ -38,11 +39,11 @@ module executionStage #(
         .o_muxOutput(aluOperand2)
     );
     
-    wire [5:0] aluCtlTOALU;
+    wire [OP_LEN-1:0] aluCtlTOALU;
     
     ALUControl ALUControl
     (
-        .i_funct(i_inmediatoEx[5:0]),
+        .i_funct(i_inmediatoEx[OP_LEN-1:0]),
         .i_aluOP(i_aluOP),
         .o_opSelector(aluCtlTOALU)
     );
