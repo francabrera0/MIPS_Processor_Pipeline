@@ -3,8 +3,7 @@
 
 module executionMemoryBuffer
 #(
-    parameter DATA_LEN = 32,
-    parameter PC_LEN = 32
+    parameter DATA_LEN = 32
 )
 (
     //Special inputs
@@ -77,7 +76,7 @@ always @(posedge i_clk) begin
         memRead <= i_memRead;
         memWrite <= i_memWrite;
         branch <= i_branch;
-        memToReg <= i_memToReg;  
+        memToReg <= i_memToReg;
     end  
 end
 
