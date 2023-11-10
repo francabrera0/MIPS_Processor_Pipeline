@@ -102,7 +102,7 @@ initial begin
     //Opcode = 000100
     //rs = 11100 = 0x1C --> data1 = 0x38
     //rt = 00111 = 0x7 --> data2 = 0xE
-    //Imm = 10000 = 0x16
+    //Imm = 10000 = 0x10
     //Señales = -01010
     i_instruction = 32'b00010011100001110000000000010000;
     #10;
