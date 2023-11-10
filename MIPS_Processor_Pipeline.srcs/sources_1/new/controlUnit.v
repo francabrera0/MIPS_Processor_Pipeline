@@ -15,14 +15,14 @@ module controlUnit
     output wire o_regDest
 );
 
-localparam RTYPE = {OPCODE_LEN{1'b0}};
+localparam RTYPE = 6'b000000;
 localparam LW = 6'b100011;
 localparam SW = 6'b101011;
 localparam BEQ = 6'b000100;
 
 reg r_regWrite;
 reg r_aluSrc;
-reg r_aluOp;
+reg [1:0] r_aluOp;
 reg r_branch;
 reg r_regDest;
 
