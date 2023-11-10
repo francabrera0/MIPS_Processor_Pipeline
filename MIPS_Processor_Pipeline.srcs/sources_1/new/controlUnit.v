@@ -10,7 +10,7 @@ module controlUnit
     //Outputs
     output wire o_regWrite,
     output wire o_aluSrc,
-    output wire o_aluOp,
+    output wire [1:0] o_aluOp,
     output wire o_branch,
     output wire o_regDest
 );
@@ -34,33 +34,33 @@ always @(*) begin
     case (r_opCode)
         RTYPE: begin
             r_regDest = 1'b1;
-            r_aluOp = 1'b0;
+            r_aluOp = 2'b10;
             r_aluSrc = 1'b0;
             r_branch = 1'b0;
             r_regWrite = 1'b1;
         end 
         LW: begin
             r_regDest = 1'b0;
-            r_aluOp = 1'b0;
+            r_aluOp = 2'b00;
             r_aluSrc = 1'b1;
             r_branch = 1'b0;
             r_regWrite = 1'b1;
         end
         SW: begin
-            r_aluOp = 1'b0;
+            r_aluOp = 2'b00;
             r_aluSrc = 1'b1;
             r_branch = 1'b0;
             r_regWrite = 1'b0;
         end
         BEQ: begin
-            r_aluOp = 1'b1;
+            r_aluOp = 2'b01;
             r_aluSrc = 1'b0;
             r_branch = 1'b1;
             r_regWrite = 1'b0;
         end
         default: begin
             r_regDest = 1'b0;
-            r_aluOp = 1'b0;
+            r_aluOp = 2'b00;
             r_aluSrc = 1'b0;
             r_branch = 1'b0;
             r_regWrite = 1'b0;
