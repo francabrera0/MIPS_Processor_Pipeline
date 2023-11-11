@@ -90,6 +90,7 @@
   <FileSets Version="1" Minor="31">
     <FileSet Name="sources_1" Type="DesignSrcs" RelSrcDir="$PSRCDIR/sources_1" RelGenDir="$PGENDIR/sources_1">
       <Filter Type="Srcs"/>
+
       <File Path="$PSRCDIR/sources_1/new/controlUnit.v">
 
         <FileInfo>
@@ -123,6 +124,7 @@
       </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
+
         <Option Name="TopModule" Val="instructionDecodeStage"/>
         <Option Name="TopAutoSet" Val="TRUE"/>
 
@@ -144,6 +146,7 @@
     </FileSet>
     <FileSet Name="sim_1" Type="SimulationSrcs" RelSrcDir="$PSRCDIR/sim_1" RelGenDir="$PGENDIR/sim_1">
       <Filter Type="Srcs"/>
+
       <File Path="$PSRCDIR/sim_1/new/instructionDecodeStage_tb.v">
         <FileInfo>
           <Attr Name="UsedIn" Val="synthesis"/>
@@ -233,6 +236,7 @@
       </File>
       <Config>
         <Option Name="DesignMode" Val="RTL"/>
+
         <Option Name="TopModule" Val="instructionDecodeStage_tb"/>
         <Option Name="TopLib" Val="xil_defaultlib"/>
         <Option Name="TransportPathDelay" Val="0"/>
