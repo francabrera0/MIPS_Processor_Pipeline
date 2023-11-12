@@ -3,7 +3,8 @@
 
 module executionMemoryBuffer
 #(
-    parameter DATA_LEN = 32
+    parameter DATA_LEN = 32,
+    parameter REGISTER_BITS = 5
 )
 (
     //Special inputs
@@ -12,9 +13,9 @@ module executionMemoryBuffer
     input wire i_enable,
     //Data inputs
     input wire [DATA_LEN-1:0] i_pcBranch,
-    input wire [DATA_LEN-1:0] i_d2,
+    input wire [DATA_LEN-1:0] i_readData2,
     input wire [DATA_LEN-1:0] i_aluResult,
-    input wire [DATA_LEN-1:0] i_writeRegister,
+    input wire [REGISTER_BITS-1:0] i_writeRegister,
     //Control inputs
     input wire i_zero,
     input wire i_regWrite,
@@ -24,9 +25,9 @@ module executionMemoryBuffer
     input wire i_memToReg,
     //Data outputs
     output wire [DATA_LEN-1:0] o_pcBranch,
-    output wire [DATA_LEN-1:0] o_d2,
+    output wire [DATA_LEN-1:0] o_readData2,
     output wire [DATA_LEN-1:0] o_aluResult,
-    output wire [DATA_LEN-1:0] o_writeRegister,
+    output wire [REGISTER_BITS-1:0] o_writeRegister,
     //Control outputs
     output wire o_zero,
     output wire o_regWrite,
@@ -40,7 +41,7 @@ module executionMemoryBuffer
 reg [DATA_LEN-1:0] pcBranch;
 reg [DATA_LEN-1:0] d2;
 reg [DATA_LEN-1:0] aluResult;
-reg [DATA_LEN-1:0] writeRegister;
+reg [REGISTER_BITS-1:0] writeRegister;
 //Control registers
 reg zero;
 reg regWrite;
@@ -67,7 +68,7 @@ always @(posedge i_clk) begin
     else if(i_enable) begin
         //Data
         pcBranch <= i_pcBranch;
-        d2 <= i_d2;
+        d2 <= i_readData2;
         aluResult <= i_aluResult;
         writeRegister <= i_writeRegister;
         //Control
@@ -82,7 +83,7 @@ end
 
 //Data
 assign o_pcBranch = pcBranch;
-assign o_d2 = d2;
+assign o_readData2 = d2;
 assign o_aluResult = aluResult;
 assign o_writeRegister = writeRegister;
 //Control

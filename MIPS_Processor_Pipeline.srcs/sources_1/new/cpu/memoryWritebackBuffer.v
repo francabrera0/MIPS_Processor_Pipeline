@@ -2,7 +2,8 @@
 
 module memoryWritebackBuffer
 #(
-    parameter DATA_LEN = 32
+    parameter DATA_LEN = 32,
+    parameter REGISTER_BITS = 5
 )
 (
     //Special inputs
@@ -12,14 +13,14 @@ module memoryWritebackBuffer
     //Data inputs
     input wire [DATA_LEN-1:0] i_memData,
     input wire [DATA_LEN-1:0] i_aluResult,
-    input wire [DATA_LEN-1:0] i_writeRegister,
+    input wire [REGISTER_BITS-1:0] i_writeRegister,
     //Control inputs
     input wire i_regWrite,
     input wire i_memToReg,
     //Data outputs
     output wire [DATA_LEN-1:0] o_memData,
     output wire [DATA_LEN-1:0] o_aluResult,
-    output wire [DATA_LEN-1:0] o_writeRegister,
+    output wire [REGISTER_BITS-1:0] o_writeRegister,
     //Control outputs
     output wire o_regWrite,
     output wire o_memToReg
@@ -28,7 +29,7 @@ module memoryWritebackBuffer
 //Data registers
 reg [DATA_LEN-1:0] memData;
 reg [DATA_LEN-1:0] aluResult;
-reg [DATA_LEN-1:0] writeRegister;
+reg [REGISTER_BITS-1:0] writeRegister;
 //Control registers
 reg regWrite;
 reg memToReg;
