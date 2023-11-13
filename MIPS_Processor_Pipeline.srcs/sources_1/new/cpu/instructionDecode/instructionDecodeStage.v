@@ -32,7 +32,8 @@ module instructionDecodeStage
 
 
 controlUnit#(
-
+    .DATA_LEN(DATA_LEN),
+    .OPCODE_LEN(OPCODE_LEN)
 ) controlUnit 
 (
     .i_instruction(i_instruction),
