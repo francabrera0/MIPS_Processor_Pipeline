@@ -12,7 +12,10 @@ module controlUnit
     output wire o_aluSrc,
     output wire [1:0] o_aluOp,
     output wire o_branch,
-    output wire o_regDest
+    output wire o_regDest,
+    output wire o_memRead,
+    output wire o_memWrite,
+    output wire o_memToReg
 );
 
 localparam RTYPE = 6'b000000;
@@ -25,6 +28,9 @@ reg r_aluSrc;
 reg [1:0] r_aluOp;
 reg r_branch;
 reg r_regDest;
+reg r_memRead;
+reg r_memWrite;
+reg r_memToReg;
 
 reg [OPCODE_LEN-1:0] r_opCode;
 
@@ -37,25 +43,35 @@ always @(*) begin
             r_aluOp = 2'b10;
             r_aluSrc = 1'b0;
             r_branch = 1'b0;
+            r_memRead = 1'b0;
+            r_memWrite = 1'b0;
             r_regWrite = 1'b1;
+            r_memToReg = 1'b0;
         end 
         LW: begin
             r_regDest = 1'b0;
             r_aluOp = 2'b00;
             r_aluSrc = 1'b1;
             r_branch = 1'b0;
+            r_memRead = 1'b1;
+            r_memWrite = 1'b0;
             r_regWrite = 1'b1;
+            r_memToReg = 1'b1;
         end
         SW: begin
             r_aluOp = 2'b00;
             r_aluSrc = 1'b1;
             r_branch = 1'b0;
+            r_memRead = 1'b0;
+            r_memWrite = 1'b1;
             r_regWrite = 1'b0;
         end
         BEQ: begin
             r_aluOp = 2'b01;
             r_aluSrc = 1'b0;
             r_branch = 1'b1;
+            r_memRead = 1'b0;
+            r_memWrite = 1'b0;
             r_regWrite = 1'b0;
         end
         default: begin
@@ -63,7 +79,10 @@ always @(*) begin
             r_aluOp = 2'b00;
             r_aluSrc = 1'b0;
             r_branch = 1'b0;
+            r_memRead = 1'b0;
+            r_memWrite = 1'b0;
             r_regWrite = 1'b0;
+            r_memToReg = 1'b0;
         end 
     endcase
 end
@@ -73,5 +92,8 @@ assign o_aluSrc = r_aluSrc;
 assign o_aluOp = r_aluOp;
 assign o_branch = r_branch;
 assign o_regDest = r_regDest;
+assign o_memRead = r_memRead;
+assign o_memWrite = r_memWrite;
+assign o_memToReg = r_memToReg;
 
 endmodule

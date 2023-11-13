@@ -30,9 +30,6 @@ module instructionDecodeStage
     output wire o_memToReg
 );
 
-assign o_memRead = 1;
-assign o_memWrite = 1;
-assign o_memToReg = 1;
 
 controlUnit#(
 
@@ -43,7 +40,10 @@ controlUnit#(
     .o_aluSrc(o_aluSrc),
     .o_aluOp(o_aluOp),
     .o_branch(o_branch),
-    .o_regDest(o_regDest)
+    .o_regDest(o_regDest),
+    .o_memRead(o_memRead),
+    .o_memWrite(o_memWrite),
+    .o_memToReg(o_memToReg)
 );
 
 registers#(
