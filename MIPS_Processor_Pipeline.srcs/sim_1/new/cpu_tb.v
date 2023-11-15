@@ -39,16 +39,18 @@ end
 initial begin
     i_clk = 1'b0;
     i_writeInstruction = 1'b0;
-    i_instructionToWrite = {DATA_LEN{1'b0}};
     i_reset = 1'b1;
     #20;
     i_reset = 1'b0;
 
     //Store: Guardamos en la posición de memoria register[0]+inmediato, el valor de register[20]
-    i_instructionToWrite = {6'b101011, 5'b00000, 5'b10100, 16'b0000000000000110}; 
+    i_instructionToWrite = {6'b101011, 5'b00000, 5'b10100, 16'b0000000000000110};
     i_writeInstruction = 1'b1;
     #20;
+    //Add: Suma el contenido de registro[0] + registro[5] y lo guarda en registro[10]
     i_instructionToWrite = {6'b000000, 5'b00000, 5'b00101, 5'b01010, 5'b00000, 6'b100000};
+    #20;
+    i_instructionToWrite = {6'b100011, 5'b00000, 5'b11111, 16'b0000000000000110};
     #20;
     i_writeInstruction = 1'b0;
 

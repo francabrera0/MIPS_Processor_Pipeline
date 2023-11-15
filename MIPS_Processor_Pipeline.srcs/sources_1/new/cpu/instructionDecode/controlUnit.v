@@ -22,6 +22,7 @@ localparam RTYPE = 6'b000000;
 localparam LW = 6'b100011;
 localparam SW = 6'b101011;
 localparam BEQ = 6'b000100;
+localparam NOP = 6'b111111;
 
 reg r_regWrite;
 reg r_aluSrc;
@@ -74,6 +75,16 @@ always @(*) begin
             r_memWrite = 1'b0;
             r_regWrite = 1'b0;
         end
+        NOP: begin
+            r_regDest = 1'b0;
+            r_aluOp = 2'b00;
+            r_aluSrc = 1'b0;
+            r_branch = 1'b0;
+            r_memRead = 1'b0;
+            r_memWrite = 1'b0;
+            r_regWrite = 1'b0;
+            r_memToReg = 1'b0;
+        end 
         default: begin
             r_regDest = 1'b0;
             r_aluOp = 2'b00;
