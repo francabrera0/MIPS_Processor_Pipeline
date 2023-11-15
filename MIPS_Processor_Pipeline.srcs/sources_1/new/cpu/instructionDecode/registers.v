@@ -29,6 +29,7 @@ always @(posedge i_clk) begin
         end
         r_registers[0] <= 32'h2;
         r_registers[5] <= 32'h8;
+        r_registers[8] <= 32'hb;
         r_registers[20] <= 32'hf2;
     end
 end

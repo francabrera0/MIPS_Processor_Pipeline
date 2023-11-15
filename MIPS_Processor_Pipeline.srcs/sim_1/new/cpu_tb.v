@@ -10,6 +10,8 @@ module cpu_tb();
     localparam IMMEDIATE_LEN = 16;
     localparam FUNCTION_LEN = 6;
 
+    localparam NOP = {32{1'b1}};
+
     reg i_clk;
     reg i_reset;
     reg i_writeInstruction;
@@ -43,16 +45,28 @@ initial begin
     #20;
     i_reset = 1'b0;
 
-    //Store: Guardamos en la posición de memoria register[0]+inmediato, el valor de register[20]
-    i_instructionToWrite = {6'b101011, 5'b00000, 5'b10100, 16'b0000000000000110};
+    //Add: Suma el contenido de register[0] + register[5] y lo guarda en register[10]
+    i_instructionToWrite = {6'b000000, 5'b00000, 5'b00101, 5'b01010, 5'b00000, 6'b100000};
     i_writeInstruction = 1'b1;
     #20;
-    //Add: Suma el contenido de registro[0] + registro[5] y lo guarda en registro[10]
-    i_instructionToWrite = {6'b000000, 5'b00000, 5'b00101, 5'b01010, 5'b00000, 6'b100000};
+    //Store: Guardamos en la posición de memoria register[0]+inmediato, el valor de register[20]
+    i_instructionToWrite = {6'b101011, 5'b00000, 5'b10100, 16'b0000000000000110};
     #20;
+    //Load: Guarda en el register[31] el contenido de la dirección apuntada por register[0]+inmediato
     i_instructionToWrite = {6'b100011, 5'b00000, 5'b11111, 16'b0000000000000110};
     #20;
+    //Beq: 
+    i_instructionToWrite = {6'b000100, 5'b01010, 5'b01000, 16'b0000000000000100};
+    #20;
+    i_instructionToWrite = NOP;
+    #60;
+
+    i_instructionToWrite = {6'b000000, 5'b00000, 5'b00101, 5'b01011, 5'b00000, 6'b100110};
+    #20;
+    i_instructionToWrite = {6'b000000, 5'b00000, 5'b00101, 5'b01011, 5'b00000, 6'b100100};
+    #20;
     i_writeInstruction = 1'b0;
+
 
 end
 
