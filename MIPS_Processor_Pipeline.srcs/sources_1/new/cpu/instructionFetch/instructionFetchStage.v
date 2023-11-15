@@ -11,7 +11,7 @@ module instructionFetchStage
     input wire [PC_LEN-1:0] i_programCounterBranch,
     input wire i_programCounterSrc,
     input wire [DATA_LEN-1:0] i_instructionToWrite,
-    input wire i_writeMemory,
+    input wire i_writeInstruction,
 
     //Outputs
     output wire [PC_LEN-1:0] o_incrementedPC,
@@ -29,7 +29,7 @@ programCounter#(
     .i_clk(i_clk),
     .i_reset(i_reset),
     .i_programCounter(w_programCounterIn),
-    .i_enable(~i_writeMemory),
+    .i_enable(~i_writeInstruction),
     .o_programCounter(w_programCounterOut)
 );
 
@@ -53,7 +53,7 @@ instructionMemory#(
     .i_reset(i_reset),
     .i_programCounter(w_programCounterOut),
     .i_dataToWrite(i_instructionToWrite),
-    .i_write(i_writeMemory),
+    .i_write(i_writeInstruction),
    .o_instruction(o_instruction)
 );
 

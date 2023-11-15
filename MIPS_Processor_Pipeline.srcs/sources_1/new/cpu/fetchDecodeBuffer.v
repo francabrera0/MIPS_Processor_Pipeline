@@ -21,7 +21,7 @@ reg [PC_LEN-1:0] r_incrementedPC;
 
 always @(posedge i_clk) begin
     if(i_reset) begin
-        r_instruction <= 0;
+        r_instruction <= 32'hfc000000; //NOP
         r_incrementedPC <= 0;
     end
     else if(i_enable) begin

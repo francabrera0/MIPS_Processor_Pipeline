@@ -2,8 +2,7 @@ module instructionDecodeStage
 #(
     parameter DATA_LEN = 32,
     parameter OPCODE_LEN = 6,
-    parameter ADDRESS_LEN = 5,
-    parameter REGISTERS = 32,
+    parameter REGISTER_BITS = 5,
     parameter IMMEDIATE_LEN = 16
 )
 (
@@ -12,7 +11,7 @@ module instructionDecodeStage
     input wire i_reset,
     input wire [DATA_LEN-1:0] i_instruction,
     input wire i_regWrite,
-    input wire [ADDRESS_LEN-1:0] i_writeRegister,
+    input wire [REGISTER_BITS-1:0] i_writeRegister,
     input wire [DATA_LEN-1:0] i_writeData,
 
     //Outputs
@@ -24,13 +23,17 @@ module instructionDecodeStage
     output wire [DATA_LEN-1:0] o_readData1,
     output wire [DATA_LEN-1:0] o_readData2,
     output wire [DATA_LEN-1:0] o_immediateExtendValue,
-    output wire [ADDRESS_LEN-1:0] o_rt,
-    output wire [ADDRESS_LEN-1:0] o_rd
-
+    output wire [REGISTER_BITS-1:0] o_rt,
+    output wire [REGISTER_BITS-1:0] o_rd,
+    output wire o_memRead,
+    output wire o_memWrite,
+    output wire o_memToReg
 );
 
-controlUnit#(
 
+controlUnit#(
+    .DATA_LEN(DATA_LEN),
+    .OPCODE_LEN(OPCODE_LEN)
 ) controlUnit 
 (
     .i_instruction(i_instruction),
@@ -38,13 +41,15 @@ controlUnit#(
     .o_aluSrc(o_aluSrc),
     .o_aluOp(o_aluOp),
     .o_branch(o_branch),
-    .o_regDest(o_regDest)
+    .o_regDest(o_regDest),
+    .o_memRead(o_memRead),
+    .o_memWrite(o_memWrite),
+    .o_memToReg(o_memToReg)
 );
 
 registers#(
     .DATA_LEN(DATA_LEN),
-    .ADDRESS_LEN(ADDRESS_LEN),
-    .REGISTERS(REGISTERS)
+    .REGISTER_BITS(REGISTER_BITS)
 ) registers
 (
     .i_clk(i_clk),
