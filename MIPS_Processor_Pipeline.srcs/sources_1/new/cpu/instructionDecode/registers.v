@@ -27,6 +27,9 @@ always @(posedge i_clk) begin
         for(i=0; i<(2**REGISTER_BITS); i=i+1) begin
             r_registers[i] <= 0;            
         end
+        r_registers[0] <= 32'h2;
+        r_registers[5] <= 32'h8;
+        r_registers[20] <= 32'hf2;
     end
 end
 
@@ -35,6 +38,7 @@ always @(posedge i_clk) begin
         r_registers[i_writeRegister] <= i_writeData;
     end
 end
+
 
 assign o_readData1 = r_registers[i_readRegister1];
 assign o_readData2 = r_registers[i_readRegister2];
