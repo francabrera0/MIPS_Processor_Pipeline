@@ -33,9 +33,9 @@ always @(posedge i_clk) begin
     end
 end
 
-always @(posedge i_clk) begin
+always @(*) begin
     if(i_regWrite) begin
-        r_registers[i_writeRegister] <= i_writeData;
+        r_registers[i_writeRegister] = i_writeData;
     end
 end
 

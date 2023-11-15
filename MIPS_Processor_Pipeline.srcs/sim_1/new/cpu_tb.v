@@ -44,8 +44,11 @@ initial begin
     #20;
     i_reset = 1'b0;
 
-    i_instructionToWrite = {6'b101011, 5'b00000, 5'b10100, 16'b0000000000000110};    
+    //Store: Guardamos en la posición de memoria register[0]+inmediato, el valor de register[20]
+    i_instructionToWrite = {6'b101011, 5'b00000, 5'b10100, 16'b0000000000000110}; 
     i_writeInstruction = 1'b1;
+    #20;
+    i_instructionToWrite = {6'b000000, 5'b00000, 5'b00101, 5'b01010, 5'b00000, 6'b100000};
     #20;
     i_writeInstruction = 1'b0;
 
