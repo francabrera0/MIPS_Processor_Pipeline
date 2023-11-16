@@ -10,10 +10,11 @@ module executionStage #(
     input wire [DATA_LEN-1:0] i_readData1,
     input wire [DATA_LEN-1:0] i_readData2,
     input wire [DATA_LEN-1:0] i_immediateExtendValue,
+    input wire [DATA_LEN-1:0] i_shamt,
     input wire [REGISTER_BITS-1:0] i_rt,
     input wire [REGISTER_BITS-1:0] i_rd,
     //Control inputs
-    input wire i_aluSrc,
+    input wire [1:0] i_aluSrc,
     input wire [1:0] i_aluOP,
     input wire i_regDst,
     //Data outputs
@@ -29,12 +30,14 @@ module executionStage #(
     wire [DATA_LEN-1:0] aluOperand2;
     
     //Mux to select ALU second operand
-    mux2to1 #(
+    mux4to1 #(
         .DATA_LEN(DATA_LEN)
     )MUXD2
     (
         .i_muxInputA(i_readData2),
         .i_muxInputB(i_immediateExtendValue),
+        .i_muxInputC(i_shamt),
+        .i_muxInputD(0),
         .i_muxSelector(i_aluSrc),
         .o_muxOutput(aluOperand2)
     );
