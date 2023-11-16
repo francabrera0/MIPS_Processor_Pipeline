@@ -25,7 +25,7 @@ module ALU #(
     localparam SRAV = 6'b000111;
     localparam SRL = 6'b000010;
     localparam SRLV = 6'b000110;
-    
+        
     localparam SLL = 6'b000000;
     localparam SLLV = 6'b000100;
     
