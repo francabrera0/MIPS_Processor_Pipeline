@@ -15,13 +15,19 @@ module ALU #(
 
     localparam ADDU = 6'b100001;
     localparam SUBU = 6'b100011;
+    
     localparam AND = 6'b100100;
     localparam OR  = 6'b100101;
     localparam XOR = 6'b100110;
     localparam NOR = 6'b100111;
-    localparam SRA = 6'b000011;
-    localparam SRL = 6'b000010;
     
+    localparam SRA = 6'b000011;
+    localparam SRAV = 6'b000111;
+    localparam SRL = 6'b000010;
+    localparam SRLV = 6'b000110;
+    
+    localparam SLL = 6'b000000;
+    localparam SLLV = 6'b000100;
     
     reg [DATA_LEN-1 : 0] tempResult;
     
@@ -44,7 +50,12 @@ module ALU #(
                 NOR: tempResult = ~(i_operandA | i_operandB);
                 
                 SRA: tempResult = $signed(i_operandA) >>> i_operandB;
+                SRAV: tempResult = $signed(i_operandA) >>> i_operandB;
                 SRL: tempResult = i_operandA >> i_operandB;
+                SRLV: tempResult = i_operandA >> i_operandB;
+                
+                SLL: tempResult = i_operandA << i_operandB;
+                SLLV: tempResult = i_operandA << i_operandB;
                 
                 default : tempResult = {DATA_LEN {1'b1}};
             endcase
