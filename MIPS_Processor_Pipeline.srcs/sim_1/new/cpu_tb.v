@@ -55,15 +55,23 @@ initial begin
     //Load: Guarda en el register[31] el contenido de la dirección apuntada por register[0]+inmediato
     i_instructionToWrite = {6'b100011, 5'b00000, 5'b11111, 16'b0000000000000110};
     #20;
-    //Beq: 
+    //Beq: Si el contenido del register[10] es igual a register[8] salta a la instrucción nextPC + 7 
     i_instructionToWrite = {6'b000100, 5'b01010, 5'b01000, 16'b0000000000000100};
     #20;
+    //Nop: tres nop para permitir el cálculo de dirección y verificación de la condición del branch
     i_instructionToWrite = NOP;
     #60;
-
+    //OR: Esta instrucción se ejecuta si la condición del beq es falsa
     i_instructionToWrite = {6'b000000, 5'b00000, 5'b00101, 5'b01011, 5'b00000, 6'b100110};
     #20;
+    //AND: A esta instrucción salta el branch si la condición fue verdadera
     i_instructionToWrite = {6'b000000, 5'b00000, 5'b00101, 5'b01011, 5'b00000, 6'b100100};
+    #20;
+    //SLL: Shift en 2 el contenido del register[20] y lo guarda en register[20]
+    i_instructionToWrite = {6'b000000, 5'b00000, 5'b10100, 5'b10100, 5'b10, 6'b000000};
+    #20;
+    //SLLV: Shift en 2 el contenido del register[20] y lo guarda en register[20]
+    i_instructionToWrite = {6'b000000, 5'b00000, 5'b01000, 5'b01000, 5'b00000, 6'b000100};
     #20;
     i_writeInstruction = 1'b0;
 
