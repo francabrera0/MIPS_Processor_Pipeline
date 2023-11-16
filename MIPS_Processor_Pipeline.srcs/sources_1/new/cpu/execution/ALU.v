@@ -52,12 +52,12 @@ module ALU #(
                 NOR: tempResult = ~(i_operandA | i_operandB);
                 
                 SRA: tempResult = $signed(i_operandA) >>> i_operandB;
-                SRAV: tempResult = $signed(i_operandA) >>> i_operandB;  
+                SRAV: tempResult = $signed(i_operandB) >>> i_operandA;  
                 SRL: tempResult = i_operandA >> i_operandB;
-                SRLV: tempResult = i_operandA >> i_operandB;
+                SRLV: tempResult = i_operandB >> i_operandA;
                 
                 SLL: tempResult = i_operandA << i_operandB;
-                SLLV: tempResult = i_operandA << i_operandB;
+                SLLV: tempResult = i_operandB << i_operandA;
                 
                 SLT: tempResult = i_operandA < i_operandB;
                 

@@ -46,7 +46,7 @@ initial begin
     i_reset = 1'b0;
 
     //Add: Suma el contenido de register[0] + register[5] y lo guarda en register[10]
-    i_instructionToWrite = {6'b000000, 5'b00000, 5'b00101, 5'b01010, 5'b00000, 6'b100000};
+    i_instructionToWrite = {6'b000000, 5'b00000, 5'b00101, 5'b01010, 5'b00000, 6'b100001};
     i_writeInstruction = 1'b1;
     #20;
     //Store: Guardamos en la posición de memoria register[0]+inmediato, el valor de register[20]
