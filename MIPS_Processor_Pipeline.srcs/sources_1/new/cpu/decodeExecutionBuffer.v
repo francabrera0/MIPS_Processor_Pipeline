@@ -12,7 +12,7 @@ module decodeExecutionBuffer
     
     input wire [PC_LEN-1:0] i_incrementedPC,
     input wire i_regWrite,
-    input wire i_aluSrc,
+    input wire [1:0] i_aluSrc,
     input wire [1:0] i_aluOp,
     input wire i_branch,
     input wire i_regDest,
@@ -24,11 +24,12 @@ module decodeExecutionBuffer
     input wire i_memRead,
     input wire i_memWrite,
     input wire i_memToReg,
+    input wire [DATA_LEN-1:0] i_shamt,
 
     //Outputs
     output wire [PC_LEN-1:0] o_incrementedPC,
     output wire o_regWrite,
-    output wire o_aluSrc,
+    output wire [1:0] o_aluSrc,
     output wire [1:0] o_aluOp,
     output wire o_branch,
     output wire o_regDest,
@@ -39,12 +40,13 @@ module decodeExecutionBuffer
     output wire [REGISTER_BITS-1:0] o_rd,
     output wire o_memRead,
     output wire o_memWrite,
-    output wire o_memToReg
+    output wire o_memToReg,
+    output wire [DATA_LEN-1:0] o_shamt
 );
 
 reg [PC_LEN-1:0] r_incrementedPC;
 reg r_regWrite;
-reg r_aluSrc;
+reg [1:0] r_aluSrc;
 reg [1:0] r_aluOp;
 reg r_branch;
 reg r_regDest;
@@ -56,6 +58,7 @@ reg [REGISTER_BITS-1:0] r_rd;
 reg r_memRead;
 reg r_memWrite;
 reg r_memToReg;
+reg [DATA_LEN-1:0] r_shamt;
 
 always @(posedge i_clk) begin
     if(i_reset) begin
@@ -73,6 +76,7 @@ always @(posedge i_clk) begin
         r_memRead <= 0;
         r_memWrite <= 0;
         r_memToReg <= 0;
+        r_shamt <= 0;
     end
     else if (i_enable) begin
         r_incrementedPC <= i_incrementedPC;
@@ -89,6 +93,7 @@ always @(posedge i_clk) begin
         r_memRead <= i_memRead;
         r_memWrite <= i_memWrite;
         r_memToReg <= i_memToReg;
+        r_shamt <= i_shamt;
     end
 end
 
@@ -107,5 +112,6 @@ assign o_rd = r_rd;
 assign o_memRead = r_memRead;
 assign o_memWrite = r_memWrite;
 assign o_memToReg = r_memToReg;
+assign o_shamt = r_shamt;
 
 endmodule

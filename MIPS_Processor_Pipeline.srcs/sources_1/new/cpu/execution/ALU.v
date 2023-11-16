@@ -10,35 +10,26 @@ module ALU #(
     input wire  [DATA_LEN-1 : 0] i_operandB,
     input wire    [OP_LEN-1 : 0] i_opSelector,
     output wire [DATA_LEN-1 : 0] o_aluResult,
-    output wire                  o_zero,
-    output wire                  o_overFlow
+    output wire                  o_zero
 ); 
 
-    localparam ADD = 6'b100000;
-    localparam SUB = 6'b100010;
+    localparam ADDU = 6'b100001;
+    localparam SUBU = 6'b100011;
+    
     localparam AND = 6'b100100;
     localparam OR  = 6'b100101;
     localparam XOR = 6'b100110;
     localparam NOR = 6'b100111;
+    
     localparam SRA = 6'b000011;
+    localparam SRAV = 6'b000111;
     localparam SRL = 6'b000010;
-
+    localparam SRLV = 6'b000110;
+        
+    localparam SLL = 6'b000000;
+    localparam SLLV = 6'b000100;
     
-    //Adder Substractor module    
-    wire [DATA_LEN-1 : 0] tempAddSubResult;
-    wire                  tempAddSubOverFlow;  
-    
-    SumadorRestador #(
-        .DATA_LEN(DATA_LEN)    
-    ) SumRes
-    (
-        .i_operandA(i_operandA),
-        .i_operandB(i_operandB),
-        .i_substract(i_opSelector[1]),
-        .o_result(tempAddSubResult),
-        .o_overflow(tempAddSubOverFlow)
-    );
-    
+    localparam SLT = 6'b101010;
     
     reg [DATA_LEN-1 : 0] tempResult;
     
@@ -46,17 +37,14 @@ module ALU #(
     assign o_aluResult = tempResult;
     
     //Zero flag
-    assign o_zero = & (~ o_aluResult);
-
-    assign o_overFlow = (i_opSelector == ADD | i_opSelector == SUB) ? tempAddSubOverFlow : 0; 
-    
+    assign o_zero = & (~ o_aluResult);   
    
     //Calculation
     always @(*)
         begin
             case(i_opSelector)
-                ADD: tempResult = tempAddSubResult;                
-                SUB: tempResult = tempAddSubResult;
+                ADDU: tempResult = i_operandA + i_operandB;                
+                SUBU: tempResult = i_operandA - i_operandB;
                 
                 AND: tempResult = i_operandA & i_operandB;
                 OR : tempResult = i_operandA | i_operandB;
@@ -64,7 +52,14 @@ module ALU #(
                 NOR: tempResult = ~(i_operandA | i_operandB);
                 
                 SRA: tempResult = $signed(i_operandA) >>> i_operandB;
+                SRAV: tempResult = $signed(i_operandB) >>> i_operandA;  
                 SRL: tempResult = i_operandA >> i_operandB;
+                SRLV: tempResult = i_operandB >> i_operandA;
+                
+                SLL: tempResult = i_operandA << i_operandB;
+                SLLV: tempResult = i_operandB << i_operandA;
+                
+                SLT: tempResult = i_operandA < i_operandB;
                 
                 default : tempResult = {DATA_LEN {1'b1}};
             endcase

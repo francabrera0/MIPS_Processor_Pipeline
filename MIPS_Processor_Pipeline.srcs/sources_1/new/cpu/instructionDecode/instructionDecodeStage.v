@@ -16,7 +16,7 @@ module instructionDecodeStage
 
     //Outputs
     output wire o_regWrite,
-    output wire o_aluSrc,
+    output wire [1:0] o_aluSrc,
     output wire [1:0] o_aluOp,
     output wire o_branch,
     output wire o_regDest,
@@ -25,6 +25,7 @@ module instructionDecodeStage
     output wire [DATA_LEN-1:0] o_immediateExtendValue,
     output wire [REGISTER_BITS-1:0] o_rt,
     output wire [REGISTER_BITS-1:0] o_rd,
+    output wire [DATA_LEN-1:0] o_shamt,
     output wire o_memRead,
     output wire o_memWrite,
     output wire o_memToReg
@@ -74,5 +75,6 @@ signExtend#(
 
 assign o_rt = i_instruction[20:16];
 assign o_rd = i_instruction[15:11];
+assign o_shamt = {{DATA_LEN-5{1'b0}}, i_instruction[10:6]};
 
 endmodule

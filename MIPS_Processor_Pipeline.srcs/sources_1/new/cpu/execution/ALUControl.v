@@ -13,9 +13,9 @@ always @(*)
         begin
             case(i_aluOP)
                 //Load or store instruction ALU should add 
-                2'b00: o_opSelector = 6'b100000;
+                2'b00: o_opSelector = 6'b100001;
                 //Branch equal instruction ALU should substract                
-                2'b01: o_opSelector = 6'b100010;
+                2'b01: o_opSelector = 6'b100011;
                 //R.type instruction
                 2'b10: o_opSelector = i_funct;
 

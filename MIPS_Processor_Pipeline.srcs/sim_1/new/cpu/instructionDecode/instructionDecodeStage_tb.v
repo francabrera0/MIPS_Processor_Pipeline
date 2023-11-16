@@ -16,7 +16,7 @@ module instructionDecodeStage_tb();
     reg [DATA_LEN-1:0] i_writeData;
 
     wire o_regWrite;
-    wire o_aluSrc;
+    wire [1:0] o_aluSrc;
     wire [1:0] o_aluOp;
     wire o_branch;
     wire o_regDest;
@@ -25,6 +25,7 @@ module instructionDecodeStage_tb();
     wire [DATA_LEN-1:0] o_immediateExtendValue;
     wire [ADDRESS_LEN-1:0] o_rt;
     wire [ADDRESS_LEN-1:0] o_rd;
+    wire [DATA_LEN-1:0] o_shamt; 
 
 
 instructionDecodeStage#(
@@ -51,7 +52,8 @@ instructionDecodeStage#(
     .o_readData2(o_readData2),
     .o_immediateExtendValue(o_immediateExtendValue),
     .o_rt(o_rt),
-    .o_rd(o_rd)
+    .o_rd(o_rd),
+    .o_shamt(o_shamt)
 );
 
 
@@ -105,6 +107,12 @@ initial begin
     //Imm = 10000 = 0x10
     //Señales = -01010
     i_instruction = 32'b00010011100001110000000000010000;
+    #10;
+    //Opcode = 000000
+    //rt = 01010 = 0x10
+    //rd = 00101 = 0x05
+    //Shamt = 00111 = 0x07
+    i_instruction = 32'b00000000000010100010100111000000;
     #10;
 
 end
