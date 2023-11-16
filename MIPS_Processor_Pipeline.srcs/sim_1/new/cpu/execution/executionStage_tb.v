@@ -123,7 +123,7 @@ module executionStage_tb;
         
         #20
         
-        //R-type instruction control signals
+        //R-type AND instruction control signals
         i_regDst = 1'b1;
         i_aluOP = 2'b10;
         i_aluSrc = 2'b00;
@@ -141,22 +141,61 @@ module executionStage_tb;
         
         //Check branchPC
         if(o_branchPC != (i_inmediatoEx << 2) + i_incrementedPC) begin
-            $display("R-type instruction: Incorrect branchPC");
+            $display("R-type AND instruction: Incorrect branchPC");
         end
         
         //Check aluResult, should d1 AND d2 
         if(o_aluResult != i_d1 & i_d2) begin
-            $display("R-type instruction: Incorrect aluResult");
+            $display("R-type AND instruction: Incorrect aluResult");
         end
         
         //Check zero
         if(&(~o_aluResult) != o_zero) begin
-            $display("R-type instruction: Incorrect zero");
+            $display("R-type AND instruction: Incorrect zero");
         end
         
         //Check writeRegister
         if(o_writeRegister != i_rd) begin
-            $display("R-type instruction: Incorrect writeRegister");
+            $display("R-type AND instruction: Incorrect writeRegister");
+        end
+        
+        #20
+        
+        //R-type SRL instruction control signals
+        i_regDst = 1'b1;
+        i_aluOP = 2'b10;
+        i_aluSrc = 2'b10;
+        //R-type instruction data
+        i_incrementedPC = $random(seed);
+        i_d1 = $random(seed);
+        i_d2 = $random(seed);
+        i_shamt = 32'h00000005;
+        i_rt = $random(seed);
+        i_rd =$random(seed);
+        i_inmediatoEx[16:11] = i_rd;
+        //Funct = SLL
+        i_inmediatoEx[10:0] = 11'b00000000000;
+        
+        #10
+        
+        //Check branchPC
+        if(o_branchPC != (i_inmediatoEx << 2) + i_incrementedPC) begin
+            $display("R-type SLL instruction: Incorrect branchPC");
+        end
+        
+        //Check aluResult, should d1 << i_shamt 
+        if(o_aluResult != i_d1 << i_shamt) begin
+            $display("R-type SLL instruction: Incorrect aluResult");
+        end
+        
+        //Check zero
+        if(&(~o_aluResult) != o_zero) begin
+            $display("R-type SLL instruction: Incorrect zero");
+        end
+        
+        //Check writeRegister
+        if(o_writeRegister != i_rd) begin
+            $display("R-type SLL instruction: Incorrect writeRegister");
         end
         
         #20

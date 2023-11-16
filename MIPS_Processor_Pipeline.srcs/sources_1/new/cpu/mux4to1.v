@@ -14,10 +14,10 @@ module mux4to1
     output wire [DATA_LEN-1:0] o_muxOutput
 );
 
-localparam INPUTA = 1'b00;
-localparam INPUTB = 1'b01;
-localparam INPUTC = 1'b10;
-localparam INPUTD = 1'b11;
+localparam INPUTA = 2'b00;
+localparam INPUTB = 2'b01;
+localparam INPUTC = 2'b10;
+localparam INPUTD = 2'b11;
 
 reg [DATA_LEN-1:0] r_muxOutput;
 
