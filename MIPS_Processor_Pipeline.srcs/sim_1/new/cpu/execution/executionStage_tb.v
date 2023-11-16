@@ -8,10 +8,11 @@ module executionStage_tb;
     reg [DATA_LEN-1:0] i_d1;
     reg [DATA_LEN-1:0] i_d2;
     reg [DATA_LEN-1:0] i_inmediatoEx;
+    reg [DATA_LEN-1:0] i_shamt;
     reg [REGISTER_BITS-1:0] i_rt;
     reg [REGISTER_BITS-1:0] i_rd;
     //Control inputs
-    reg i_aluSrc;
+    reg [1:0] i_aluSrc;
     reg [1:0] i_aluOP;
     reg i_regDst;
     //Data outputs
@@ -28,9 +29,10 @@ module executionStage_tb;
     ) executionStage(
         //Data inputs
         .i_incrementedPC(i_incrementedPC),
-        .i_d1(i_d1),
-        .i_d2(i_d2),
-        .i_inmediatoEx(i_inmediatoEx),
+        .i_readData1(i_d1),
+        .i_readData2(i_d2),
+        .i_immediateExtendValue(i_inmediatoEx),
+        .i_shamt(i_shamt),
         .i_rt(i_rt),
         .i_rd(i_rd),
         //Control inputs
@@ -54,7 +56,7 @@ module executionStage_tb;
         //Load instruction control signals
         i_regDst = 1'b0;
         i_aluOP = 2'b00;
-        i_aluSrc = 1'b1;
+        i_aluSrc = 2'b01;
         //Load instruction data
         i_incrementedPC = $random(seed);
         i_d1 = $random(seed);
@@ -91,7 +93,7 @@ module executionStage_tb;
         
         //Store instruction control signals
         i_aluOP = 2'b00;
-        i_aluSrc = 1'b1;
+        i_aluSrc = 2'b01;
         //Store instruction data
         i_incrementedPC = $random(seed);
         i_d1 = $random(seed);
@@ -124,7 +126,7 @@ module executionStage_tb;
         //R-type instruction control signals
         i_regDst = 1'b1;
         i_aluOP = 2'b10;
-        i_aluSrc = 1'b0;
+        i_aluSrc = 2'b00;
         //R-type instruction data
         i_incrementedPC = $random(seed);
         i_d1 = $random(seed);
@@ -161,7 +163,7 @@ module executionStage_tb;
         
         //Branch equal instruction control signals
         i_aluOP = 2'b01;
-        i_aluSrc = 1'b0;
+        i_aluSrc = 2'b00;
         //Branch equal instruction data
         i_incrementedPC = $random(seed);
         i_d1 = $random(seed);
