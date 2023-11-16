@@ -29,6 +29,8 @@ module ALU #(
     localparam SLL = 6'b000000;
     localparam SLLV = 6'b000100;
     
+    localparam SLT = 6'b101010;
+    
     reg [DATA_LEN-1 : 0] tempResult;
     
     //Alu out
@@ -50,12 +52,14 @@ module ALU #(
                 NOR: tempResult = ~(i_operandA | i_operandB);
                 
                 SRA: tempResult = $signed(i_operandA) >>> i_operandB;
-                SRAV: tempResult = $signed(i_operandA) >>> i_operandB;
+                SRAV: tempResult = $signed(i_operandA) >>> i_operandB;  
                 SRL: tempResult = i_operandA >> i_operandB;
                 SRLV: tempResult = i_operandA >> i_operandB;
                 
                 SLL: tempResult = i_operandA << i_operandB;
                 SLLV: tempResult = i_operandA << i_operandB;
+                
+                SLT: tempResult = i_operandA < i_operandB;
                 
                 default : tempResult = {DATA_LEN {1'b1}};
             endcase
