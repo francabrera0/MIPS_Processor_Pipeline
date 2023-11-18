@@ -13,6 +13,7 @@ module cpu
     input wire i_clk,
     input wire i_reset,
     input wire i_writeInstruction,
+    input wire i_enable,
     input wire [DATA_LEN-1:0] i_instructionToWrite
 );
 
@@ -32,6 +33,7 @@ instructionFetchStage#(
     .i_clk(i_clk),
     .i_reset(i_reset),
     .i_programCounterBranch(w_pcBranchM),
+    .i_enable(i_enable),
     .i_programCounterSrc(w_programCounterSrcM),
     .i_instructionToWrite(i_instructionToWrite),
     .i_writeInstruction(i_writeInstruction),
@@ -55,7 +57,7 @@ fetchDecodeBuffer#(
     .i_reset(i_reset),
     .i_instruction(w_instructionIF),
     .i_incrementedPC(w_incrementedPCIF),
-    .i_enable(~i_writeInstruction),
+    .i_enable(i_enable),
 
     //Outputs
     .o_incrementedPC(w_incrementedPCID),
@@ -141,7 +143,7 @@ decodeExecutionBuffer#(
     //Inputs
     .i_clk(i_clk),
     .i_reset(i_reset),
-    .i_enable(~i_writeInstruction),
+    .i_enable(i_enable),
     .i_incrementedPC(w_incrementedPCID),
     .i_regWrite(w_regWriteID),
     .i_aluSrc(w_aluSrcID),
@@ -228,7 +230,7 @@ executionMemoryBuffer#(
     //Special inputs
     .i_clk(i_clk),
     .i_reset(i_reset),
-    .i_enable(~i_writeInstruction),
+    .i_enable(i_enable),
     //Data inputs
     .i_pcBranch(w_branchPCE),
     .i_readData2(w_readData2E),
@@ -291,7 +293,7 @@ memoryWritebackBuffer#(
     //Special inputs
     .i_clk(i_clk),
     .i_reset(i_reset),
-    .i_enable(~i_writeInstruction),
+    .i_enable(i_enable),
     //Data inputs
     .i_memData(w_readDataM),
     .i_aluResult(w_aluResultM),
