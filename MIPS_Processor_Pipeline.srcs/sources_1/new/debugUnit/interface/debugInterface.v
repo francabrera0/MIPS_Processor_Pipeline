@@ -29,8 +29,11 @@ localparam [2:0] IDLE = 3'b000;
 localparam [2:0] WAIT = 3'b001;
 localparam [2:0] DECODE = 3'b010;
 localparam [2:0] INSTRUCTION = 3'b011;
+localparam [2:0] STEP = 3'b100;
 
 localparam [UART_DATA_LEN-1:0] PROGRAM_CODE = 8'h23;
+localparam [UART_DATA_LEN-1:0] STEP_CODE= 8'h12;
+localparam [UART_DATA_LEN-1:0] RUN_CODE = 8'h54;
 
 reg [2:0] r_state, r_stateNext;
 reg [2:0] r_wait, r_waitNext;
@@ -90,6 +93,7 @@ always @(*) begin
     case (r_state)
         IDLE: begin
             r_writeInstructionNext = 1'b0;
+            r_readUartNext = 1'b0;
             if(~i_rxEmpty) begin
                 r_stateNext = DECODE;
                 r_readUartNext = 1'b1;
@@ -112,7 +116,18 @@ always @(*) begin
             else begin
                 if(i_dataToRead == PROGRAM_CODE) begin
                     r_stateNext = INSTRUCTION;
+                    r_enableNext = 1'b0;
                     r_readUartNext = 1'b1;
+                end
+                else if(i_dataToRead == STEP_CODE) begin
+                    r_stateNext = STEP;
+                    r_readUartNext = 1'b1;
+                    r_enableNext = 1'b1;
+                end
+                else if(i_dataToRead == RUN_CODE) begin
+                    r_stateNext = IDLE;
+                    r_readUartNext = 1'b1;
+                    r_enableNext = 1'b1;
                 end
                 else begin
                     r_stateNext = IDLE;
@@ -144,6 +159,12 @@ always @(*) begin
                     r_stateNext = INSTRUCTION;
                 end
             end
+        end
+
+        STEP: begin
+            r_enableNext = 1'b0;
+            r_readUartNext = 1'b0;
+            r_stateNext = IDLE;
         end
 
         default: begin
