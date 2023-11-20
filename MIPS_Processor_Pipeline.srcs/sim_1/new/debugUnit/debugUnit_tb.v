@@ -30,9 +30,11 @@ uart#(
 );
 
 
+reg [31:0] i_registerValue;
 wire o_enable;
 wire o_writeInstruction;
-wire [32-1:0] o_instructionToWrite;
+wire [31:0] o_instructionToWrite;
+wire [4:0] o_registerAddress;
 
 debugUnit#(
     .UART_DATA_LEN(8),
@@ -46,10 +48,12 @@ debugUnit#(
     .i_clk(i_clk),
     .i_reset(i_reset),
     .i_uartRx(w_pcTx),
+    .i_registerValue(i_registerValue),
     .o_uartTx(w_pcRx),
     .o_enable(o_enable),
     .o_writeInstruction(o_writeInstruction),
-    .o_instructionToWrite(o_instructionToWrite)
+    .o_instructionToWrite(o_instructionToWrite),
+    .o_registerAddress(o_registerAddress)
 );
 
 always begin
@@ -66,6 +70,7 @@ reg [3:0] j;
         i_reset = 1;
         r_writeUart = 0;
         r_dataToWrite = 8'b0;
+        i_registerValue = 32'h15;
 
         #20 i_reset = 0;
 

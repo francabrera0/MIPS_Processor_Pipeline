@@ -5,16 +5,19 @@ module debugUnit
     parameter COUNTER_MOD = 27,
     parameter COUNTER_BITS = 5,
     parameter PTR_LEN = 2,
-    parameter CPU_DATA_LEN = 32
+    parameter CPU_DATA_LEN = 32,
+    parameter REGISTER_BITS = 5
 )
 (
     input wire i_clk,
     input wire i_reset,
     input wire i_uartRx,
+    input wire [CPU_DATA_LEN-1:0] i_registerValue,
     output wire o_uartTx,
     output wire o_enable,
     output wire o_writeInstruction,
-    output wire [CPU_DATA_LEN-1:0] o_instructionToWrite
+    output wire [CPU_DATA_LEN-1:0] o_instructionToWrite,
+    output wire [REGISTER_BITS-1:0] o_registerAddress
 );
 
 
@@ -60,6 +63,7 @@ debugInterface# (
     .i_dataToRead(w_dataToRead),
 
     //Signals from CPU
+    .i_registerValue(i_registerValue),
 
     //Signals to uart
     .o_readUart(w_readUart),
@@ -69,7 +73,8 @@ debugInterface# (
     //Signals to CPU
     .o_enable(o_enable),
     .o_writeInstruction(o_writeInstruction),
-    .o_instructionToWrite(o_instructionToWrite)
+    .o_instructionToWrite(o_instructionToWrite),
+    .o_registerAddress(o_registerAddress)
 );
 
 endmodule
