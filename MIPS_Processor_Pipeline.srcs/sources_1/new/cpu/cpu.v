@@ -14,7 +14,9 @@ module cpu
     input wire i_reset,
     input wire i_writeInstruction,
     input wire i_enable,
-    input wire [DATA_LEN-1:0] i_instructionToWrite
+    input wire [DATA_LEN-1:0] i_instructionToWrite,
+    input wire [REGISTER_BITS-1:0] i_registerAddress,
+    output wire [DATA_LEN-1:0] o_registerValue
 );
 
 //////////////////////Instruction Fetch///////////////////////////
@@ -97,6 +99,7 @@ instructionDecodeStage#(
     .i_regWrite(w_regWriteWB),
     .i_writeRegister(w_writeRegisterWB),
     .i_writeData(w_writeDataWB),
+    .i_registerAddress(i_registerAddress),
 
     //Outputs
     .o_regWrite(w_regWriteID),
@@ -112,7 +115,8 @@ instructionDecodeStage#(
     .o_rd(w_rdID),
     .o_memRead(w_memReadID),
     .o_memWrite(w_memWriteID),
-    .o_memToReg(w_memToRegID)
+    .o_memToReg(w_memToRegID),
+    .o_registerValue(o_registerValue)
     
     
 );

@@ -13,6 +13,7 @@ module instructionDecodeStage
     input wire i_regWrite,
     input wire [REGISTER_BITS-1:0] i_writeRegister,
     input wire [DATA_LEN-1:0] i_writeData,
+    input wire [REGISTER_BITS-1:0] i_registerAddress,
 
     //Outputs
     output wire o_regWrite,
@@ -28,7 +29,8 @@ module instructionDecodeStage
     output wire [DATA_LEN-1:0] o_shamt,
     output wire o_memRead,
     output wire o_memWrite,
-    output wire o_memToReg
+    output wire o_memToReg,
+    output wire [DATA_LEN-1:0] o_registerValue
 );
 
 
@@ -60,8 +62,10 @@ registers#(
     .i_writeRegister(i_writeRegister),
     .i_writeData(i_writeData),
     .i_regWrite(i_regWrite),
+    .i_registerAddress(i_registerAddress),
     .o_readData1(o_readData1),
-    .o_readData2(o_readData2)
+    .o_readData2(o_readData2),
+    .o_registerValue(o_registerValue)
 );
 
 signExtend#(
