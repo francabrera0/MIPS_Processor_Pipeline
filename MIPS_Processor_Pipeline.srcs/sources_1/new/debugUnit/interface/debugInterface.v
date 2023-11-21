@@ -100,6 +100,7 @@ always @(*) begin
 
     case (r_state)
         IDLE: begin
+            r_writeUartNext = 1'b0;
             r_writeInstructionNext = 1'b0;
             r_readUartNext = 1'b0;
             if(~i_rxEmpty) begin
@@ -187,15 +188,14 @@ always @(*) begin
             if(r_byteCounter == 2'b11) begin
                 r_dataToWriteNext = i_registerValue[31:24];
                 r_byteCounterNext = 2'b00;
-                r_registerAddressNext = r_registerAddress + 1;   
+                r_registerAddressNext = r_registerAddress + 1;
+
+                if(r_registerAddress == 5'b11111) begin
+                    r_stateNext = IDLE;
+                end
             end
             r_byteCounterNext = r_byteCounter + 1;
 
-            if(r_registerAddress == 5'b11111) begin
-                r_registerAddressNext = 5'b0;
-                r_writeUartNext = 1'b0;
-                r_stateNext = IDLE;
-            end
         end
 
         default: begin
