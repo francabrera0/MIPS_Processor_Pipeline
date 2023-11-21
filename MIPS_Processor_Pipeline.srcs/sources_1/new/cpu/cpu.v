@@ -16,7 +16,8 @@ module cpu
     input wire i_enable,
     input wire [DATA_LEN-1:0] i_instructionToWrite,
     input wire [REGISTER_BITS-1:0] i_registerAddress,
-    output wire [DATA_LEN-1:0] o_registerValue
+    output wire [DATA_LEN-1:0] o_registerValue,
+    output wire o_halt
 );
 
 //////////////////////Instruction Fetch///////////////////////////
@@ -81,6 +82,7 @@ wire [REGISTER_BITS-1:0] w_rdID;
 wire w_memReadID;
 wire w_memWriteID;
 wire w_memToRegID;
+wire w_haltID;
 wire [DATA_LEN-1:0] w_writeRegisterWB;
 wire w_regWriteWB;
 wire [DATA_LEN-1:0] w_writeDataWB;
@@ -116,9 +118,8 @@ instructionDecodeStage#(
     .o_memRead(w_memReadID),
     .o_memWrite(w_memWriteID),
     .o_memToReg(w_memToRegID),
-    .o_registerValue(o_registerValue)
-    
-    
+    .o_registerValue(o_registerValue),
+    .o_halt(w_haltID)
 );
 
 ////////////////////ID-Ex Buffer////////////////////////////////////////
@@ -137,6 +138,7 @@ wire w_regDestE;
 wire w_memReadE;
 wire w_memWriteE;
 wire w_memToRegE;
+wire w_haltE;
 
 decodeExecutionBuffer#(
     .DATA_LEN(DATA_LEN),
@@ -163,6 +165,7 @@ decodeExecutionBuffer#(
     .i_memRead(w_memReadID),
     .i_memWrite(w_memWriteID),
     .i_memToReg(w_memToRegID),
+    .i_halt(w_haltID),
 
     //Outputs
     .o_incrementedPC(w_incrementedPCE),
@@ -179,7 +182,8 @@ decodeExecutionBuffer#(
     .o_rd(w_rdE),
     .o_memRead(w_memReadE),
     .o_memWrite(w_memWriteE),
-    .o_memToReg(w_memToRegE)
+    .o_memToReg(w_memToRegE),
+    .o_halt(w_haltE)
 );
 
 ///////////////////Execution stage////////////////////////////////
@@ -225,6 +229,7 @@ wire w_memReadM;
 wire w_memWriteM;
 wire w_branchM;
 wire w_memToRegM;
+wire w_haltM;
 
 
 executionMemoryBuffer#(
@@ -247,6 +252,7 @@ executionMemoryBuffer#(
     .i_memWrite(w_memWriteE),
     .i_branch(w_branchE),
     .i_memToReg(w_memToRegE),
+    .i_halt(w_haltE),
     //Data outputs
     .o_pcBranch(w_pcBranchM),
     .o_readData2(w_readData2M),
@@ -258,7 +264,8 @@ executionMemoryBuffer#(
     .o_memRead(w_memReadM),
     .o_memWrite(w_memWriteM),
     .o_branch(w_branchM),
-    .o_memToReg(w_memToRegM)
+    .o_memToReg(w_memToRegM),
+    .o_halt(w_haltM)
 );
 
 ///////////////////Memory stage////////////////////////////////
@@ -305,13 +312,15 @@ memoryWritebackBuffer#(
     //Control inputs
     .i_regWrite(w_regWriteM),
     .i_memToReg(w_memToRegM),
+    .i_halt(w_haltM),
     //Data outputs
     .o_memData(w_memDataWB),
     .o_aluResult(w_aluResultWB),
     .o_writeRegister(w_writeRegisterWB),
     //Control outputs
     .o_regWrite(w_regWriteWB),
-    .o_memToReg(w_memToRegWB)
+    .o_memToReg(w_memToRegWB),
+    .o_halt(o_halt)
 );
 
 

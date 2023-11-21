@@ -20,6 +20,7 @@ module cpu_tb();
     reg [REGISTER_BITS-1:0] i_registerAddress;
     
     wire [DATA_LEN-1:0] o_registerValue;
+    wire o_halt;
 
 cpu#(
     .DATA_LEN(DATA_LEN),
@@ -37,7 +38,8 @@ cpu#(
     .i_enable(i_enable),
     .i_instructionToWrite(i_instructionToWrite),
     .i_registerAddress(i_registerAddress),
-    .o_registerValue(o_registerValue)
+    .o_registerValue(o_registerValue),
+    .o_halt(o_halt)
 );
 
 
@@ -85,6 +87,9 @@ initial begin
     #20;
     //SLLV: Shift en 2 el contenido del register[8] y lo guarda en register[8]
     i_instructionToWrite = {6'b000000, 5'b00000, 5'b01000, 5'b01000, 5'b00000, 6'b000100};
+    #20;
+    //Halt
+    i_instructionToWrite = {6'b111000, 5'b00000, 5'b01000, 5'b01000, 5'b00000, 6'b000100};
     #20;
     i_writeInstruction = 1'b0;
     #60;
