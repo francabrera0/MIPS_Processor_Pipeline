@@ -13,6 +13,7 @@ module debugUnit
     input wire i_reset,
     input wire i_uartRx,
     input wire [CPU_DATA_LEN-1:0] i_registerValue,
+    input wire i_halt,
     output wire o_uartTx,
     output wire o_enable,
     output wire o_writeInstruction,
@@ -64,6 +65,7 @@ debugInterface# (
 
     //Signals from CPU
     .i_registerValue(i_registerValue),
+    .i_halt(i_halt),
 
     //Signals to uart
     .o_readUart(w_readUart),

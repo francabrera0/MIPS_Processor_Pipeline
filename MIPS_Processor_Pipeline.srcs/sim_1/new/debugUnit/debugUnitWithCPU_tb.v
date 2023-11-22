@@ -49,6 +49,7 @@ uart#(
 
 
 wire w_enable;
+wire w_halt;
 wire [CPU_DATA_LEN-1:0] w_registerValue;
 wire w_writeInstruction;
 wire [CPU_DATA_LEN-1:0] w_instructionToWrite;
@@ -68,6 +69,7 @@ debugUnit#(
     .i_reset(i_reset),
     .i_uartRx(w_pcTx),
     .i_registerValue(w_registerValue),
+    .i_halt(w_halt),
     .o_uartTx(w_pcRx),
     .o_enable(w_enable),
     .o_writeInstruction(w_writeInstruction),
@@ -92,7 +94,8 @@ cpu#(
     .i_enable(w_enable),
     .i_instructionToWrite(w_instructionToWrite),
     .i_registerAddress(w_registerAddress),
-    .o_registerValue(w_registerValue)
+    .o_registerValue(w_registerValue),
+    .o_halt(w_halt)
 );
 
 
@@ -133,14 +136,15 @@ initial begin
     instructions[9] = {6'b000000, 5'b00000, 5'b10100, 5'b10100, 5'b10, 6'b000000};
     //SLLV: Shift en 2 el contenido del register[8] y lo guarda en register[8]
     instructions[10] = {6'b000000, 5'b00000, 5'b01000, 5'b01000, 5'b00000, 6'b000100};
-    
+    //Halt
+    instructions[11] = {6'b111000, {26{1'b0}}};
     
     #20;
 
     i_reset = 0;
     
     j = 0;
-    for (j=0; j<11; j=j+1) begin
+    for (j=0; j<12; j=j+1) begin
         
         r_PCdataToWrite = 8'h23;
         r_PCwriteUart = 1'b1;
@@ -162,7 +166,13 @@ initial begin
         #20;
         r_PCwriteUart = 0;
     end
-
+        
+    r_PCdataToWrite = 8'h54;
+    r_PCwriteUart = 1;
+    #20;
+    r_PCwriteUart = 0;
+    
+        
 
 
 end

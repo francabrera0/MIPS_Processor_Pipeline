@@ -15,6 +15,7 @@ module debugInterface
 
     //Signals from CPU
     input wire [CPU_DATA_LEN-1:0] i_registerValue,
+    input wire i_halt,
 
     //Signals to uart
     output wire o_readUart,
@@ -34,6 +35,8 @@ localparam [2:0] DECODE = 3'b010;
 localparam [2:0] INSTRUCTION = 3'b011;
 localparam [2:0] STEP = 3'b100;
 localparam [2:0] SEND_VALUES = 3'b101;
+localparam [2:0] RUN = 3'b110;
+localparam [2:0] HALT = 3'b111;
 
 localparam [UART_DATA_LEN-1:0] PROGRAM_CODE = 8'h23;
 localparam [UART_DATA_LEN-1:0] STEP_CODE= 8'h12;
@@ -55,6 +58,7 @@ reg [CPU_DATA_LEN-1:0] r_instructionToWrite, r_instructionToWriteNext;
 reg [1:0] r_byteCounter, r_byteCounterNext;
 reg [4:0] r_registerAddress, r_registerAddressNext;
 
+reg r_aux;
 
 always @(posedge i_clk) begin
     if(i_reset) begin
@@ -69,6 +73,8 @@ always @(posedge i_clk) begin
         r_byteCounter <= 2'b00;
         r_wait <= 3'b000;
         r_registerAddress <= 5'b00000;
+        r_aux = 1'b0;
+
     end
     else begin
         r_state <= r_stateNext;
@@ -134,7 +140,7 @@ always @(*) begin
                     r_enableNext = 1'b1;
                 end
                 else if(i_dataToRead == RUN_CODE) begin
-                    r_stateNext = IDLE;
+                    r_stateNext = RUN;
                     r_readUartNext = 1'b1;
                     r_enableNext = 1'b1;
                 end
@@ -174,6 +180,18 @@ always @(*) begin
             r_enableNext = 1'b0;
             r_readUartNext = 1'b0;
             r_stateNext = SEND_VALUES;
+            if(i_halt) begin
+                r_stateNext = HALT;
+            end
+        end
+
+        RUN: begin
+            if(i_halt) begin
+                r_stateNext = SEND_VALUES;
+                r_enableNext = 1'b0;
+                r_readUartNext = 1'b0;
+                r_aux = 1;
+            end
         end
 
         SEND_VALUES: begin
@@ -191,11 +209,18 @@ always @(*) begin
                 r_registerAddressNext = r_registerAddress + 1;
 
                 if(r_registerAddress == 5'b11111) begin
-                    r_stateNext = IDLE;
+                    if(r_aux)
+                        r_stateNext = HALT;
+                    else
+                        r_stateNext = IDLE;
                 end
             end
             r_byteCounterNext = r_byteCounter + 1;
+        end
 
+        HALT: begin
+            r_writeUartNext = 1'b0;
+            r_enableNext = 1'b0;
         end
 
         default: begin
