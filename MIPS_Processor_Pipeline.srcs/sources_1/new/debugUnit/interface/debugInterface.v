@@ -62,7 +62,7 @@ reg [CPU_DATA_LEN-1:0] r_instructionToWrite, r_instructionToWriteNext;
 reg [1:0] r_byteCounter, r_byteCounterNext;
 reg [5:0] r_regMemAddress, r_regiMemAddressNext;
 
-reg r_aux;
+reg r_halt;
 
 always @(posedge i_clk) begin
     if(i_reset) begin
@@ -77,7 +77,7 @@ always @(posedge i_clk) begin
         r_byteCounter <= 2'b00;
         r_wait <= 3'b000;
         r_regMemAddress <= 6'b00000;
-        r_aux = 1'b0;
+        r_halt = 1'b0;
 
     end
     else begin
@@ -194,7 +194,7 @@ always @(*) begin
                 r_stateNext = SEND_VALUES;
                 r_enableNext = 1'b0;
                 r_readUartNext = 1'b0;
-                r_aux = 1;
+                r_halt = 1;
             end
         end
 
@@ -227,8 +227,8 @@ always @(*) begin
 
             if(r_byteCounter == 2'b11) begin
                 r_dataToWriteNext = i_programCounter[31:24];
-                
-                if(r_aux)
+
+                if(r_halt)
                     r_stateNext = HALT;
                 else
                     r_stateNext = IDLE;
