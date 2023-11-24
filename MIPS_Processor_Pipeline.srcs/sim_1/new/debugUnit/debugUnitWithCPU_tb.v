@@ -50,10 +50,11 @@ uart#(
 
 wire w_enable;
 wire w_halt;
-wire [CPU_DATA_LEN-1:0] w_registerValue;
+wire [CPU_DATA_LEN-1:0] w_regMemValue;
 wire w_writeInstruction;
 wire [CPU_DATA_LEN-1:0] w_instructionToWrite;
-wire [REGISTER_BITS-1:0] w_registerAddress;
+wire [REGISTER_BITS-1:0] w_regMemAddress;
+wire w_regMemCtrl;
 
 //Debug unit
 debugUnit#(
@@ -68,13 +69,15 @@ debugUnit#(
     .i_clk(i_clk),
     .i_reset(i_reset),
     .i_uartRx(w_pcTx),
-    .i_registerValue(w_registerValue),
+    .i_regMemValue(w_regMemValue),
     .i_halt(w_halt),
     .o_uartTx(w_pcRx),
     .o_enable(w_enable),
     .o_writeInstruction(w_writeInstruction),
     .o_instructionToWrite(w_instructionToWrite),
-    .o_registerAddress(w_registerAddress)
+    .o_regMemAddress(w_regMemAddress),
+    .o_regMemCtrl(w_regMemCtrl)
+
 );
 
 
@@ -93,8 +96,9 @@ cpu#(
     .i_writeInstruction(w_writeInstruction),
     .i_enable(w_enable),
     .i_instructionToWrite(w_instructionToWrite),
-    .i_registerAddress(w_registerAddress),
-    .o_registerValue(w_registerValue),
+    .i_regMemAddress(w_regMemAddress),
+    .i_regMemCtrl(w_regMemCtrl),
+    .o_regMemValue(w_regMemValue),
     .o_halt(w_halt)
 );
 
@@ -173,8 +177,6 @@ initial begin
     r_PCwriteUart = 0;
     
         
-
-
 end
 
 endmodule

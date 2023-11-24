@@ -14,7 +14,7 @@ module debugInterface
     input wire [UART_DATA_LEN-1:0] i_dataToRead,
 
     //Signals from CPU
-    input wire [CPU_DATA_LEN-1:0] i_registerValue,
+    input wire [CPU_DATA_LEN-1:0] i_regMemValue,
     input wire i_halt,
 
     //Signals to uart
@@ -26,7 +26,8 @@ module debugInterface
     output wire o_enable,
     output wire o_writeInstruction,
     output wire [CPU_DATA_LEN-1:0] o_instructionToWrite,
-    output wire [REGISTER_BITS-1:0] o_registerAddress
+    output wire [REGISTER_BITS-1:0] o_regMemAddress,
+    output wire o_regMemCtrl
 );
 
 localparam [2:0] IDLE = 3'b000;
@@ -56,7 +57,7 @@ reg r_writeInstruction, r_writeInstructionNext;
 reg [CPU_DATA_LEN-1:0] r_instructionToWrite, r_instructionToWriteNext;
 
 reg [1:0] r_byteCounter, r_byteCounterNext;
-reg [4:0] r_registerAddress, r_registerAddressNext;
+reg [5:0] r_regMemAddress, r_regiMemAddressNext;
 
 reg r_aux;
 
@@ -72,7 +73,7 @@ always @(posedge i_clk) begin
         r_instructionToWrite <= {CPU_DATA_LEN{1'b0}};
         r_byteCounter <= 2'b00;
         r_wait <= 3'b000;
-        r_registerAddress <= 5'b00000;
+        r_regMemAddress <= 6'b00000;
         r_aux = 1'b0;
 
     end
@@ -87,7 +88,7 @@ always @(posedge i_clk) begin
         r_instructionToWrite <= r_instructionToWriteNext;
         r_byteCounter <= r_byteCounterNext;
         r_wait <= r_waitNext;
-        r_registerAddress <= r_registerAddressNext;
+        r_regMemAddress <= r_regiMemAddressNext;
     end
 end
 
@@ -102,7 +103,7 @@ always @(*) begin
     r_instructionToWriteNext = r_instructionToWrite; 
     r_byteCounterNext = r_byteCounter;
     r_waitNext = r_wait;
-    r_registerAddressNext = r_registerAddress;
+    r_regiMemAddressNext = r_regMemAddress;
 
     case (r_state)
         IDLE: begin
@@ -197,18 +198,18 @@ always @(*) begin
         SEND_VALUES: begin
             r_writeUartNext = 1'b1;
 
-            if(r_byteCounter == 2'b00) r_dataToWriteNext = i_registerValue[7:0];
-            if(r_byteCounter == 2'b01) r_dataToWriteNext = i_registerValue[15:8];
-            if(r_byteCounter == 2'b10) r_dataToWriteNext = i_registerValue[23:16];
+            if(r_byteCounter == 2'b00) r_dataToWriteNext = i_regMemValue[7:0];
+            if(r_byteCounter == 2'b01) r_dataToWriteNext = i_regMemValue[15:8];
+            if(r_byteCounter == 2'b10) r_dataToWriteNext = i_regMemValue[23:16];
             
             r_stateNext = SEND_VALUES;
             
             if(r_byteCounter == 2'b11) begin
-                r_dataToWriteNext = i_registerValue[31:24];
+                r_dataToWriteNext = i_regMemValue[31:24];
                 r_byteCounterNext = 2'b00;
-                r_registerAddressNext = r_registerAddress + 1;
+                r_regiMemAddressNext = r_regMemAddress + 1;
 
-                if(r_registerAddress == 5'b11111) begin
+                if(r_regMemAddress == 6'b111111) begin
                     if(r_aux)
                         r_stateNext = HALT;
                     else
@@ -236,7 +237,8 @@ end
 assign o_instructionToWrite = r_instructionToWrite;
 assign o_enable = r_enable;
 assign o_writeInstruction = r_writeInstruction;
-assign o_registerAddress = r_registerAddress;
+assign o_regMemAddress = r_regMemAddress[4:0];
+assign o_regMemCtrl = r_regMemAddress[5];
 
 assign o_readUart = r_readUart;
 assign o_writeUart = r_writeUart;

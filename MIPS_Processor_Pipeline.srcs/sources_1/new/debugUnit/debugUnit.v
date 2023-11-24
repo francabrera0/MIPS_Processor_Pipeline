@@ -12,13 +12,14 @@ module debugUnit
     input wire i_clk,
     input wire i_reset,
     input wire i_uartRx,
-    input wire [CPU_DATA_LEN-1:0] i_registerValue,
+    input wire [CPU_DATA_LEN-1:0] i_regMemValue,
     input wire i_halt,
     output wire o_uartTx,
     output wire o_enable,
     output wire o_writeInstruction,
     output wire [CPU_DATA_LEN-1:0] o_instructionToWrite,
-    output wire [REGISTER_BITS-1:0] o_registerAddress
+    output wire [REGISTER_BITS-1:0] o_regMemAddress,
+    output wire o_regMemCtrl
 );
 
 
@@ -64,7 +65,7 @@ debugInterface# (
     .i_dataToRead(w_dataToRead),
 
     //Signals from CPU
-    .i_registerValue(i_registerValue),
+    .i_regMemValue(i_regMemValue),
     .i_halt(i_halt),
 
     //Signals to uart
@@ -76,7 +77,8 @@ debugInterface# (
     .o_enable(o_enable),
     .o_writeInstruction(o_writeInstruction),
     .o_instructionToWrite(o_instructionToWrite),
-    .o_registerAddress(o_registerAddress)
+    .o_regMemAddress(o_regMemAddress),
+    .o_regMemCtrl(o_regMemCtrl)
 );
 
 endmodule

@@ -11,8 +11,10 @@ module memoryStage#(
     input wire i_memWrite,
     input wire i_branch,
     input wire i_zero,
+    input wire [4:0] i_memoryAddress,
     //Data outputs
     output wire [DATA_LEN-1:0] o_readData,
+    output wire [DATA_LEN-1:0] o_memoryValue,
     //Control outputs
     output wire o_PCSrc
 );
@@ -30,7 +32,9 @@ module memoryStage#(
         .i_writeData(i_writeData),
         .i_memRead(i_memRead),
         .i_memWrite(i_memWrite),
-        .o_readData(o_readData)
+        .i_memoryAddress(i_memoryAddress),
+        .o_readData(o_readData),
+        .o_memoryValue(o_memoryValue)
     );
 
 endmodule
