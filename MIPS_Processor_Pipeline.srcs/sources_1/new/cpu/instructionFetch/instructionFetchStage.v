@@ -16,7 +16,8 @@ module instructionFetchStage
 
     //Outputs
     output wire [PC_LEN-1:0] o_incrementedPC,
-    output wire [DATA_LEN-1:0] o_instruction
+    output wire [DATA_LEN-1:0] o_instruction,
+    output wire [PC_LEN-1:0] o_programCounter
 );
 
 wire [PC_LEN-1:0] w_programCounterOut;
@@ -68,5 +69,7 @@ mux2to1#(
     .i_muxSelector(i_programCounterSrc),
     .o_muxOutput(w_programCounterIn)
 );
+
+assign o_programCounter = w_programCounterOut;
 
 endmodule

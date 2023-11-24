@@ -18,6 +18,7 @@ module cpu
     input wire [REGISTER_BITS-1:0] i_regMemAddress,
     input wire i_regMemCtrl,
     output wire [DATA_LEN-1:0] o_regMemValue,
+    output wire [PC_LEN-1:0] o_programCounter,
     output wire o_halt
 );
 
@@ -44,7 +45,8 @@ instructionFetchStage#(
 
     //Outputs
     .o_incrementedPC(w_incrementedPCIF),
-    .o_instruction(w_instructionIF)
+    .o_instruction(w_instructionIF),
+    .o_programCounter(o_programCounter)
 );
 
 ////////////////////IF-ID Buffer////////////////////////////////////////
@@ -342,6 +344,5 @@ writebackStage #(
 );
 
 assign o_regMemValue = i_regMemCtrl ?  w_memoryValue : w_registerValue ;
-
 
 endmodule

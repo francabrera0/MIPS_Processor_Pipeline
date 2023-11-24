@@ -6,7 +6,8 @@ module debugUnit
     parameter COUNTER_BITS = 5,
     parameter PTR_LEN = 2,
     parameter CPU_DATA_LEN = 32,
-    parameter REGISTER_BITS = 5
+    parameter REGISTER_BITS = 5,
+    parameter PC_LEN = 32
 )
 (
     input wire i_clk,
@@ -14,6 +15,7 @@ module debugUnit
     input wire i_uartRx,
     input wire [CPU_DATA_LEN-1:0] i_regMemValue,
     input wire i_halt,
+    input wire [PC_LEN-1:0] i_programCounter,
     output wire o_uartTx,
     output wire o_enable,
     output wire o_writeInstruction,
@@ -67,6 +69,7 @@ debugInterface# (
     //Signals from CPU
     .i_regMemValue(i_regMemValue),
     .i_halt(i_halt),
+    .i_programCounter(i_programCounter),
 
     //Signals to uart
     .o_readUart(w_readUart),

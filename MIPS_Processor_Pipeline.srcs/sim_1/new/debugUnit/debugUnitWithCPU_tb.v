@@ -55,6 +55,7 @@ wire w_writeInstruction;
 wire [CPU_DATA_LEN-1:0] w_instructionToWrite;
 wire [REGISTER_BITS-1:0] w_regMemAddress;
 wire w_regMemCtrl;
+wire [PC_LEN-1:0] w_programCounter;
 
 //Debug unit
 debugUnit#(
@@ -71,6 +72,7 @@ debugUnit#(
     .i_uartRx(w_pcTx),
     .i_regMemValue(w_regMemValue),
     .i_halt(w_halt),
+    .i_programCounter(w_programCounter),
     .o_uartTx(w_pcRx),
     .o_enable(w_enable),
     .o_writeInstruction(w_writeInstruction),
@@ -99,7 +101,8 @@ cpu#(
     .i_regMemAddress(w_regMemAddress),
     .i_regMemCtrl(w_regMemCtrl),
     .o_regMemValue(w_regMemValue),
-    .o_halt(w_halt)
+    .o_halt(w_halt),
+    .o_programCounter(w_programCounter)
 );
 
 
@@ -164,7 +167,7 @@ initial begin
         r_PCwriteUart = 0;
     end
 
-    for(j=0; j<4; j=j+1) begin
+    for(j=0; j<2; j=j+1) begin
         r_PCdataToWrite = 8'h12;
         r_PCwriteUart = 1;
         #20;

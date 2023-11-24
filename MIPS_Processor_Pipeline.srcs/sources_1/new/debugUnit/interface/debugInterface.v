@@ -2,7 +2,8 @@ module debugInterface
 #(
     parameter UART_DATA_LEN = 8,
     parameter CPU_DATA_LEN = 32,
-    parameter REGISTER_BITS = 5
+    parameter REGISTER_BITS = 5,
+    parameter PC_LEN = 32
 )
 (
     input wire i_clk,
@@ -16,6 +17,7 @@ module debugInterface
     //Signals from CPU
     input wire [CPU_DATA_LEN-1:0] i_regMemValue,
     input wire i_halt,
+    input wire [PC_LEN-1:0] i_programCounter,
 
     //Signals to uart
     output wire o_readUart,
@@ -30,21 +32,22 @@ module debugInterface
     output wire o_regMemCtrl
 );
 
-localparam [2:0] IDLE = 3'b000;
-localparam [2:0] WAIT = 3'b001;
-localparam [2:0] DECODE = 3'b010;
-localparam [2:0] INSTRUCTION = 3'b011;
-localparam [2:0] STEP = 3'b100;
-localparam [2:0] SEND_VALUES = 3'b101;
-localparam [2:0] RUN = 3'b110;
-localparam [2:0] HALT = 3'b111;
+localparam [3:0] IDLE = 4'b0000;
+localparam [3:0] WAIT = 4'b0001;
+localparam [3:0] DECODE = 4'b0010;
+localparam [3:0] INSTRUCTION = 4'b0011;
+localparam [3:0] STEP = 4'b0100;
+localparam [3:0] SEND_VALUES = 4'b0101;
+localparam [3:0] SEND_PC = 4'b0110;
+localparam [3:0] RUN = 4'b0111;
+localparam [3:0] HALT = 4'b1000;
 
 localparam [UART_DATA_LEN-1:0] PROGRAM_CODE = 8'h23;
 localparam [UART_DATA_LEN-1:0] STEP_CODE= 8'h12;
 localparam [UART_DATA_LEN-1:0] RUN_CODE = 8'h54;
 
-reg [2:0] r_state, r_stateNext;
-reg [2:0] r_wait, r_waitNext;
+reg [3:0] r_state, r_stateNext;
+reg [3:0] r_wait, r_waitNext;
 
 reg r_readUart, r_readUartNext;
 reg r_writeUart, r_writeUartNext;
@@ -206,15 +209,29 @@ always @(*) begin
             
             if(r_byteCounter == 2'b11) begin
                 r_dataToWriteNext = i_regMemValue[31:24];
-                r_byteCounterNext = 2'b00;
                 r_regiMemAddressNext = r_regMemAddress + 1;
 
                 if(r_regMemAddress == 6'b111111) begin
-                    if(r_aux)
-                        r_stateNext = HALT;
-                    else
-                        r_stateNext = IDLE;
+                   r_stateNext = SEND_PC;
                 end
+            end
+            r_byteCounterNext = r_byteCounter + 1;
+        end
+
+        SEND_PC: begin
+            if(r_byteCounter == 2'b00) r_dataToWriteNext = i_programCounter[7:0];
+            if(r_byteCounter == 2'b01) r_dataToWriteNext = i_programCounter[15:8];
+            if(r_byteCounter == 2'b10) r_dataToWriteNext = i_programCounter[23:16];
+
+            r_stateNext = SEND_PC;
+
+            if(r_byteCounter == 2'b11) begin
+                r_dataToWriteNext = i_programCounter[31:24];
+                
+                if(r_aux)
+                    r_stateNext = HALT;
+                else
+                    r_stateNext = IDLE;
             end
             r_byteCounterNext = r_byteCounter + 1;
         end
