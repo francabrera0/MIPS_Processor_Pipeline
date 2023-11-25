@@ -5,7 +5,7 @@ localparam UART_DATA_LEN = 8;
 localparam SB_TICK = 16;
 localparam COUNTER_MOD = 27;
 localparam COUNTER_BITS = 5;
-localparam PTR_LEN = 10;
+localparam PTR_LEN = 4;
 localparam PC_LEN = 32;
 localparam MEM_SIZE_ADDRESS_BITS = 10;
 localparam OPCODE_LEN = 6; 
@@ -32,7 +32,7 @@ uart#(
     .SB_TICK(SB_TICK),
     .COUNTER_MOD(COUNTER_MOD),
     .COUNTER_BITS(COUNTER_BITS),
-    .PTR_LEN(PTR_LEN)       
+    .PTR_LEN(10)       
 ) uartPc
 (
     .i_clk(i_clk),

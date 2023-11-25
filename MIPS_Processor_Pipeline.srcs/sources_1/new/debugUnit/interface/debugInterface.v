@@ -41,6 +41,7 @@ localparam [3:0] SEND_VALUES = 4'b0101;
 localparam [3:0] SEND_PC = 4'b0110;
 localparam [3:0] RUN = 4'b0111;
 localparam [3:0] HALT = 4'b1000;
+localparam [3:0] WAIT_SEND = 4'b1001;
 
 localparam [UART_DATA_LEN-1:0] PROGRAM_CODE = 8'h23;
 localparam [UART_DATA_LEN-1:0] STEP_CODE= 8'h12;
@@ -48,6 +49,7 @@ localparam [UART_DATA_LEN-1:0] RUN_CODE = 8'h54;
 
 reg [3:0] r_state, r_stateNext;
 reg [3:0] r_wait, r_waitNext;
+reg [3:0] r_waitSend, r_waitSendNext;
 
 reg r_readUart, r_readUartNext;
 reg r_writeUart, r_writeUartNext;
@@ -126,6 +128,13 @@ always @(*) begin
             end
         end
 
+        WAIT_SEND: begin
+            if(~i_txFull) begin
+                r_stateNext = r_waitSendNext;
+                r_writeUartNext = 1'b1;
+            end
+        end
+
         DECODE: begin
             if(i_rxEmpty) begin
                 r_readUartNext = 1'b0;
@@ -140,12 +149,12 @@ always @(*) begin
                 end
                 else if(i_dataToRead == STEP_CODE) begin
                     r_stateNext = STEP;
-                    r_readUartNext = 1'b1;
+                    r_readUartNext = 1'b0;
                     r_enableNext = 1'b1;
                 end
                 else if(i_dataToRead == RUN_CODE) begin
                     r_stateNext = RUN;
-                    r_readUartNext = 1'b1;
+                    r_readUartNext = 1'b0;
                     r_enableNext = 1'b1;
                 end
                 else begin
@@ -199,43 +208,57 @@ always @(*) begin
         end
 
         SEND_VALUES: begin
-            r_writeUartNext = 1'b1;
-
-            if(r_byteCounter == 2'b00) r_dataToWriteNext = i_regMemValue[7:0];
-            if(r_byteCounter == 2'b01) r_dataToWriteNext = i_regMemValue[15:8];
-            if(r_byteCounter == 2'b10) r_dataToWriteNext = i_regMemValue[23:16];
-            
-            r_stateNext = SEND_VALUES;
-            
-            if(r_byteCounter == 2'b11) begin
-                r_dataToWriteNext = i_regMemValue[31:24];
-                r_regiMemAddressNext = r_regMemAddress + 1;
-
-                if(r_regMemAddress == 6'b111111) begin
-                   r_stateNext = SEND_PC;
-                end
+            if(i_txFull) begin
+                r_stateNext = WAIT_SEND;
+                r_waitSendNext = SEND_VALUES;
+                r_writeUartNext = 1'b0;
             end
-            r_byteCounterNext = r_byteCounter + 1;
+            else begin
+                r_writeUartNext = 1'b1;
+    
+                if(r_byteCounter == 2'b00) r_dataToWriteNext = i_regMemValue[7:0];
+                if(r_byteCounter == 2'b01) r_dataToWriteNext = i_regMemValue[15:8];
+                if(r_byteCounter == 2'b10) r_dataToWriteNext = i_regMemValue[23:16];
+                
+                r_stateNext = SEND_VALUES;
+                
+                if(r_byteCounter == 2'b11) begin
+                    r_dataToWriteNext = i_regMemValue[31:24];
+                    r_regiMemAddressNext = r_regMemAddress + 1;
+    
+                    if(r_regMemAddress == 6'b111111) begin
+                       r_stateNext = SEND_PC;
+                    end
+                end
+                r_byteCounterNext = r_byteCounter + 1;
+            end
         end
 
         SEND_PC: begin
-            if(r_byteCounter == 2'b00) r_dataToWriteNext = i_programCounter[7:0];
-            if(r_byteCounter == 2'b01) r_dataToWriteNext = i_programCounter[15:8];
-            if(r_byteCounter == 2'b10) r_dataToWriteNext = i_programCounter[23:16];
-
-            r_stateNext = SEND_PC;
-
-            if(r_byteCounter == 2'b11) begin
-                r_dataToWriteNext = i_programCounter[31:24];
-
-                if(r_halt)
-                    r_stateNext = HALT;
-                else
-                    r_stateNext = IDLE;
+            if(i_txFull) begin
+                r_writeUartNext = 1'b0;
+                r_stateNext = WAIT_SEND;
+                r_waitSendNext = SEND_PC;
             end
-            r_byteCounterNext = r_byteCounter + 1;
+            else begin
+                if(r_byteCounter == 2'b00) r_dataToWriteNext = i_programCounter[7:0];
+                if(r_byteCounter == 2'b01) r_dataToWriteNext = i_programCounter[15:8];
+                if(r_byteCounter == 2'b10) r_dataToWriteNext = i_programCounter[23:16];
+    
+                r_stateNext = SEND_PC;
+    
+                if(r_byteCounter == 2'b11) begin
+                    r_dataToWriteNext = i_programCounter[31:24];
+    
+                    if(r_halt)
+                        r_stateNext = HALT;
+                    else
+                        r_stateNext = IDLE;
+                end
+                r_byteCounterNext = r_byteCounter + 1;
+            end
         end
-
+        
         HALT: begin
             r_writeUartNext = 1'b0;
             r_enableNext = 1'b0;
