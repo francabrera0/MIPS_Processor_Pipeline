@@ -13,7 +13,13 @@ module cpu
     input wire i_clk,
     input wire i_reset,
     input wire i_writeInstruction,
-    input wire [DATA_LEN-1:0] i_instructionToWrite
+    input wire i_enable,
+    input wire [DATA_LEN-1:0] i_instructionToWrite,
+    input wire [REGISTER_BITS-1:0] i_regMemAddress,
+    input wire i_regMemCtrl,
+    output wire [DATA_LEN-1:0] o_regMemValue,
+    output wire [PC_LEN-1:0] o_programCounter,
+    output wire o_halt
 );
 
 //////////////////////Instruction Fetch///////////////////////////
@@ -32,13 +38,15 @@ instructionFetchStage#(
     .i_clk(i_clk),
     .i_reset(i_reset),
     .i_programCounterBranch(w_pcBranchM),
+    .i_enable(i_enable),
     .i_programCounterSrc(w_programCounterSrcM),
     .i_instructionToWrite(i_instructionToWrite),
     .i_writeInstruction(i_writeInstruction),
 
     //Outputs
     .o_incrementedPC(w_incrementedPCIF),
-    .o_instruction(w_instructionIF)
+    .o_instruction(w_instructionIF),
+    .o_programCounter(o_programCounter)
 );
 
 ////////////////////IF-ID Buffer////////////////////////////////////////
@@ -55,7 +63,7 @@ fetchDecodeBuffer#(
     .i_reset(i_reset),
     .i_instruction(w_instructionIF),
     .i_incrementedPC(w_incrementedPCIF),
-    .i_enable(~i_writeInstruction),
+    .i_enable(i_enable),
 
     //Outputs
     .o_incrementedPC(w_incrementedPCID),
@@ -77,9 +85,11 @@ wire [REGISTER_BITS-1:0] w_rdID;
 wire w_memReadID;
 wire w_memWriteID;
 wire w_memToRegID;
+wire w_haltID;
 wire [DATA_LEN-1:0] w_writeRegisterWB;
 wire w_regWriteWB;
 wire [DATA_LEN-1:0] w_writeDataWB;
+wire [DATA_LEN-1:0] w_registerValue;
 
 instructionDecodeStage#(
     .DATA_LEN(DATA_LEN),
@@ -95,6 +105,7 @@ instructionDecodeStage#(
     .i_regWrite(w_regWriteWB),
     .i_writeRegister(w_writeRegisterWB),
     .i_writeData(w_writeDataWB),
+    .i_registerAddress(i_regMemAddress),
 
     //Outputs
     .o_regWrite(w_regWriteID),
@@ -110,9 +121,9 @@ instructionDecodeStage#(
     .o_rd(w_rdID),
     .o_memRead(w_memReadID),
     .o_memWrite(w_memWriteID),
-    .o_memToReg(w_memToRegID)
-    
-    
+    .o_memToReg(w_memToRegID),
+    .o_registerValue(w_registerValue),
+    .o_halt(w_haltID)
 );
 
 ////////////////////ID-Ex Buffer////////////////////////////////////////
@@ -131,6 +142,7 @@ wire w_regDestE;
 wire w_memReadE;
 wire w_memWriteE;
 wire w_memToRegE;
+wire w_haltE;
 
 decodeExecutionBuffer#(
     .DATA_LEN(DATA_LEN),
@@ -141,7 +153,7 @@ decodeExecutionBuffer#(
     //Inputs
     .i_clk(i_clk),
     .i_reset(i_reset),
-    .i_enable(~i_writeInstruction),
+    .i_enable(i_enable),
     .i_incrementedPC(w_incrementedPCID),
     .i_regWrite(w_regWriteID),
     .i_aluSrc(w_aluSrcID),
@@ -157,6 +169,7 @@ decodeExecutionBuffer#(
     .i_memRead(w_memReadID),
     .i_memWrite(w_memWriteID),
     .i_memToReg(w_memToRegID),
+    .i_halt(w_haltID),
 
     //Outputs
     .o_incrementedPC(w_incrementedPCE),
@@ -173,7 +186,8 @@ decodeExecutionBuffer#(
     .o_rd(w_rdE),
     .o_memRead(w_memReadE),
     .o_memWrite(w_memWriteE),
-    .o_memToReg(w_memToRegE)
+    .o_memToReg(w_memToRegE),
+    .o_halt(w_haltE)
 );
 
 ///////////////////Execution stage////////////////////////////////
@@ -219,6 +233,7 @@ wire w_memReadM;
 wire w_memWriteM;
 wire w_branchM;
 wire w_memToRegM;
+wire w_haltM;
 
 
 executionMemoryBuffer#(
@@ -228,7 +243,7 @@ executionMemoryBuffer#(
     //Special inputs
     .i_clk(i_clk),
     .i_reset(i_reset),
-    .i_enable(~i_writeInstruction),
+    .i_enable(i_enable),
     //Data inputs
     .i_pcBranch(w_branchPCE),
     .i_readData2(w_readData2E),
@@ -241,6 +256,7 @@ executionMemoryBuffer#(
     .i_memWrite(w_memWriteE),
     .i_branch(w_branchE),
     .i_memToReg(w_memToRegE),
+    .i_halt(w_haltE),
     //Data outputs
     .o_pcBranch(w_pcBranchM),
     .o_readData2(w_readData2M),
@@ -252,13 +268,14 @@ executionMemoryBuffer#(
     .o_memRead(w_memReadM),
     .o_memWrite(w_memWriteM),
     .o_branch(w_branchM),
-    .o_memToReg(w_memToRegM)
+    .o_memToReg(w_memToRegM),
+    .o_halt(w_haltM)
 );
 
 ///////////////////Memory stage////////////////////////////////
 
 wire [DATA_LEN-1:0] w_readDataM;
-
+wire [DATA_LEN-1:0] w_memoryValue;
 
 memoryStage#(
     .DATA_LEN(DATA_LEN)
@@ -272,8 +289,10 @@ memoryStage#(
     .i_memWrite(w_memWriteM),
     .i_branch(w_branchM),
     .i_zero(w_zeroM),
+    .i_memoryAddress(i_regMemAddress),
     //Data outputs
     .o_readData(w_readDataM),
+    .o_memoryValue(w_memoryValue),
     //Control outputs
     .o_PCSrc(w_programCounterSrcM)
 );
@@ -291,7 +310,7 @@ memoryWritebackBuffer#(
     //Special inputs
     .i_clk(i_clk),
     .i_reset(i_reset),
-    .i_enable(~i_writeInstruction),
+    .i_enable(i_enable),
     //Data inputs
     .i_memData(w_readDataM),
     .i_aluResult(w_aluResultM),
@@ -299,13 +318,15 @@ memoryWritebackBuffer#(
     //Control inputs
     .i_regWrite(w_regWriteM),
     .i_memToReg(w_memToRegM),
+    .i_halt(w_haltM),
     //Data outputs
     .o_memData(w_memDataWB),
     .o_aluResult(w_aluResultWB),
     .o_writeRegister(w_writeRegisterWB),
     //Control outputs
     .o_regWrite(w_regWriteWB),
-    .o_memToReg(w_memToRegWB)
+    .o_memToReg(w_memToRegWB),
+    .o_halt(o_halt)
 );
 
 
@@ -322,5 +343,6 @@ writebackStage #(
     .o_writeData(w_writeDataWB)
 );
 
+assign o_regMemValue = i_regMemCtrl ?  w_memoryValue : w_registerValue ;
 
 endmodule

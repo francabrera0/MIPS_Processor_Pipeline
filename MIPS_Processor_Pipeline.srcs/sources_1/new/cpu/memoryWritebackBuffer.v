@@ -17,13 +17,15 @@ module memoryWritebackBuffer
     //Control inputs
     input wire i_regWrite,
     input wire i_memToReg,
+    input wire i_halt,
     //Data outputs
     output wire [DATA_LEN-1:0] o_memData,
     output wire [DATA_LEN-1:0] o_aluResult,
     output wire [REGISTER_BITS-1:0] o_writeRegister,
     //Control outputs
     output wire o_regWrite,
-    output wire o_memToReg
+    output wire o_memToReg,
+    output wire o_halt
 );
 
 //Data registers
@@ -33,6 +35,7 @@ reg [REGISTER_BITS-1:0] writeRegister;
 //Control registers
 reg regWrite;
 reg memToReg;
+reg halt;
 
 always @(posedge i_clk) begin
     if(i_reset) begin
@@ -43,6 +46,7 @@ always @(posedge i_clk) begin
         //Control
         regWrite <= 0;
         memToReg <= 0;    
+        halt <= 0;
     end
     else if(i_enable) begin
         //Data
@@ -52,6 +56,7 @@ always @(posedge i_clk) begin
         //Control
         regWrite <= i_regWrite;
         memToReg <= i_memToReg;
+        halt <= i_halt;
     end  
 end
 
@@ -62,5 +67,6 @@ assign o_writeRegister = writeRegister;
 //Control
 assign o_regWrite = regWrite;
 assign o_memToReg = memToReg;
+assign o_halt = halt;
 
 endmodule

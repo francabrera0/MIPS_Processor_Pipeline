@@ -12,10 +12,13 @@ module registers
     input wire [REGISTER_BITS-1:0] i_writeRegister,
     input wire [DATA_LEN-1:0] i_writeData,
     input wire i_regWrite,
+    input wire [REGISTER_BITS-1:0] i_registerAddress,
 
     //Outputs
     output wire [DATA_LEN-1:0] o_readData1,
-    output wire [DATA_LEN-1:0] o_readData2
+    output wire [DATA_LEN-1:0] o_readData2,
+    output wire [DATA_LEN-1:0] o_registerValue
+
 );
 
 reg [DATA_LEN-1:0] r_registers [(2**REGISTER_BITS)-1:0];
@@ -31,6 +34,8 @@ always @(posedge i_clk) begin
         r_registers[5] <= 32'h8;
         r_registers[8] <= 32'ha;
         r_registers[20] <= 32'hf2;
+        r_registers[30] <= 32'hff;
+        r_registers[31] <= 32'hff;
     end
 end
 
@@ -43,5 +48,6 @@ end
 
 assign o_readData1 = r_registers[i_readRegister1];
 assign o_readData2 = r_registers[i_readRegister2];
+assign o_registerValue = r_registers[i_registerAddress];
 
 endmodule

@@ -8,6 +8,7 @@ module instructionFetchStage
     //Inputs
     input wire i_clk,
     input wire i_reset,
+    input wire i_enable,
     input wire [PC_LEN-1:0] i_programCounterBranch,
     input wire i_programCounterSrc,
     input wire [DATA_LEN-1:0] i_instructionToWrite,
@@ -15,7 +16,8 @@ module instructionFetchStage
 
     //Outputs
     output wire [PC_LEN-1:0] o_incrementedPC,
-    output wire [DATA_LEN-1:0] o_instruction
+    output wire [DATA_LEN-1:0] o_instruction,
+    output wire [PC_LEN-1:0] o_programCounter
 );
 
 wire [PC_LEN-1:0] w_programCounterOut;
@@ -29,7 +31,7 @@ programCounter#(
     .i_clk(i_clk),
     .i_reset(i_reset),
     .i_programCounter(w_programCounterIn),
-    .i_enable(~i_writeInstruction),
+    .i_enable(i_enable),
     .o_programCounter(w_programCounterOut)
 );
 
@@ -53,7 +55,7 @@ instructionMemory#(
     .i_reset(i_reset),
     .i_programCounter(w_programCounterOut),
     .i_dataToWrite(i_instructionToWrite),
-    .i_write(i_writeInstruction),
+    .i_write(i_writeInstruction & ~i_enable),
    .o_instruction(o_instruction)
 );
 
@@ -67,5 +69,7 @@ mux2to1#(
     .i_muxSelector(i_programCounterSrc),
     .o_muxOutput(w_programCounterIn)
 );
+
+assign o_programCounter = w_programCounterOut;
 
 endmodule
