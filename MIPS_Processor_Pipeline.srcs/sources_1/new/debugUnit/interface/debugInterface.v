@@ -58,10 +58,10 @@ reg [UART_DATA_LEN-1:0] r_dataToWrite;
 
 reg r_enable;
 reg r_writeInstruction;
-reg [CPU_DATA_LEN-1:0] r_instructionToWrite, r_instructionToWriteNext;
+reg [CPU_DATA_LEN-1:0] r_instructionToWrite;
 
 reg [1:0] r_byteCounter, r_byteCounterNext;
-reg [5:0] r_regMemAddress, r_regiMemAddressNext;
+reg [5:0] r_regMemAddress, r_regMemAddressNext;
 
 reg r_halt;
 
@@ -84,20 +84,18 @@ always @(posedge i_clk) begin
     end
     else begin
         r_state <= r_stateNext;
-        r_instructionToWrite <= r_instructionToWriteNext;
         r_byteCounter <= r_byteCounterNext;
         r_wait <= r_waitNext;
-        r_regMemAddress <= r_regiMemAddressNext;
+        r_regMemAddress <= r_regMemAddressNext;
     end
 end
 
 //Finiste State Machine with Data (Next logic state)
 always @(*) begin
     r_stateNext = r_state;              
-    r_instructionToWriteNext = r_instructionToWrite; 
     r_byteCounterNext = r_byteCounter;
     r_waitNext = r_wait;
-    r_regiMemAddressNext = r_regMemAddress;
+    r_regMemAddressNext = r_regMemAddress;
 
     case (r_state)
         IDLE: begin
@@ -126,7 +124,7 @@ always @(*) begin
             else begin
                 if(i_dataToRead == PROGRAM_CODE) begin
                     r_stateNext = INSTRUCTION;
-                    r_instructionToWriteNext = 32'b0;
+                    r_instructionToWrite = 32'b0;
                 end
                 else if(i_dataToRead == STEP_CODE) begin
                     r_stateNext = STEP;
@@ -146,7 +144,7 @@ always @(*) begin
                 r_waitNext = INSTRUCTION;
             end
             else begin
-                r_instructionToWriteNext = r_instructionToWriteNext | (i_dataToRead << (r_byteCounter * 8));
+                r_instructionToWrite = r_instructionToWrite | (i_dataToRead << (r_byteCounter * 8));
                                 
                 if(r_byteCounter == 2'b11) begin
                     r_byteCounterNext = 2'b00;
@@ -189,7 +187,7 @@ always @(*) begin
                 r_stateNext = SEND_VALUES;
                 
                 if(r_byteCounter == 2'b11) begin
-                    r_regiMemAddressNext = r_regMemAddress + 1;
+                    r_regMemAddressNext = r_regMemAddress + 1;
     
                     if(r_regMemAddress == 6'b111111) begin
                        r_stateNext = SEND_PC;
