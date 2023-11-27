@@ -66,6 +66,8 @@ reg [5:0] r_regMemAddress, r_regiMemAddressNext;
 
 reg r_halt;
 
+
+//Finite State Machine with Data (State and Data registers)
 always @(posedge i_clk) begin
     if(i_reset) begin
         r_state <= IDLE;
@@ -93,6 +95,7 @@ always @(posedge i_clk) begin
     end
 end
 
+//Finiste State Machine with Data (Next logic state)
 always @(*) begin
     r_stateNext = r_state;              
     r_dataToReadNext = r_dataToRead;         
@@ -104,32 +107,24 @@ always @(*) begin
 
     case (r_state)
         IDLE: begin
-            r_writeUart = 1'b0;
-            r_writeInstruction = 1'b0;
-            r_readUart = 1'b0;
-
             if(~i_rxEmpty) begin
                 r_stateNext = DECODE;
             end
         end
         
         WAIT: begin
-            r_readUart = 1'b0;
             if(~i_rxEmpty) begin
                 r_stateNext = r_wait;
             end
         end
 
         WAIT_SEND: begin
-            r_writeUart = 1'b0;
             if(~i_txFull) begin
                 r_stateNext = r_wait;
             end
         end
 
         DECODE: begin
-            r_readUart = 1'b1;
-
             if(i_rxEmpty) begin
                 r_stateNext = WAIT;
                 r_waitNext = DECODE;
@@ -151,9 +146,6 @@ always @(*) begin
         end
 
         INSTRUCTION: begin
-            r_readUart = 1'b1;
-            r_enable = 1'b0;
-
             if(i_rxEmpty) begin
                 r_stateNext = WAIT;
                 r_waitNext = INSTRUCTION;
@@ -176,25 +168,17 @@ always @(*) begin
         end
 
         WRITE_INSTRUCTION: begin
-            r_writeInstruction = 1'b1;
             r_stateNext = IDLE;
         end
 
         STEP: begin
-            r_readUart = 1'b0;
-            r_enable = 1'b1;
-
             r_stateNext = SEND_VALUES;
-
             if(i_halt) begin
                 r_stateNext = HALT;
             end
         end
 
         RUN: begin
-            r_readUart = 1'b0;
-            r_enable = 1'b1;
-
             if(i_halt) begin
                 r_stateNext = SEND_VALUES;
                 r_halt = 1;
@@ -202,10 +186,6 @@ always @(*) begin
         end
 
         SEND_VALUES: begin
-            r_writeUart = 1'b1;
-            r_enable = 1'b0;
-            r_readUart = 1'b0;
-
             if(i_txFull) begin
                 r_stateNext = WAIT_SEND;
                 r_waitNext = SEND_VALUES;
@@ -231,10 +211,6 @@ always @(*) begin
         end
 
         SEND_PC: begin
-            r_writeUart = 1'b1;
-            r_enable = 1'b0;
-            r_readUart = 1'b0;
-
             if(i_txFull) begin
                 r_stateNext = WAIT_SEND;
                 r_waitNext = SEND_PC;
@@ -259,9 +235,7 @@ always @(*) begin
         end
         
         HALT: begin
-            r_writeUart = 1'b0;
-            r_enable = 1'b0;
-            r_readUart = 1'b0;
+            //Logic
         end
 
         default: begin
@@ -271,6 +245,74 @@ always @(*) begin
     endcase
 
 end
+
+//Finiste State Machine with Data (output logic)
+always @(*) begin
+
+    case (r_state)
+        IDLE: begin
+            r_writeUart = 1'b0;
+            r_writeInstruction = 1'b0;
+            r_readUart = 1'b0;
+        end
+        
+        WAIT: begin
+            r_readUart = 1'b0;
+        end
+
+        WAIT_SEND: begin
+            r_writeUart = 1'b0;
+        end
+
+        DECODE: begin
+            r_readUart = 1'b1;
+        end
+
+        INSTRUCTION: begin
+            r_readUart = 1'b1;
+            r_enable = 1'b0;
+        end
+
+        WRITE_INSTRUCTION: begin
+            r_writeInstruction = 1'b1;
+        end
+
+        STEP: begin
+            r_readUart = 1'b0;
+            r_enable = 1'b1;
+        end
+
+        RUN: begin
+            r_readUart = 1'b0;
+            r_enable = 1'b1;
+        end
+
+        SEND_VALUES: begin
+            r_writeUart = 1'b1;
+            r_enable = 1'b0;
+            r_readUart = 1'b0;
+        end
+
+        SEND_PC: begin
+            r_writeUart = 1'b1;
+            r_enable = 1'b0;
+            r_readUart = 1'b0;
+        end
+        
+        HALT: begin
+            r_writeUart = 1'b0;
+            r_enable = 1'b0;
+            r_readUart = 1'b0;
+        end
+
+        default: begin
+            r_writeUart = 1'b0;
+            r_enable = 1'b0;
+            r_readUart = 1'b0;
+        end
+    endcase
+end
+
 
 assign o_instructionToWrite = r_instructionToWrite;
 assign o_enable = r_enable;
