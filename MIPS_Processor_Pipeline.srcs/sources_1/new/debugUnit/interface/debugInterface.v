@@ -54,8 +54,7 @@ reg [3:0] r_wait, r_waitNext;
 reg r_readUart;
 reg r_writeUart;
 
-reg [UART_DATA_LEN-1:0] r_dataToRead, r_dataToReadNext;
-reg [UART_DATA_LEN-1:0] r_dataToWrite, r_dataToWriteNext;
+reg [UART_DATA_LEN-1:0] r_dataToWrite;
 
 reg r_enable;
 reg r_writeInstruction;
@@ -73,7 +72,6 @@ always @(posedge i_clk) begin
         r_state <= IDLE;
         r_readUart <= 1'b0;
         r_writeUart <= 1'b0;
-        r_dataToRead <= {UART_DATA_LEN{1'b0}};
         r_dataToWrite <= {UART_DATA_LEN{1'b0}};
         r_enable <= 1'b0;
         r_writeInstruction <= 1'b0;
@@ -86,8 +84,6 @@ always @(posedge i_clk) begin
     end
     else begin
         r_state <= r_stateNext;
-        r_dataToRead <= r_dataToReadNext;
-        r_dataToWrite <= r_dataToWriteNext;
         r_instructionToWrite <= r_instructionToWriteNext;
         r_byteCounter <= r_byteCounterNext;
         r_wait <= r_waitNext;
@@ -98,8 +94,6 @@ end
 //Finiste State Machine with Data (Next logic state)
 always @(*) begin
     r_stateNext = r_state;              
-    r_dataToReadNext = r_dataToRead;         
-    r_dataToWriteNext = r_dataToWrite;        
     r_instructionToWriteNext = r_instructionToWrite; 
     r_byteCounterNext = r_byteCounter;
     r_waitNext = r_wait;
@@ -132,6 +126,7 @@ always @(*) begin
             else begin
                 if(i_dataToRead == PROGRAM_CODE) begin
                     r_stateNext = INSTRUCTION;
+                    r_instructionToWriteNext = 32'b0;
                 end
                 else if(i_dataToRead == STEP_CODE) begin
                     r_stateNext = STEP;
@@ -151,12 +146,9 @@ always @(*) begin
                 r_waitNext = INSTRUCTION;
             end
             else begin
-                if(r_byteCounter == 2'b00) r_instructionToWriteNext[7:0] = i_dataToRead;
-                if(r_byteCounter == 2'b01) r_instructionToWriteNext[15:8] = i_dataToRead;
-                if(r_byteCounter == 2'b10) r_instructionToWriteNext[23:16] = i_dataToRead;
-
+                r_instructionToWriteNext = r_instructionToWriteNext | (i_dataToRead << (r_byteCounter * 8));
+                                
                 if(r_byteCounter == 2'b11) begin
-                    r_instructionToWriteNext[31 :24] = i_dataToRead;
                     r_byteCounterNext = 2'b00;
                     r_stateNext = WRITE_INSTRUCTION;
                 end
@@ -191,15 +183,12 @@ always @(*) begin
                 r_waitNext = SEND_VALUES;
             end
             else begin
-    
-                if(r_byteCounter == 2'b00) r_dataToWrite = i_regMemValue[7:0];
-                if(r_byteCounter == 2'b01) r_dataToWrite = i_regMemValue[15:8];
-                if(r_byteCounter == 2'b10) r_dataToWrite = i_regMemValue[23:16];
+                
+                r_dataToWrite = (i_regMemValue >> (r_byteCounter*8) & 32'hff);
                 
                 r_stateNext = SEND_VALUES;
                 
                 if(r_byteCounter == 2'b11) begin
-                    r_dataToWrite = i_regMemValue[31:24];
                     r_regiMemAddressNext = r_regMemAddress + 1;
     
                     if(r_regMemAddress == 6'b111111) begin
@@ -216,14 +205,12 @@ always @(*) begin
                 r_waitNext = SEND_PC;
             end
             else begin
-                if(r_byteCounter == 2'b00) r_dataToWrite = i_programCounter[7:0];
-                if(r_byteCounter == 2'b01) r_dataToWrite = i_programCounter[15:8];
-                if(r_byteCounter == 2'b10) r_dataToWrite = i_programCounter[23:16];
+                
+                r_dataToWrite = (i_programCounter >> (r_byteCounter*8) & 32'hff);
     
                 r_stateNext = SEND_PC;
     
                 if(r_byteCounter == 2'b11) begin
-                    r_dataToWrite = i_programCounter[31:24];
     
                     if(r_halt)
                         r_stateNext = HALT;
