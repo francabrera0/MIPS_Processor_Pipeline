@@ -50,7 +50,6 @@ localparam [UART_DATA_LEN-1:0] RUN_CODE = 8'h54;
 
 reg [3:0] r_state, r_stateNext;
 reg [3:0] r_wait, r_waitNext;
-reg [3:0] r_waitSend, r_waitSendNext;
 
 reg r_readUart;
 reg r_writeUart;
@@ -124,7 +123,7 @@ always @(*) begin
         WAIT_SEND: begin
             r_writeUart = 1'b0;
             if(~i_txFull) begin
-                r_stateNext = r_waitSendNext;
+                r_stateNext = r_wait;
             end
         end
 
@@ -209,7 +208,7 @@ always @(*) begin
 
             if(i_txFull) begin
                 r_stateNext = WAIT_SEND;
-                r_waitSendNext = SEND_VALUES;
+                r_waitNext = SEND_VALUES;
             end
             else begin
     
@@ -238,7 +237,7 @@ always @(*) begin
 
             if(i_txFull) begin
                 r_stateNext = WAIT_SEND;
-                r_waitSendNext = SEND_PC;
+                r_waitNext = SEND_PC;
             end
             else begin
                 if(r_byteCounter == 2'b00) r_dataToWrite = i_programCounter[7:0];
