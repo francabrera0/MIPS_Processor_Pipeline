@@ -24,8 +24,11 @@ module executionStage #(
     //Control outputs
     output wire o_zero
 );
+
+    wire[DATA_LEN-1:0] shiftedImmediate = {1'b0, i_immediateExtendValue[DATA_LEN-2:0] << 2};
+
     //Calculates branch program counter
-    assign o_branchPC = i_incrementedPC + ($signed(i_immediateExtendValue) <<< 2);
+    assign o_branchPC = i_immediateExtendValue[DATA_LEN-1]? i_incrementedPC - shiftedImmediate: i_incrementedPC + shiftedImmediate;
     
     wire [DATA_LEN-1:0] aluOperand1;
     wire [DATA_LEN-1:0] aluOperand2;
