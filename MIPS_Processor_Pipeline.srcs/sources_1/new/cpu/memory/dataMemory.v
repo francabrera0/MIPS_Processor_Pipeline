@@ -11,6 +11,7 @@ module dataMemory #(
     input wire i_memRead,
     input wire i_memWrite,
     input wire [4:0] i_memoryAddress,
+    input wire [1:0] i_loadStoreType,
     //Data outputs
     output reg [DATA_LEN-1:0] o_readData,
     output reg [DATA_LEN-1:0] o_memoryValue

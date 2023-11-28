@@ -16,11 +16,13 @@ module controlUnit
     output wire o_memRead,
     output wire o_memWrite,
     output wire o_memToReg,
-    output wire o_halt
-    
+    output wire o_halt,
+    output wire [1:0] o_loadStoreType
 );
 
 localparam RTYPE = 6'b000000;
+localparam LB = 6'b100000;
+localparam LH = 6'b100001;
 localparam LW = 6'b100011;
 localparam SW = 6'b101011;
 localparam BEQ = 6'b000100;
@@ -36,6 +38,7 @@ reg r_memRead;
 reg r_memWrite;
 reg r_memToReg;
 reg r_halt;
+reg r_loadStoreType;
 
 reg [OPCODE_LEN-1:0] r_opCode;
 reg r_isShamt;
@@ -55,8 +58,9 @@ always @(*) begin
             r_regWrite = 1'b1;
             r_memToReg = 1'b0;
             r_halt = 1'b0;
+            r_loadStoreType = 2'b11;
         end 
-        LW: begin
+        LW | LB | LH: begin
             r_regDest = 1'b0;
             r_aluOp = 2'b00;
             r_aluSrc = 2'b01;
@@ -66,6 +70,7 @@ always @(*) begin
             r_regWrite = 1'b1;
             r_memToReg = 1'b1;
             r_halt = 1'b0;
+            r_loadStoreType = r_opCode[1:0];
         end
         SW: begin
             r_aluOp = 2'b00;
@@ -75,6 +80,7 @@ always @(*) begin
             r_memWrite = 1'b1;
             r_regWrite = 1'b0;
             r_halt = 1'b0;
+            r_loadStoreType = 2'b11;
         end
         BEQ: begin
             r_aluOp = 2'b01;
@@ -84,6 +90,7 @@ always @(*) begin
             r_memWrite = 1'b0;
             r_regWrite = 1'b0;
             r_halt = 1'b0;
+            r_loadStoreType = 2'b11;
         end
         NOP: begin
             r_regDest = 1'b0;
@@ -95,6 +102,7 @@ always @(*) begin
             r_regWrite = 1'b0;
             r_memToReg = 1'b0;
             r_halt = 1'b0;
+            r_loadStoreType = 2'b11;
         end 
         HALT: begin
             r_regDest = 1'b0;
@@ -106,6 +114,7 @@ always @(*) begin
             r_regWrite = 1'b0;
             r_memToReg = 1'b0;
             r_halt = 1'b1;
+            r_loadStoreType = 2'b11;
         end
         default: begin
             r_regDest = 1'b0;
@@ -117,6 +126,7 @@ always @(*) begin
             r_regWrite = 1'b0;
             r_memToReg = 1'b0;
             r_halt = 1'b0;
+            r_loadStoreType = 2'b11;
         end 
     endcase
 end

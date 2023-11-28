@@ -86,6 +86,7 @@ wire w_memReadID;
 wire w_memWriteID;
 wire w_memToRegID;
 wire w_haltID;
+wire [1:0] w_loadStoreTypeID;
 wire [DATA_LEN-1:0] w_writeRegisterWB;
 wire w_regWriteWB;
 wire [DATA_LEN-1:0] w_writeDataWB;
@@ -123,7 +124,8 @@ instructionDecodeStage#(
     .o_memWrite(w_memWriteID),
     .o_memToReg(w_memToRegID),
     .o_registerValue(w_registerValue),
-    .o_halt(w_haltID)
+    .o_halt(w_haltID),
+    .o_loadStoreType(w_loadStoretypeID)
 );
 
 ////////////////////ID-Ex Buffer////////////////////////////////////////
@@ -143,6 +145,7 @@ wire w_memReadE;
 wire w_memWriteE;
 wire w_memToRegE;
 wire w_haltE;
+wire [1:0] w_loadStoreTypeE;
 
 decodeExecutionBuffer#(
     .DATA_LEN(DATA_LEN),
@@ -170,6 +173,7 @@ decodeExecutionBuffer#(
     .i_memWrite(w_memWriteID),
     .i_memToReg(w_memToRegID),
     .i_halt(w_haltID),
+    .i_loadStoreType(w_loadStoretypeID),
 
     //Outputs
     .o_incrementedPC(w_incrementedPCE),
@@ -187,7 +191,8 @@ decodeExecutionBuffer#(
     .o_memRead(w_memReadE),
     .o_memWrite(w_memWriteE),
     .o_memToReg(w_memToRegE),
-    .o_halt(w_haltE)
+    .o_halt(w_haltE),
+    .o_loadStoreType(w_loadStoretypeE)
 );
 
 ///////////////////Execution stage////////////////////////////////
@@ -234,7 +239,7 @@ wire w_memWriteM;
 wire w_branchM;
 wire w_memToRegM;
 wire w_haltM;
-
+wire [1:0] w_loadStoreTypeM;
 
 executionMemoryBuffer#(
     .DATA_LEN(DATA_LEN)
@@ -257,6 +262,7 @@ executionMemoryBuffer#(
     .i_branch(w_branchE),
     .i_memToReg(w_memToRegE),
     .i_halt(w_haltE),
+    .i_loadStoreType(w_loadStoretypeE),
     //Data outputs
     .o_pcBranch(w_pcBranchM),
     .o_readData2(w_readData2M),
@@ -269,7 +275,8 @@ executionMemoryBuffer#(
     .o_memWrite(w_memWriteM),
     .o_branch(w_branchM),
     .o_memToReg(w_memToRegM),
-    .o_halt(w_haltM)
+    .o_halt(w_haltM),
+    .o_loadStoreType(w_loadStoretypeM)
 );
 
 ///////////////////Memory stage////////////////////////////////
@@ -290,6 +297,7 @@ memoryStage#(
     .i_branch(w_branchM),
     .i_zero(w_zeroM),
     .i_memoryAddress(i_regMemAddress),
+    .i_loadStoreType(w_loadStoretypeM),
     //Data outputs
     .o_readData(w_readDataM),
     .o_memoryValue(w_memoryValue),

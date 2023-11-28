@@ -24,6 +24,7 @@ module executionMemoryBuffer
     input wire i_branch,
     input wire i_memToReg,
     input wire i_halt,
+    input wire [1:0] i_loadStoreType,
     //Data outputs
     output wire [DATA_LEN-1:0] o_pcBranch,
     output wire [DATA_LEN-1:0] o_readData2,
@@ -36,7 +37,8 @@ module executionMemoryBuffer
     output wire o_memWrite,
     output wire o_branch,
     output wire o_memToReg,
-    output wire o_halt
+    output wire o_halt,
+    output wire [1:0] o_loadStoreType
 );
 
 //Data registers
@@ -52,6 +54,7 @@ reg memWrite;
 reg branch;
 reg memToReg;
 reg halt;
+reg [1:0] r_loadStoreType;
 
 always @(posedge i_clk) begin
     if(i_reset) begin
@@ -68,6 +71,7 @@ always @(posedge i_clk) begin
         branch <= 0;
         memToReg <= 0;    
         halt <= 0;
+        r_loadStoreType <= 2'b11;
     end
     else if(i_enable) begin
         //Data
@@ -83,6 +87,7 @@ always @(posedge i_clk) begin
         branch <= i_branch;
         memToReg <= i_memToReg;
         halt <= i_halt;
+        r_loadStoreType <= i_loadStoreType;
     end  
 end
 
@@ -99,5 +104,6 @@ assign o_memWrite = memWrite;
 assign o_branch = branch;
 assign o_memToReg = memToReg;
 assign o_halt = halt;
+assign o_loadStoreType = r_loadStoreType;
 
 endmodule

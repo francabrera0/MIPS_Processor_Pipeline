@@ -12,6 +12,7 @@ module memoryStage#(
     input wire i_branch,
     input wire i_zero,
     input wire [4:0] i_memoryAddress,
+    input wire [1:0] i_loadStoreType,
     //Data outputs
     output wire [DATA_LEN-1:0] o_readData,
     output wire [DATA_LEN-1:0] o_memoryValue,
@@ -33,6 +34,7 @@ module memoryStage#(
         .i_memRead(i_memRead),
         .i_memWrite(i_memWrite),
         .i_memoryAddress(i_memoryAddress),
+        .i_loadStoreType(i_loadStoreType),
         .o_readData(o_readData),
         .o_memoryValue(o_memoryValue)
     );

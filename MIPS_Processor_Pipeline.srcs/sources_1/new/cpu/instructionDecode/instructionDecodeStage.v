@@ -31,6 +31,7 @@ module instructionDecodeStage
     output wire o_memWrite,
     output wire o_memToReg,
     output wire o_halt,
+    output wire [1:0] o_loadStoreType,
     output wire [DATA_LEN-1:0] o_registerValue
 );
 
@@ -49,7 +50,8 @@ controlUnit#(
     .o_memRead(o_memRead),
     .o_memWrite(o_memWrite),
     .o_memToReg(o_memToReg),
-    .o_halt(o_halt)
+    .o_halt(o_halt),
+    .o_loadStoreType(o_loadStoreType)
 );
 
 registers#(
