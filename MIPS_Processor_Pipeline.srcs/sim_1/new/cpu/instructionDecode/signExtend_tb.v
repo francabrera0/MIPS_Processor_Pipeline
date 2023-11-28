@@ -24,7 +24,7 @@ initial begin
     #10;
     i_immediateValue = 16'h05;
     #10;
-    i_immediateValue = 16'hff;
+    i_immediateValue = 16'hf0ff;
     #10;
 end
 

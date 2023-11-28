@@ -25,7 +25,7 @@ module executionStage #(
     output wire o_zero
 );
     //Calculates branch program counter
-    assign o_branchPC = i_incrementedPC + (i_immediateExtendValue << 2);
+    assign o_branchPC = i_incrementedPC + ($signed(i_immediateExtendValue) <<< 2);
     
     wire [DATA_LEN-1:0] aluOperand1;
     wire [DATA_LEN-1:0] aluOperand2;
