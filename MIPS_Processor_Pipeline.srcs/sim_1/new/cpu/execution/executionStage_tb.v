@@ -69,7 +69,7 @@ module executionStage_tb;
         #10
         
         //Check branchPC
-        if(o_branchPC != (i_inmediatoEx << 2) + i_incrementedPC) begin
+        if(o_branchPC != ($signed(i_inmediatoEx) <<< 2) + i_incrementedPC) begin
             $display("Load instruction: Incorrect branchPC");
         end
         
@@ -106,7 +106,7 @@ module executionStage_tb;
         #10
         
         //Check branchPC
-        if(o_branchPC != (i_inmediatoEx << 2) + i_incrementedPC) begin
+        if(o_branchPC != ($signed(i_inmediatoEx) <<< 2) + i_incrementedPC) begin
             $display("Store instruction: Incorrect branchPC");
         end
         
@@ -140,7 +140,7 @@ module executionStage_tb;
         #10
         
         //Check branchPC
-        if(o_branchPC != (i_inmediatoEx << 2) + i_incrementedPC) begin
+        if(o_branchPC != ($signed(i_inmediatoEx) <<< 2) + i_incrementedPC) begin
             $display("R-type AND instruction: Incorrect branchPC");
         end
         
@@ -161,7 +161,7 @@ module executionStage_tb;
         
         #20
         
-        //R-type SRL instruction control signals
+        //R-type SLL instruction control signals
         i_regDst = 1'b1;
         i_aluOP = 2'b10;
         i_aluSrc = 2'b10;
@@ -179,12 +179,12 @@ module executionStage_tb;
         #10
         
         //Check branchPC
-        if(o_branchPC != (i_inmediatoEx << 2) + i_incrementedPC) begin
+        if(o_branchPC != ($signed(i_inmediatoEx) <<< 2) + i_incrementedPC) begin
             $display("R-type SLL instruction: Incorrect branchPC");
         end
         
-        //Check aluResult, should d1 << i_shamt 
-        if(o_aluResult != i_d1 << i_shamt) begin
+        //Check aluResult, should d2 << i_shamt 
+        if(o_aluResult != i_d2 << i_shamt) begin
             $display("R-type SLL instruction: Incorrect aluResult");
         end
         
@@ -215,7 +215,7 @@ module executionStage_tb;
         #10
         
         //Check branchPC
-        if(o_branchPC != (i_inmediatoEx << 2) + i_incrementedPC) begin
+        if(o_branchPC != ($signed(i_inmediatoEx) <<< 2) + i_incrementedPC) begin
             $display("Beq instruction: Incorrect branchPC");
         end
         
