@@ -94,6 +94,9 @@ initial begin
     //Load Byte: Guarda en el register[29] el contenido de la direcci�n apuntada por register[0]+inmediato
     i_instructionToWrite = {6'b100000, 5'b00000, 5'b11101, 16'b0000000000000001};
     #20
+    //Load Halfword: Guarda en el register[28] el contenido de la direcci�n apuntada por register[0]+inmediato
+    i_instructionToWrite = {6'b100001, 5'b00000, 5'b11100, 16'b0000000000000000};
+    #20
     //Halt
     i_instructionToWrite = {6'b111000, 5'b00000, 5'b01000, 5'b01000, 5'b00000, 6'b000100};
     #20;
