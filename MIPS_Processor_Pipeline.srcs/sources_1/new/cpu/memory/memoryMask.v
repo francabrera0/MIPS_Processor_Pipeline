@@ -20,8 +20,8 @@ localparam WORD = 2'b11;
 localparam BYTE_SIZE = 8;
 localparam HALFWORD_SIZE = DATA_LEN / 2;
 
-wire[DATA_LEN-1:0] byteShifted = (i_readData >> (i_address[1] * HALFWORD_SIZE));
-wire[DATA_LEN-1:0] halfWordShifted = (i_readData >> (i_address * BYTE_SIZE));
+wire[DATA_LEN-1:0] byteShifted = (i_readData >> (i_address * BYTE_SIZE));
+wire[DATA_LEN-1:0] halfWordShifted = (i_readData >> (i_address[1] * HALFWORD_SIZE));
 
 always @(*) begin
     case(i_loadStoreType)

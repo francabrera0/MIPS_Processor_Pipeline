@@ -91,6 +91,9 @@ initial begin
     //SLLV: Shift en 2 el contenido del register[8] y lo guarda en register[8]
     i_instructionToWrite = {6'b000000, 5'b00000, 5'b01000, 5'b01000, 5'b00000, 6'b000100};
     #20;
+    //Load Byte: Guarda en el register[29] el contenido de la direcci�n apuntada por register[0]+inmediato
+    i_instructionToWrite = {6'b100000, 5'b00000, 5'b11101, 16'b0000000000000001};
+    #20
     //Halt
     i_instructionToWrite = {6'b111000, 5'b00000, 5'b01000, 5'b01000, 5'b00000, 6'b000100};
     #20;
