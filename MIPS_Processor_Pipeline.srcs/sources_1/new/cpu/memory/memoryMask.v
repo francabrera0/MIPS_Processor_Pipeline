@@ -5,16 +5,16 @@ module memoryMask #(
 )(
     //Data inputs
     input wire [DATA_LEN-1:0] i_readData,
+    input wire[1:0] i_address,
     //Control inputs
     input wire i_unsigned,
-    input wire[1:0] i_address,
     input wire [1:0] i_loadStoreType,
     //Data outputs
     output reg [DATA_LEN-1:0] o_readData
 );
 
 localparam BYTE = 2'b00;
-localparam HALFWORD = 2'b10;
+localparam HALFWORD = 2'b01;
 localparam WORD = 2'b11;
 
 localparam BYTE_SIZE = 8;
@@ -27,14 +27,16 @@ always @(*) begin
     case(i_loadStoreType)
         BYTE: begin
             o_readData = {
-                i_unsigned & halfWordShifted[HALFWORD_SIZE-1],
-                {24'b0}, 
-                halfWordShifted[BYTE_SIZE-2:0]};
+                (!i_unsigned) & byteShifted[BYTE_SIZE-1],
+                {23'b0},
+                i_unsigned & byteShifted[BYTE_SIZE-1], 
+                byteShifted[BYTE_SIZE-2:0]};
         end
         HALFWORD: begin
             o_readData = {
-                i_unsigned & halfWordShifted[HALFWORD_SIZE-1],
-                {16'b0}, 
+                (!i_unsigned) & halfWordShifted[HALFWORD_SIZE-1],
+                {15'b0},
+                i_unsigned & halfWordShifted[HALFWORD_SIZE-1], 
                 halfWordShifted[HALFWORD_SIZE-2:0]};
         end
         WORD: begin
