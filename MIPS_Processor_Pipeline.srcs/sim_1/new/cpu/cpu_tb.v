@@ -17,9 +17,10 @@ module cpu_tb();
     reg i_writeInstruction;
     reg i_enable;
     reg [DATA_LEN-1:0] i_instructionToWrite;
-    reg [REGISTER_BITS-1:0] i_registerAddress;
+    reg [REGISTER_BITS-1:0] i_regMemAddress;
+    reg i_regMemCtrl;
     
-    wire [DATA_LEN-1:0] o_registerValue;
+    wire [DATA_LEN-1:0] o_regMemValue;
     wire o_halt;
 
 cpu#(
@@ -37,8 +38,9 @@ cpu#(
     .i_writeInstruction(i_writeInstruction),
     .i_enable(i_enable),
     .i_instructionToWrite(i_instructionToWrite),
-    .i_registerAddress(i_registerAddress),
-    .o_registerValue(o_registerValue),
+    .i_regMemAddress(i_regMemAddress),
+    .i_regMemCtrl(i_regMemCtrl),
+    .o_regMemValue(o_regMemValue),
     .o_halt(o_halt)
 );
 
@@ -54,7 +56,8 @@ initial begin
     i_writeInstruction = 1'b0;
     i_enable = 1'b0;
     i_reset = 1'b1;
-    i_registerAddress = 0;
+    i_regMemAddress = 0;
+    i_regMemCtrl = 0;
     #20;
     i_reset = 1'b0;
 
@@ -98,7 +101,7 @@ initial begin
     #500;
 
     for(i=0; i<32; i=i+1) begin
-        i_registerAddress = i;
+        i_regMemAddress = i;
         #10;
     end
 

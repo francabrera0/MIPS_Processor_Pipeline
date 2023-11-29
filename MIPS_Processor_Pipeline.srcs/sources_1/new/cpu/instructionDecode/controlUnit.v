@@ -50,7 +50,7 @@ reg r_memRead;
 reg r_memWrite;
 reg r_memToReg;
 reg r_halt;
-reg r_loadStoreType;
+reg [1:0] r_loadStoreType;
 reg r_unsigned;
 
 reg [OPCODE_LEN-1:0] r_opCode;
@@ -173,6 +173,7 @@ assign o_memRead = r_memRead;
 assign o_memWrite = r_memWrite;
 assign o_memToReg = r_memToReg;
 assign o_halt = r_halt;
+assign o_loadStoreType = r_loadStoreType;
 assign o_unsigned = r_unsigned;
 
 endmodule

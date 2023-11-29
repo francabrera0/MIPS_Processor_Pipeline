@@ -126,7 +126,7 @@ instructionDecodeStage#(
     .o_memToReg(w_memToRegID),
     .o_registerValue(w_registerValue),
     .o_halt(w_haltID),
-    .o_loadStoreType(w_loadStoretypeID),
+    .o_loadStoreType(w_loadStoreTypeID),
     .o_unsigned(w_unsignedID)
 );
 
@@ -176,7 +176,7 @@ decodeExecutionBuffer#(
     .i_memWrite(w_memWriteID),
     .i_memToReg(w_memToRegID),
     .i_halt(w_haltID),
-    .i_loadStoreType(w_loadStoretypeID),
+    .i_loadStoreType(w_loadStoreTypeID),
     .i_unsigned(w_unsignedID),
 
     //Outputs
@@ -196,7 +196,7 @@ decodeExecutionBuffer#(
     .o_memWrite(w_memWriteE),
     .o_memToReg(w_memToRegE),
     .o_halt(w_haltE),
-    .o_loadStoreType(w_loadStoretypeE),
+    .o_loadStoreType(w_loadStoreTypeE),
     .o_unsigned(w_unsignedE)
 );
 
@@ -268,7 +268,7 @@ executionMemoryBuffer#(
     .i_branch(w_branchE),
     .i_memToReg(w_memToRegE),
     .i_halt(w_haltE),
-    .i_loadStoreType(w_loadStoretypeE),
+    .i_loadStoreType(w_loadStoreTypeE),
     .i_unsigned(w_unsignedE),
     //Data outputs
     .o_pcBranch(w_pcBranchM),
@@ -283,7 +283,7 @@ executionMemoryBuffer#(
     .o_branch(w_branchM),
     .o_memToReg(w_memToRegM),
     .o_halt(w_haltM),
-    .o_loadStoreType(w_loadStoretypeM),
+    .o_loadStoreType(w_loadStoreTypeM),
     .o_unsigned(w_unsignedM)
 );
 
@@ -305,7 +305,7 @@ memoryStage#(
     .i_branch(w_branchM),
     .i_zero(w_zeroM),
     .i_memoryAddress(i_regMemAddress),
-    .i_loadStoreType(w_loadStoretypeM),
+    .i_loadStoreType(w_loadStoreTypeM),
     .i_unsigned(w_unsignedM),
     //Data outputs
     .o_readData(w_readDataM),
