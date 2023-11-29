@@ -17,17 +17,29 @@ module controlUnit
     output wire o_memWrite,
     output wire o_memToReg,
     output wire o_halt,
-    output wire [1:0] o_loadStoreType
+    output wire [1:0] o_loadStoreType,
+    output wire o_unsigned
 );
 
 localparam RTYPE = 6'b000000;
+
+localparam BEQ = 6'b000100;
+
 localparam LB = 6'b100000;
 localparam LH = 6'b100001;
 localparam LW = 6'b100011;
+
+localparam LHU = 6'b100101;
+localparam LBU = 6'b100100;
+localparam LWU = 6'b100111;
+
+localparam SB = 6'b101000;
+localparam SH = 6'b101001;
 localparam SW = 6'b101011;
-localparam BEQ = 6'b000100;
-localparam NOP = 6'b111111;
+
 localparam HALT = 6'b111000;
+
+localparam NOP = 6'b111111;
 
 reg r_regWrite;
 reg [1:0] r_aluSrc;
@@ -39,6 +51,7 @@ reg r_memWrite;
 reg r_memToReg;
 reg r_halt;
 reg r_loadStoreType;
+reg r_unsigned;
 
 reg [OPCODE_LEN-1:0] r_opCode;
 reg r_isShamt;
@@ -47,8 +60,8 @@ always @(*) begin
     r_opCode = i_instruction[DATA_LEN-1:DATA_LEN-OPCODE_LEN];
     r_isShamt = ~(i_instruction[2] || i_instruction[5]);       
 
-    case (r_opCode)
-        RTYPE: begin
+    case (r_opCode[OPCODE_LEN-1:2])
+        RTYPE[OPCODE_LEN-1:2]: begin
             r_regDest = 1'b1;
             r_aluOp = 2'b10;
             r_aluSrc = (r_isShamt) ? 2'b10 : 2'b00;
@@ -59,8 +72,9 @@ always @(*) begin
             r_memToReg = 1'b0;
             r_halt = 1'b0;
             r_loadStoreType = 2'b11;
+            r_unsigned = 0;
         end 
-        LW | LB | LH: begin
+        LW[OPCODE_LEN-1:2]: begin
             r_regDest = 1'b0;
             r_aluOp = 2'b00;
             r_aluSrc = 2'b01;
@@ -71,8 +85,22 @@ always @(*) begin
             r_memToReg = 1'b1;
             r_halt = 1'b0;
             r_loadStoreType = r_opCode[1:0];
+            r_unsigned = 1'b0;
         end
-        SW: begin
+        LWU[OPCODE_LEN-1:2]: begin
+            r_regDest = 1'b0;
+            r_aluOp = 2'b00;
+            r_aluSrc = 2'b01;
+            r_branch = 1'b0;
+            r_memRead = 1'b1;
+            r_memWrite = 1'b0;
+            r_regWrite = 1'b1;
+            r_memToReg = 1'b1;
+            r_halt = 1'b0;
+            r_loadStoreType = r_opCode[1:0];
+            r_unsigned = 1'b1;
+        end
+        SW[OPCODE_LEN-1:2]: begin
             r_aluOp = 2'b00;
             r_aluSrc = 2'b01;
             r_branch = 1'b0;
@@ -80,9 +108,10 @@ always @(*) begin
             r_memWrite = 1'b1;
             r_regWrite = 1'b0;
             r_halt = 1'b0;
-            r_loadStoreType = 2'b11;
+            r_loadStoreType = r_opCode[1:0];
+            r_unsigned = 0;
         end
-        BEQ: begin
+        BEQ[OPCODE_LEN-1:2]: begin
             r_aluOp = 2'b01;
             r_aluSrc = 2'b00;
             r_branch = 1'b1;
@@ -91,8 +120,9 @@ always @(*) begin
             r_regWrite = 1'b0;
             r_halt = 1'b0;
             r_loadStoreType = 2'b11;
+            r_unsigned = 0;
         end
-        NOP: begin
+        NOP[OPCODE_LEN-1:2]: begin
             r_regDest = 1'b0;
             r_aluOp = 2'b00;
             r_aluSrc = 2'b00;
@@ -103,8 +133,9 @@ always @(*) begin
             r_memToReg = 1'b0;
             r_halt = 1'b0;
             r_loadStoreType = 2'b11;
+            r_unsigned = 0;
         end 
-        HALT: begin
+        HALT[OPCODE_LEN-1:2]: begin
             r_regDest = 1'b0;
             r_aluOp = 2'b00;
             r_aluSrc = 2'b00;
@@ -115,6 +146,7 @@ always @(*) begin
             r_memToReg = 1'b0;
             r_halt = 1'b1;
             r_loadStoreType = 2'b11;
+            r_unsigned = 0;
         end
         default: begin
             r_regDest = 1'b0;
@@ -127,6 +159,7 @@ always @(*) begin
             r_memToReg = 1'b0;
             r_halt = 1'b0;
             r_loadStoreType = 2'b11;
+            r_unsigned = 0;
         end 
     endcase
 end
@@ -140,5 +173,6 @@ assign o_memRead = r_memRead;
 assign o_memWrite = r_memWrite;
 assign o_memToReg = r_memToReg;
 assign o_halt = r_halt;
+assign o_unsigned = r_unsigned;
 
 endmodule

@@ -27,6 +27,7 @@ module decodeExecutionBuffer
     input wire [DATA_LEN-1:0] i_shamt,
     input wire i_halt,
     input wire [1:0] i_loadStoreType,
+    input wire i_unsigned,
 
     //Outputs
     output wire [PC_LEN-1:0] o_incrementedPC,
@@ -45,8 +46,8 @@ module decodeExecutionBuffer
     output wire o_memToReg,
     output wire [DATA_LEN-1:0] o_shamt,
     output wire o_halt,
-    output wire [1:0] o_loadStoreType
-
+    output wire [1:0] o_loadStoreType,
+    output wire o_unsigned
 );
 
 reg [PC_LEN-1:0] r_incrementedPC;
@@ -66,6 +67,7 @@ reg r_memToReg;
 reg [DATA_LEN-1:0] r_shamt;
 reg r_halt;
 reg [1:0] r_loadStoreType;
+reg r_unsigned;
 
 always @(posedge i_clk) begin
     if(i_reset) begin
@@ -86,6 +88,7 @@ always @(posedge i_clk) begin
         r_shamt <= 0;
         r_halt <= 0;
         r_loadStoreType <= 2'b11;
+        r_unsigned <= 0;
     end
     else if (i_enable) begin
         r_incrementedPC <= i_incrementedPC;
@@ -105,6 +108,7 @@ always @(posedge i_clk) begin
         r_shamt <= i_shamt;
         r_halt <= i_halt;
         r_loadStoreType <= i_loadStoreType;
+        r_unsigned <= i_unsigned;
     end
 end
 
@@ -126,5 +130,6 @@ assign o_memToReg = r_memToReg;
 assign o_shamt = r_shamt;
 assign o_halt = r_halt;
 assign o_loadStoreType = r_loadStoreType;
+assign o_unsigned = r_unsigned;
 
 endmodule
