@@ -18,11 +18,21 @@ module dataMemory #(
     output reg [DATA_LEN-1:0] o_memoryValue
 );
 
+localparam BYTE = 2'b00;
+localparam HALFWORD = 2'b01;
+localparam WORD = 2'b11;
+
+localparam BYTE_SIZE = 8;
+localparam HALFWORD_SIZE = DATA_LEN / 2;
+
 reg [DATA_LEN-1:0] memoryBlock [(2**SIZE_BITS)-1: 0];
 
 wire [DATA_LEN-3:0] alingnedAddress = i_address[DATA_LEN-1:2];
 
 reg [DATA_LEN-1:0] r_readData;
+
+wire[DATA_LEN-1:0] byteSigned = {{24{1'b0}}, i_writeData[DATA_LEN-1], i_writeData[BYTE_SIZE-2:0]};
+wire[DATA_LEN-1:0] halfWordSigned = {{16{1'b0}}, i_writeData[DATA_LEN-1], i_writeData[HALFWORD_SIZE-2:0]};
 
 initial begin
     memoryBlock[0] = 32'hffaaffaa;
@@ -41,7 +51,34 @@ end
 
 always @(*) begin
     if(i_memWrite) begin
-        memoryBlock[alingnedAddress] = i_writeData;
+        case(i_loadStoreType)
+            BYTE: begin
+                case(i_address)
+                    2'b00: begin
+                        memoryBlock[alingnedAddress][BYTE_SIZE-1:0] = byteSigned[BYTE_SIZE-1:0];
+                    end
+                    2'b01: begin
+                        memoryBlock[alingnedAddress][BYTE_SIZE*2-1:BYTE_SIZE] = byteSigned[BYTE_SIZE-1:0];
+                    end
+                    2'b10: begin
+                        memoryBlock[alingnedAddress][BYTE_SIZE*3-1:BYTE_SIZE*2] = byteSigned[BYTE_SIZE-1:0];
+                    end
+                    2'b11: begin
+                        memoryBlock[alingnedAddress][DATA_LEN-1:BYTE_SIZE*3] = byteSigned[BYTE_SIZE-1:0];
+                    end
+                endcase
+            end
+            HALFWORD: begin
+                if(i_address[1]) begin
+                    memoryBlock[alingnedAddress][DATA_LEN-1:HALFWORD_SIZE] = halfWordSigned[HALFWORD_SIZE-1:0];
+                end else begin
+                    memoryBlock[alingnedAddress][HALFWORD_SIZE-1:0] = halfWordSigned[HALFWORD_SIZE-1:0];
+                end
+            end
+            WORD: begin
+                memoryBlock[alingnedAddress] = i_writeData;
+            end
+        endcase
     end
     
     if(i_memRead) begin
