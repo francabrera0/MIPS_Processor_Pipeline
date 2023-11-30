@@ -103,6 +103,12 @@ initial begin
     //Load Halfword Unsigned: Guarda en el register[26] el contenido de la direcci�n apuntada por register[0]+inmediato
     i_instructionToWrite = {6'b100101, 5'b00000, 5'b11010, 16'b0000000000000000};
     #20
+    //Store Byte: Guarda el contenido de register[29] en la direcci�n apuntada por register[0]+inmediato
+    i_instructionToWrite = {6'b101000, 5'b00000, 5'b11101, 16'b0000000000001100};
+    #20
+    //Store Halfword: Guarda el contenido de register[28] en la direcci�n apuntada por register[0]+inmediato
+    i_instructionToWrite = {6'b101001, 5'b00000, 5'b11100, 16'b0000000000010000};
+    #20
     //Halt
     i_instructionToWrite = {6'b111000, 5'b00000, 5'b01000, 5'b01000, 5'b00000, 6'b000100};
     #20;

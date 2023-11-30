@@ -31,8 +31,8 @@ wire [DATA_LEN-3:0] alingnedAddress = i_address[DATA_LEN-1:2];
 
 reg [DATA_LEN-1:0] r_readData;
 
-wire[DATA_LEN-1:0] byteSigned = {{24{1'b0}}, i_writeData[DATA_LEN-1], i_writeData[BYTE_SIZE-2:0]};
-wire[DATA_LEN-1:0] halfWordSigned = {{16{1'b0}}, i_writeData[DATA_LEN-1], i_writeData[HALFWORD_SIZE-2:0]};
+wire[BYTE_SIZE-1:0] byteSigned = {i_writeData[DATA_LEN-1], i_writeData[BYTE_SIZE-2:0]};
+wire[HALFWORD_SIZE-1:0] halfWordSigned = {i_writeData[DATA_LEN-1], i_writeData[HALFWORD_SIZE-2:0]};
 
 initial begin
     memoryBlock[0] = 32'hffaaffaa;
@@ -55,24 +55,24 @@ always @(*) begin
             BYTE: begin
                 case(i_address[1:0])
                     2'b00: begin
-                        memoryBlock[alingnedAddress][BYTE_SIZE-1:0] = byteSigned[BYTE_SIZE-1:0];
+                        memoryBlock[alingnedAddress][BYTE_SIZE-1:0] = byteSigned;
                     end
                     2'b01: begin
-                        memoryBlock[alingnedAddress][BYTE_SIZE*2-1:BYTE_SIZE] = byteSigned[BYTE_SIZE-1:0];
+                        memoryBlock[alingnedAddress][BYTE_SIZE*2-1:BYTE_SIZE] = byteSigned;
                     end
                     2'b10: begin
-                        memoryBlock[alingnedAddress][BYTE_SIZE*3-1:BYTE_SIZE*2] = byteSigned[BYTE_SIZE-1:0];
+                        memoryBlock[alingnedAddress][BYTE_SIZE*3-1:BYTE_SIZE*2] = byteSigned;
                     end
                     2'b11: begin
-                        memoryBlock[alingnedAddress][DATA_LEN-1:BYTE_SIZE*3] = byteSigned[BYTE_SIZE-1:0];
+                        memoryBlock[alingnedAddress][DATA_LEN-1:BYTE_SIZE*3] = byteSigned;
                     end
                 endcase
             end
             HALFWORD: begin
                 if(i_address[1]) begin
-                    memoryBlock[alingnedAddress][DATA_LEN-1:HALFWORD_SIZE] = halfWordSigned[HALFWORD_SIZE-1:0];
+                    memoryBlock[alingnedAddress][DATA_LEN-1:HALFWORD_SIZE] = halfWordSigned;
                 end else begin
-                    memoryBlock[alingnedAddress][HALFWORD_SIZE-1:0] = halfWordSigned[HALFWORD_SIZE-1:0];
+                    memoryBlock[alingnedAddress][HALFWORD_SIZE-1:0] = halfWordSigned;
                 end
             end
             WORD: begin
