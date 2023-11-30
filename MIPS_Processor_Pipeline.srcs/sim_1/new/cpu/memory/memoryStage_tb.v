@@ -11,6 +11,7 @@ module memoryStage_tb;
     reg i_memWrite;
     reg i_branch = 0;
     reg i_zero;
+    reg [1:0] i_loadStoreType = 2'b11;
     //Data outputs
     wire [DATA_LEN-1:0] o_readData;
     //Control outputs
@@ -27,6 +28,7 @@ module memoryStage_tb;
         .i_memWrite(i_memWrite),
         .i_branch(i_branch),
         .i_zero(i_zero),
+        .i_loadStoreType(i_loadStoreType),
         //Data outputs
         .o_readData(o_readData),
         //Control outputs
