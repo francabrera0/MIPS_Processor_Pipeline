@@ -53,7 +53,7 @@ always @(*) begin
     if(i_memWrite) begin
         case(i_loadStoreType)
             BYTE: begin
-                case(i_address)
+                case(i_address[1:0])
                     2'b00: begin
                         memoryBlock[alingnedAddress][BYTE_SIZE-1:0] = byteSigned[BYTE_SIZE-1:0];
                     end
