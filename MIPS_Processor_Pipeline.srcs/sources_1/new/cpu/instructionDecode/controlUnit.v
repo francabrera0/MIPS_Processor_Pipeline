@@ -11,7 +11,7 @@ module controlUnit
     output wire o_regWrite,
     output wire [1:0] o_aluSrc,
     output wire [1:0] o_aluOp,
-    output wire [3:0] o_immediateFunct,
+    output wire [2:0] o_immediateFunct,
     output wire o_branch,
     output wire o_regDest,
     output wire o_memRead,
@@ -53,7 +53,7 @@ localparam NOP = 6'b111111;
 reg r_regWrite;
 reg [1:0] r_aluSrc;
 reg [1:0] r_aluOp;
-reg [3:0] r_immediateFunct;
+reg [2:0] r_immediateFunct;
 reg r_branch;
 reg r_regDest;
 reg r_memRead;
@@ -68,13 +68,13 @@ reg r_isShamt;
 
 always @(*) begin
     r_opCode = i_instruction[DATA_LEN-1:DATA_LEN-OPCODE_LEN];
-    r_isShamt = ~(i_instruction[2] || i_instruction[5]);       
+    r_isShamt = ~(i_instruction[2] || i_instruction[5]);
 
     case (r_opCode[OPCODE_LEN-1:2])
         RTYPE[OPCODE_LEN-1:2]: begin
             r_regDest = 1'b1;
             r_aluOp = 2'b10;
-            r_immediateFunct = 4'b0000;
+            r_immediateFunct = 3'b000;
             r_aluSrc = (r_isShamt) ? 2'b10 : 2'b00;
             r_branch = 1'b0;
             r_memRead = 1'b0;
@@ -84,11 +84,39 @@ always @(*) begin
             r_halt = 1'b0;
             r_loadStoreType = 2'b11;
             r_unsigned = 0;
-        end 
+        end
+        ADDI[OPCODE_LEN-1:2]: begin
+            r_regDest = 1'b0;
+            r_aluOp = 2'b11;
+            r_immediateFunct = r_opCode[2:0];
+            r_aluSrc = 2'b01;
+            r_branch = 1'b0;
+            r_memRead = 1'b0;
+            r_memWrite = 1'b0;
+            r_regWrite = 1'b1;
+            r_memToReg = 1'b1;
+            r_halt = 1'b0;
+            r_loadStoreType = 2'b11;
+            r_unsigned = 1'b0;
+        end
+        ANDI[OPCODE_LEN-1:2]: begin
+            r_regDest = 1'b0;
+            r_aluOp = 2'b11;
+            r_immediateFunct = r_opCode[2:0];
+            r_aluSrc = 2'b01;
+            r_branch = 1'b0;
+            r_memRead = 1'b0;
+            r_memWrite = 1'b0;
+            r_regWrite = 1'b1;
+            r_memToReg = 1'b1;
+            r_halt = 1'b0;
+            r_loadStoreType = 2'b11;
+            r_unsigned = 1'b0;
+        end
         LW[OPCODE_LEN-1:2]: begin
             r_regDest = 1'b0;
             r_aluOp = 2'b00;
-            r_immediateFunct = 4'b0000;
+            r_immediateFunct = 3'b000;
             r_aluSrc = 2'b01;
             r_branch = 1'b0;
             r_memRead = 1'b1;
@@ -101,7 +129,7 @@ always @(*) begin
         end
         LWU[OPCODE_LEN-1:2]: begin
             r_regDest = 1'b0;
-            r_immediateFunct = 4'b0000;
+            r_immediateFunct = 3'b000;
             r_aluOp = 2'b00;
             r_aluSrc = 2'b01;
             r_branch = 1'b0;
@@ -115,7 +143,7 @@ always @(*) begin
         end
         SW[OPCODE_LEN-1:2]: begin
             r_aluOp = 2'b00;
-            r_immediateFunct = 4'b0000;
+            r_immediateFunct = 3'b000;
             r_aluSrc = 2'b01;
             r_branch = 1'b0;
             r_memRead = 1'b0;
@@ -127,7 +155,7 @@ always @(*) begin
         end
         BEQ[OPCODE_LEN-1:2]: begin
             r_aluOp = 2'b01;
-            r_immediateFunct = 4'b0000;
+            r_immediateFunct = 3'b000;
             r_aluSrc = 2'b00;
             r_branch = 1'b1;
             r_memRead = 1'b0;
@@ -140,7 +168,7 @@ always @(*) begin
         NOP[OPCODE_LEN-1:2]: begin
             r_regDest = 1'b0;
             r_aluOp = 2'b00;
-            r_immediateFunct = 4'b0000;
+            r_immediateFunct = 3'b000;
             r_aluSrc = 2'b00;
             r_branch = 1'b0;
             r_memRead = 1'b0;
@@ -154,7 +182,7 @@ always @(*) begin
         HALT[OPCODE_LEN-1:2]: begin
             r_regDest = 1'b0;
             r_aluOp = 2'b00;
-            r_immediateFunct = 4'b0000;
+            r_immediateFunct = 3'b000;
             r_aluSrc = 2'b00;
             r_branch = 1'b0;
             r_memRead = 1'b0;
@@ -168,7 +196,7 @@ always @(*) begin
         default: begin
             r_regDest = 1'b0;
             r_aluOp = 2'b00;
-            r_immediateFunct = 4'b0000;
+            r_immediateFunct = 3'b000;
             r_aluSrc = 2'b00;
             r_branch = 1'b0;
             r_memRead = 1'b0;
