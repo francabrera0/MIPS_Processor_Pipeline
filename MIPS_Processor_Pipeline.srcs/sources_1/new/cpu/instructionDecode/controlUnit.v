@@ -11,6 +11,7 @@ module controlUnit
     output wire o_regWrite,
     output wire [1:0] o_aluSrc,
     output wire [1:0] o_aluOp,
+    output wire [3:0] o_immediateFunct,
     output wire o_branch,
     output wire o_regDest,
     output wire o_memRead,
@@ -52,6 +53,7 @@ localparam NOP = 6'b111111;
 reg r_regWrite;
 reg [1:0] r_aluSrc;
 reg [1:0] r_aluOp;
+reg [3:0] r_immediateFunct;
 reg r_branch;
 reg r_regDest;
 reg r_memRead;
@@ -72,6 +74,7 @@ always @(*) begin
         RTYPE[OPCODE_LEN-1:2]: begin
             r_regDest = 1'b1;
             r_aluOp = 2'b10;
+            r_immediateFunct = 4'b0000;
             r_aluSrc = (r_isShamt) ? 2'b10 : 2'b00;
             r_branch = 1'b0;
             r_memRead = 1'b0;
@@ -85,6 +88,7 @@ always @(*) begin
         LW[OPCODE_LEN-1:2]: begin
             r_regDest = 1'b0;
             r_aluOp = 2'b00;
+            r_immediateFunct = 4'b0000;
             r_aluSrc = 2'b01;
             r_branch = 1'b0;
             r_memRead = 1'b1;
@@ -97,6 +101,7 @@ always @(*) begin
         end
         LWU[OPCODE_LEN-1:2]: begin
             r_regDest = 1'b0;
+            r_immediateFunct = 4'b0000;
             r_aluOp = 2'b00;
             r_aluSrc = 2'b01;
             r_branch = 1'b0;
@@ -110,6 +115,7 @@ always @(*) begin
         end
         SW[OPCODE_LEN-1:2]: begin
             r_aluOp = 2'b00;
+            r_immediateFunct = 4'b0000;
             r_aluSrc = 2'b01;
             r_branch = 1'b0;
             r_memRead = 1'b0;
@@ -121,6 +127,7 @@ always @(*) begin
         end
         BEQ[OPCODE_LEN-1:2]: begin
             r_aluOp = 2'b01;
+            r_immediateFunct = 4'b0000;
             r_aluSrc = 2'b00;
             r_branch = 1'b1;
             r_memRead = 1'b0;
@@ -133,6 +140,7 @@ always @(*) begin
         NOP[OPCODE_LEN-1:2]: begin
             r_regDest = 1'b0;
             r_aluOp = 2'b00;
+            r_immediateFunct = 4'b0000;
             r_aluSrc = 2'b00;
             r_branch = 1'b0;
             r_memRead = 1'b0;
@@ -146,6 +154,7 @@ always @(*) begin
         HALT[OPCODE_LEN-1:2]: begin
             r_regDest = 1'b0;
             r_aluOp = 2'b00;
+            r_immediateFunct = 4'b0000;
             r_aluSrc = 2'b00;
             r_branch = 1'b0;
             r_memRead = 1'b0;
@@ -159,6 +168,7 @@ always @(*) begin
         default: begin
             r_regDest = 1'b0;
             r_aluOp = 2'b00;
+            r_immediateFunct = 4'b0000;
             r_aluSrc = 2'b00;
             r_branch = 1'b0;
             r_memRead = 1'b0;
@@ -175,6 +185,7 @@ end
 assign o_regWrite = r_regWrite;
 assign o_aluSrc = r_aluSrc;
 assign o_aluOp = r_aluOp;
+assign o_immediateFunct = r_immediateFunct;
 assign o_branch = r_branch;
 assign o_regDest = r_regDest;
 assign o_memRead = r_memRead;
