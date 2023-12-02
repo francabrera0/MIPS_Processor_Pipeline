@@ -25,6 +25,14 @@ localparam RTYPE = 6'b000000;
 
 localparam BEQ = 6'b000100;
 
+localparam ADDI = 6'b001000;
+localparam STLI = 6'b001010;
+
+localparam ANDI = 6'b001100;
+localparam ORI = 6'b001101;
+localparam XORI = 6'b001110;
+localparam LUI = 6'b001111;
+
 localparam LB = 6'b100000;
 localparam LH = 6'b100001;
 localparam LW = 6'b100011;
