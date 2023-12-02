@@ -59,7 +59,7 @@ module ALU #(
                 SLL: tempResult = i_operandA << i_operandB;
                 SLLV: tempResult = i_operandB << i_operandA;
                 
-                SLT: tempResult = i_operandA < i_operandB;
+                SLT: tempResult = $signed(i_operandA) < $signed(i_operandB);
                 
                 default : tempResult = {DATA_LEN {1'b1}};
             endcase
