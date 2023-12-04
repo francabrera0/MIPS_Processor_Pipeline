@@ -16,6 +16,7 @@ module executionStage #(
     //Control inputs
     input wire [1:0] i_aluSrc,
     input wire [1:0] i_aluOP,
+    input wire [2:0] i_immediateFunct,
     input wire i_regDst,
     //Data outputs
     output wire [DATA_LEN-1:0] o_branchPC,
@@ -63,6 +64,7 @@ module executionStage #(
     (
         .i_funct(i_immediateExtendValue[FUNCTION_LEN-1:0]),
         .i_aluOP(i_aluOP),
+        .i_immediateFunct(i_immediateFunct),
         .o_opSelector(aluCtlTOALU)
     );
     

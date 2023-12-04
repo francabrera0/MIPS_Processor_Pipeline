@@ -14,6 +14,7 @@ module decodeExecutionBuffer
     input wire i_regWrite,
     input wire [1:0] i_aluSrc,
     input wire [1:0] i_aluOp,
+    input wire [2:0] i_immediateFunct,
     input wire i_branch,
     input wire i_regDest,
     input wire [DATA_LEN-1:0] i_readData1,
@@ -34,6 +35,7 @@ module decodeExecutionBuffer
     output wire o_regWrite,
     output wire [1:0] o_aluSrc,
     output wire [1:0] o_aluOp,
+    output wire [2:0] o_immediateFunct,
     output wire o_branch,
     output wire o_regDest,
     output wire [DATA_LEN-1:0] o_readData1,
@@ -54,6 +56,7 @@ reg [PC_LEN-1:0] r_incrementedPC;
 reg r_regWrite;
 reg [1:0] r_aluSrc;
 reg [1:0] r_aluOp;
+reg [2:0] r_immediateFunct;
 reg r_branch;
 reg r_regDest;
 reg [DATA_LEN-1:0] r_readData1;
@@ -75,6 +78,7 @@ always @(posedge i_clk) begin
         r_regWrite <= 0;
         r_aluSrc <= 0;
         r_aluOp <= 0;
+        r_immediateFunct <= 0;
         r_branch <= 0;
         r_regDest <= 0;
         r_readData1 <= 0;
@@ -95,6 +99,7 @@ always @(posedge i_clk) begin
         r_regWrite <= i_regWrite;
         r_aluSrc <= i_aluSrc;
         r_aluOp <= i_aluOp;
+        r_immediateFunct <= i_immediateFunct;
         r_branch <= i_branch;
         r_regDest <= i_regDest;
         r_readData1 <= i_readData1;
@@ -117,6 +122,7 @@ assign o_incrementedPC = r_incrementedPC;
 assign o_regWrite = r_regWrite;
 assign o_aluSrc = r_aluSrc;
 assign o_aluOp = r_aluOp;
+assign o_immediateFunct = r_immediateFunct;
 assign o_branch = r_branch;
 assign o_regDest = r_regDest;
 assign o_readData1 = r_readData1;

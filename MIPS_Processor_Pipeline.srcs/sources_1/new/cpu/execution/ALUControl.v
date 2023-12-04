@@ -5,6 +5,7 @@ module ALUControl(
     input wire [5:0] i_funct,
     //Control inputs
     input wire [1:0] i_aluOP,
+    input wire [2:0] i_immediateFunct,
     //Control outputs
     output reg [5:0] o_opSelector
 );
