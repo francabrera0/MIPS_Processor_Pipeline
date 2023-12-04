@@ -16,6 +16,7 @@ module executionStage #(
     //Control inputs
     input wire [1:0] i_aluSrc,
     input wire [1:0] i_aluOP,
+    input wire [2:0] i_immediateFunct,
     input wire i_regDst,
     //Data outputs
     output wire [DATA_LEN-1:0] o_branchPC,
@@ -24,8 +25,11 @@ module executionStage #(
     //Control outputs
     output wire o_zero
 );
+
+    wire[DATA_LEN-1:0] shiftedImmediate = {1'b0, i_immediateExtendValue[DATA_LEN-2:0] << 2};
+
     //Calculates branch program counter
-    assign o_branchPC = i_incrementedPC + (i_immediateExtendValue << 2);
+    assign o_branchPC = i_immediateExtendValue[DATA_LEN-1]? i_incrementedPC - shiftedImmediate: i_incrementedPC + shiftedImmediate;
     
     wire [DATA_LEN-1:0] aluOperand1;
     wire [DATA_LEN-1:0] aluOperand2;
@@ -60,6 +64,7 @@ module executionStage #(
     (
         .i_funct(i_immediateExtendValue[FUNCTION_LEN-1:0]),
         .i_aluOP(i_aluOP),
+        .i_immediateFunct(i_immediateFunct),
         .o_opSelector(aluCtlTOALU)
     );
     

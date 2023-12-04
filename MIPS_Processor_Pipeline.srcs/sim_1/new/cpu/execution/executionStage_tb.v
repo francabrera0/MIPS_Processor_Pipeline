@@ -48,6 +48,8 @@ module executionStage_tb;
     );
     
     reg [31:0] seed;
+    wire [DATA_LEN-1:0] shiftedImmediate = {1'b0, i_inmediatoEx[DATA_LEN-2:0] << 2};
+    wire [DATA_LEN-1:0] pcBranchResult = i_inmediatoEx[DATA_LEN-1]? i_incrementedPC - shiftedImmediate: i_incrementedPC + shiftedImmediate;
     
     initial begin
         seed = 100;
@@ -69,7 +71,7 @@ module executionStage_tb;
         #10
         
         //Check branchPC
-        if(o_branchPC != (i_inmediatoEx << 2) + i_incrementedPC) begin
+        if(o_branchPC != pcBranchResult) begin
             $display("Load instruction: Incorrect branchPC");
         end
         
@@ -106,7 +108,7 @@ module executionStage_tb;
         #10
         
         //Check branchPC
-        if(o_branchPC != (i_inmediatoEx << 2) + i_incrementedPC) begin
+        if(o_branchPC != pcBranchResult) begin
             $display("Store instruction: Incorrect branchPC");
         end
         
@@ -140,7 +142,7 @@ module executionStage_tb;
         #10
         
         //Check branchPC
-        if(o_branchPC != (i_inmediatoEx << 2) + i_incrementedPC) begin
+        if(o_branchPC != pcBranchResult) begin
             $display("R-type AND instruction: Incorrect branchPC");
         end
         
@@ -161,7 +163,7 @@ module executionStage_tb;
         
         #20
         
-        //R-type SRL instruction control signals
+        //R-type SLL instruction control signals
         i_regDst = 1'b1;
         i_aluOP = 2'b10;
         i_aluSrc = 2'b10;
@@ -179,12 +181,12 @@ module executionStage_tb;
         #10
         
         //Check branchPC
-        if(o_branchPC != (i_inmediatoEx << 2) + i_incrementedPC) begin
+        if(o_branchPC != pcBranchResult) begin
             $display("R-type SLL instruction: Incorrect branchPC");
         end
         
-        //Check aluResult, should d1 << i_shamt 
-        if(o_aluResult != i_d1 << i_shamt) begin
+        //Check aluResult, should d2 << i_shamt 
+        if(o_aluResult != i_d2 << i_shamt) begin
             $display("R-type SLL instruction: Incorrect aluResult");
         end
         
@@ -208,14 +210,12 @@ module executionStage_tb;
         i_d1 = $random(seed);
         i_d2 = i_d1;
         i_rt = $random(seed);
-        i_rd =$random(seed);
-        i_inmediatoEx[16:11] = i_rd;
-        i_inmediatoEx[10:0] = $random(seed);
+        i_inmediatoEx = 32'h800000ff;
         
         #10
         
         //Check branchPC
-        if(o_branchPC != (i_inmediatoEx << 2) + i_incrementedPC) begin
+        if(o_branchPC != pcBranchResult) begin
             $display("Beq instruction: Incorrect branchPC");
         end
         

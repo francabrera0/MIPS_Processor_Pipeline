@@ -74,7 +74,8 @@ fetchDecodeBuffer#(
 wire w_regWriteID;
 wire [1:0] w_aluSrcID;
 wire [1:0] w_aluOpID;
-wire w_branchID;
+wire [2:0] w_immediateFunctID;
+wire [1:0] w_branchID;
 wire w_regDestID;
 wire [DATA_LEN-1:0] w_readData1ID;
 wire [DATA_LEN-1:0] w_readData2ID;
@@ -86,6 +87,8 @@ wire w_memReadID;
 wire w_memWriteID;
 wire w_memToRegID;
 wire w_haltID;
+wire [1:0] w_loadStoreTypeID;
+wire w_unsignedID;
 wire [DATA_LEN-1:0] w_writeRegisterWB;
 wire w_regWriteWB;
 wire [DATA_LEN-1:0] w_writeDataWB;
@@ -111,6 +114,7 @@ instructionDecodeStage#(
     .o_regWrite(w_regWriteID),
     .o_aluSrc(w_aluSrcID),
     .o_aluOp(w_aluOpID),
+    .o_immediateFunct(w_immediateFunctID),
     .o_branch(w_branchID),
     .o_regDest(w_regDestID),
     .o_readData1(w_readData1ID),
@@ -123,7 +127,9 @@ instructionDecodeStage#(
     .o_memWrite(w_memWriteID),
     .o_memToReg(w_memToRegID),
     .o_registerValue(w_registerValue),
-    .o_halt(w_haltID)
+    .o_halt(w_haltID),
+    .o_loadStoreType(w_loadStoreTypeID),
+    .o_unsigned(w_unsignedID)
 );
 
 ////////////////////ID-Ex Buffer////////////////////////////////////////
@@ -137,12 +143,15 @@ wire [REGISTER_BITS-1:0] w_rdE;
 wire w_regWriteE;
 wire [1:0] w_aluSrcE;
 wire [1:0] w_aluOpE;
-wire w_branchE;
+wire [2:0] w_immediateFunctE;
+wire [1:0] w_branchE;
 wire w_regDestE;
 wire w_memReadE;
 wire w_memWriteE;
 wire w_memToRegE;
 wire w_haltE;
+wire [1:0] w_loadStoreTypeE;
+wire w_unsignedE;
 
 decodeExecutionBuffer#(
     .DATA_LEN(DATA_LEN),
@@ -158,6 +167,7 @@ decodeExecutionBuffer#(
     .i_regWrite(w_regWriteID),
     .i_aluSrc(w_aluSrcID),
     .i_aluOp(w_aluOpID),
+    .i_immediateFunct(w_immediateFunctID),
     .i_branch(w_branchID),
     .i_regDest(w_regDestID),
     .i_readData1(w_readData1ID),
@@ -170,12 +180,15 @@ decodeExecutionBuffer#(
     .i_memWrite(w_memWriteID),
     .i_memToReg(w_memToRegID),
     .i_halt(w_haltID),
+    .i_loadStoreType(w_loadStoreTypeID),
+    .i_unsigned(w_unsignedID),
 
     //Outputs
     .o_incrementedPC(w_incrementedPCE),
     .o_regWrite(w_regWriteE),
     .o_aluSrc(w_aluSrcE),
     .o_aluOp(w_aluOpE),
+    .o_immediateFunct(w_immediateFunctE),
     .o_branch(w_branchE),
     .o_regDest(w_regDestE),
     .o_readData1(w_readData1E),
@@ -187,7 +200,9 @@ decodeExecutionBuffer#(
     .o_memRead(w_memReadE),
     .o_memWrite(w_memWriteE),
     .o_memToReg(w_memToRegE),
-    .o_halt(w_haltE)
+    .o_halt(w_haltE),
+    .o_loadStoreType(w_loadStoreTypeE),
+    .o_unsigned(w_unsignedE)
 );
 
 ///////////////////Execution stage////////////////////////////////
@@ -214,6 +229,7 @@ executionStage#(
     //Control inputs
     .i_aluSrc(w_aluSrcE),
     .i_aluOP(w_aluOpE),
+    .i_immediateFunct(w_immediateFunctE),
     .i_regDst(w_regDestE),
     //Data outputs
     .o_branchPC(w_branchPCE),
@@ -231,10 +247,11 @@ wire w_zeroM;
 wire w_regWriteM;
 wire w_memReadM;
 wire w_memWriteM;
-wire w_branchM;
+wire [1:0] w_branchM;
 wire w_memToRegM;
 wire w_haltM;
-
+wire [1:0] w_loadStoreTypeM;
+wire w_unsignedM;
 
 executionMemoryBuffer#(
     .DATA_LEN(DATA_LEN)
@@ -257,6 +274,8 @@ executionMemoryBuffer#(
     .i_branch(w_branchE),
     .i_memToReg(w_memToRegE),
     .i_halt(w_haltE),
+    .i_loadStoreType(w_loadStoreTypeE),
+    .i_unsigned(w_unsignedE),
     //Data outputs
     .o_pcBranch(w_pcBranchM),
     .o_readData2(w_readData2M),
@@ -269,7 +288,9 @@ executionMemoryBuffer#(
     .o_memWrite(w_memWriteM),
     .o_branch(w_branchM),
     .o_memToReg(w_memToRegM),
-    .o_halt(w_haltM)
+    .o_halt(w_haltM),
+    .o_loadStoreType(w_loadStoreTypeM),
+    .o_unsigned(w_unsignedM)
 );
 
 ///////////////////Memory stage////////////////////////////////
@@ -290,6 +311,8 @@ memoryStage#(
     .i_branch(w_branchM),
     .i_zero(w_zeroM),
     .i_memoryAddress(i_regMemAddress),
+    .i_loadStoreType(w_loadStoreTypeM),
+    .i_unsigned(w_unsignedM),
     //Data outputs
     .o_readData(w_readDataM),
     .o_memoryValue(w_memoryValue),

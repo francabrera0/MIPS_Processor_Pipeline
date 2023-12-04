@@ -19,7 +19,8 @@ module instructionDecodeStage
     output wire o_regWrite,
     output wire [1:0] o_aluSrc,
     output wire [1:0] o_aluOp,
-    output wire o_branch,
+    output wire [2:0] o_immediateFunct,
+    output wire [1:0] o_branch,
     output wire o_regDest,
     output wire [DATA_LEN-1:0] o_readData1,
     output wire [DATA_LEN-1:0] o_readData2,
@@ -31,6 +32,8 @@ module instructionDecodeStage
     output wire o_memWrite,
     output wire o_memToReg,
     output wire o_halt,
+    output wire [1:0] o_loadStoreType,
+    output wire o_unsigned,
     output wire [DATA_LEN-1:0] o_registerValue
 );
 
@@ -44,12 +47,15 @@ controlUnit#(
     .o_regWrite(o_regWrite),
     .o_aluSrc(o_aluSrc),
     .o_aluOp(o_aluOp),
+    .o_immediateFunct(o_immediateFunct),
     .o_branch(o_branch),
     .o_regDest(o_regDest),
     .o_memRead(o_memRead),
     .o_memWrite(o_memWrite),
     .o_memToReg(o_memToReg),
-    .o_halt(o_halt)
+    .o_halt(o_halt),
+    .o_loadStoreType(o_loadStoreType),
+    .o_unsigned(o_unsigned)
 );
 
 registers#(

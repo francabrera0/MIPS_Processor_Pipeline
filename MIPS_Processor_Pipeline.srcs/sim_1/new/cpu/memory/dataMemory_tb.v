@@ -10,6 +10,7 @@ module dataMemory_tb;
     //Control inputs
     reg i_memRead = 0;
     reg i_memWrite = 0;
+    reg [1:0] i_loadStoreType = 2'b11;
     //Data outputs
     wire [DATA_LEN-1:0] o_readData;
 
@@ -22,6 +23,7 @@ module dataMemory_tb;
         //Control inputs
         .i_memRead(i_memRead),
         .i_memWrite(i_memWrite),
+        .i_loadStoreType(i_loadStoreType),
         //Data outputs
         .o_readData(o_readData)
     );
