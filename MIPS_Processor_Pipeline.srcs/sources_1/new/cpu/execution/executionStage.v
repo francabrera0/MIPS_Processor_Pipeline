@@ -13,6 +13,7 @@ module executionStage #(
     input wire [DATA_LEN-1:0] i_shamt,
     input wire [REGISTER_BITS-1:0] i_rt,
     input wire [REGISTER_BITS-1:0] i_rd,
+    input wire [25:0] i_instrIndex,
     //Control inputs
     input wire [1:0] i_aluSrc,
     input wire [1:0] i_aluOP,
@@ -20,6 +21,7 @@ module executionStage #(
     input wire i_regDst,
     //Data outputs
     output wire [DATA_LEN-1:0] o_branchPC,
+    output wire [DATA_LEN-1:0] o_jumpPC,
     output wire [DATA_LEN-1:0] o_aluResult,
     output wire [REGISTER_BITS-1:0] o_writeRegister,
     //Control outputs
@@ -30,6 +32,8 @@ module executionStage #(
 
     //Calculates branch program counter
     assign o_branchPC = i_immediateExtendValue[DATA_LEN-1]? i_incrementedPC - shiftedImmediate: i_incrementedPC + shiftedImmediate;
+    
+    assign o_jumpPC = {i_incrementedPC[DATA_LEN-1:DATA_LEN-4], i_instrIndex, 2'b00};
     
     wire [DATA_LEN-1:0] aluOperand1;
     wire [DATA_LEN-1:0] aluOperand2;

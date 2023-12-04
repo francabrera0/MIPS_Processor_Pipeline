@@ -26,7 +26,7 @@ module cpu
 wire [PC_LEN-1:0] w_incrementedPCIF;
 wire [DATA_LEN-1:0] w_instructionIF;
 wire w_programCounterSrcM;
-wire [PC_LEN-1:0] w_pcBranchM;
+wire [DATA_LEN-1:0] w_pcBranch;
 
 instructionFetchStage#(
     .DATA_LEN(DATA_LEN),
@@ -37,7 +37,7 @@ instructionFetchStage#(
     //Inputs
     .i_clk(i_clk),
     .i_reset(i_reset),
-    .i_programCounterBranch(w_pcBranchM),
+    .i_programCounterBranch(w_pcBranch),
     .i_enable(i_enable),
     .i_programCounterSrc(w_programCounterSrcM),
     .i_instructionToWrite(i_instructionToWrite),
@@ -83,6 +83,7 @@ wire [DATA_LEN-1:0] w_immediateExtendValueID;
 wire [DATA_LEN-1:0] w_shamtID;
 wire [REGISTER_BITS-1:0] w_rtID;
 wire [REGISTER_BITS-1:0] w_rdID;
+wire [25:0] w_instrIndexID;
 wire w_memReadID;
 wire w_memWriteID;
 wire w_memToRegID;
@@ -123,6 +124,7 @@ instructionDecodeStage#(
     .o_shamt(w_shamtID),
     .o_rt(w_rtID),
     .o_rd(w_rdID),
+    .o_instrIndex(w_instrIndexID),
     .o_memRead(w_memReadID),
     .o_memWrite(w_memWriteID),
     .o_memToReg(w_memToRegID),
@@ -140,6 +142,7 @@ wire [DATA_LEN-1:0] w_immediateExtendValueE;
 wire [DATA_LEN-1:0] w_shamtE;
 wire [REGISTER_BITS-1:0] w_rtE;
 wire [REGISTER_BITS-1:0] w_rdE;
+wire [25:0] w_instrIndexE;
 wire w_regWriteE;
 wire [1:0] w_aluSrcE;
 wire [1:0] w_aluOpE;
@@ -176,6 +179,7 @@ decodeExecutionBuffer#(
     .i_shamt(w_shamtID),
     .i_rt(w_rtID),
     .i_rd(w_rdID),
+    .i_instrIndex(w_instrIndexID),
     .i_memRead(w_memReadID),
     .i_memWrite(w_memWriteID),
     .i_memToReg(w_memToRegID),
@@ -197,6 +201,7 @@ decodeExecutionBuffer#(
     .o_shamt(w_shamtE),
     .o_rt(w_rtE),
     .o_rd(w_rdE),
+    .o_instrIndex(w_instrIndexE),
     .o_memRead(w_memReadE),
     .o_memWrite(w_memWriteE),
     .o_memToReg(w_memToRegE),
@@ -209,6 +214,7 @@ decodeExecutionBuffer#(
 
 wire w_zeroE;
 wire [DATA_LEN-1:0] w_branchPCE;
+wire [DATA_LEN-1:0] w_jumpPCE;
 wire [DATA_LEN-1:0] w_aluResultE;
 wire [REGISTER_BITS-1:0] w_writeRegisterE;
 
@@ -226,6 +232,7 @@ executionStage#(
     .i_shamt(w_shamtE),
     .i_rt(w_rtE),
     .i_rd(w_rdE),
+    .i_instrIndex(w_instrIndexE),
     //Control inputs
     .i_aluSrc(w_aluSrcE),
     .i_aluOP(w_aluOpE),
@@ -233,6 +240,7 @@ executionStage#(
     .i_regDst(w_regDestE),
     //Data outputs
     .o_branchPC(w_branchPCE),
+    .o_jumpPC(w_jumpPCE),
     .o_aluResult(w_aluResultE),
     .o_writeRegister(w_writeRegisterE),
     //Control outputs
@@ -243,6 +251,8 @@ executionStage#(
 wire [DATA_LEN-1:0] w_readData2M;
 wire [DATA_LEN-1:0] w_aluResultM;
 wire [DATA_LEN-1:0] w_writeRegisterM;
+wire [DATA_LEN-1:0] w_pcBranchM;
+wire [DATA_LEN-1:0] w_pcJumpM;
 wire w_zeroM;
 wire w_regWriteM;
 wire w_memReadM;
@@ -263,6 +273,7 @@ executionMemoryBuffer#(
     .i_enable(i_enable),
     //Data inputs
     .i_pcBranch(w_branchPCE),
+    .i_pcJump(w_jumpPCE),
     .i_readData2(w_readData2E),
     .i_aluResult(w_aluResultE),
     .i_writeRegister(w_writeRegisterE),
@@ -278,6 +289,7 @@ executionMemoryBuffer#(
     .i_unsigned(w_unsignedE),
     //Data outputs
     .o_pcBranch(w_pcBranchM),
+    .o_pcJump(w_pcJumpM),
     .o_readData2(w_readData2M),
     .o_aluResult(w_aluResultM),
     .o_writeRegister(w_writeRegisterM),
@@ -305,6 +317,8 @@ memoryStage#(
     //Data inputs
     .i_address(w_aluResultM),
     .i_writeData(w_readData2M),
+    .i_pcBranch(w_pcBranchM),
+    .i_pcJump(w_pcJumpM),
     //Control inputs
     .i_memRead(w_memReadM),
     .i_memWrite(w_memWriteM),
@@ -316,6 +330,7 @@ memoryStage#(
     //Data outputs
     .o_readData(w_readDataM),
     .o_memoryValue(w_memoryValue),
+    .o_pcBranch(w_pcBranch),
     //Control outputs
     .o_PCSrc(w_programCounterSrcM)
 );

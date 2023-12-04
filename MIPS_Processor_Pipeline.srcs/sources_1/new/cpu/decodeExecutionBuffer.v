@@ -22,6 +22,7 @@ module decodeExecutionBuffer
     input wire [DATA_LEN-1:0] i_immediateExtendValue,
     input wire [REGISTER_BITS-1:0] i_rt,
     input wire [REGISTER_BITS-1:0] i_rd,
+    input wire [25:0] i_instrIndex,
     input wire i_memRead,
     input wire i_memWrite,
     input wire i_memToReg,
@@ -43,6 +44,7 @@ module decodeExecutionBuffer
     output wire [DATA_LEN-1:0] o_immediateExtendValue,
     output wire [REGISTER_BITS-1:0] o_rt,
     output wire [REGISTER_BITS-1:0] o_rd,
+    output wire [25:0] o_instrIndex,
     output wire o_memRead,
     output wire o_memWrite,
     output wire o_memToReg,
@@ -64,6 +66,7 @@ reg [DATA_LEN-1:0] r_readData2;
 reg [DATA_LEN-1:0] r_immediateExtendValue;
 reg [REGISTER_BITS-1:0] r_rt;
 reg [REGISTER_BITS-1:0] r_rd;
+reg [25:0] r_instrIndex;
 reg r_memRead;
 reg r_memWrite;
 reg r_memToReg;
@@ -86,6 +89,7 @@ always @(posedge i_clk) begin
         r_immediateExtendValue <= 0;
         r_rt <= 0;
         r_rd <= 0;
+        r_instrIndex <= 0;
         r_memRead <= 0;
         r_memWrite <= 0;
         r_memToReg <= 0;
@@ -107,6 +111,7 @@ always @(posedge i_clk) begin
         r_immediateExtendValue <= i_immediateExtendValue;
         r_rt <= i_rt;
         r_rd <= i_rd;
+        r_instrIndex <= i_instrIndex;
         r_memRead <= i_memRead;
         r_memWrite <= i_memWrite;
         r_memToReg <= i_memToReg;
@@ -130,6 +135,7 @@ assign o_readData2 = r_readData2;
 assign o_immediateExtendValue = r_immediateExtendValue;
 assign o_rt = r_rt;
 assign o_rd = r_rd;
+assign o_instrIndex = r_instrIndex;
 assign o_memRead = r_memRead;
 assign o_memWrite = r_memWrite;
 assign o_memToReg = r_memToReg;

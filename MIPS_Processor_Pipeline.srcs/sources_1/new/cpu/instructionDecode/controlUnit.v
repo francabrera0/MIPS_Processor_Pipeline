@@ -24,6 +24,9 @@ module controlUnit
 
 localparam RTYPE = 6'b000000;
 
+localparam J = 6'b000010;
+localparam JAL = 6'b000011;
+
 localparam BEQ = 6'b000100;
 localparam BNE = 6'b000101;
 
@@ -82,6 +85,18 @@ always @(*) begin
             r_memWrite = 1'b0;
             r_regWrite = 1'b1;
             r_memToReg = 1'b0;
+            r_halt = 1'b0;
+            r_loadStoreType = 2'b11;
+            r_unsigned = 0;
+        end
+        J[OPCODE_LEN-1:2]: begin
+            r_aluOp = 2'b00;
+            r_immediateFunct = 3'b000;
+            r_aluSrc = 2'b00;
+            r_branch = 2'b10;
+            r_memRead = 1'b0;
+            r_memWrite = 1'b0;
+            r_regWrite = r_opCode[0];
             r_halt = 1'b0;
             r_loadStoreType = 2'b11;
             r_unsigned = 0;
