@@ -15,7 +15,7 @@ module decodeExecutionBuffer
     input wire [1:0] i_aluSrc,
     input wire [1:0] i_aluOp,
     input wire [2:0] i_immediateFunct,
-    input wire i_branch,
+    input wire [1:0] i_branch,
     input wire i_regDest,
     input wire [DATA_LEN-1:0] i_readData1,
     input wire [DATA_LEN-1:0] i_readData2,
@@ -36,7 +36,7 @@ module decodeExecutionBuffer
     output wire [1:0] o_aluSrc,
     output wire [1:0] o_aluOp,
     output wire [2:0] o_immediateFunct,
-    output wire o_branch,
+    output wire [1:0] o_branch,
     output wire o_regDest,
     output wire [DATA_LEN-1:0] o_readData1,
     output wire [DATA_LEN-1:0] o_readData2,
@@ -57,7 +57,7 @@ reg r_regWrite;
 reg [1:0] r_aluSrc;
 reg [1:0] r_aluOp;
 reg [2:0] r_immediateFunct;
-reg r_branch;
+reg [1:0] r_branch;
 reg r_regDest;
 reg [DATA_LEN-1:0] r_readData1;
 reg [DATA_LEN-1:0] r_readData2;

@@ -21,7 +21,7 @@ module executionMemoryBuffer
     input wire i_regWrite,
     input wire i_memRead,
     input wire i_memWrite,
-    input wire i_branch,
+    input wire [1:0] i_branch,
     input wire i_memToReg,
     input wire i_halt,
     input wire [1:0] i_loadStoreType,
@@ -36,7 +36,7 @@ module executionMemoryBuffer
     output wire o_regWrite,
     output wire o_memRead,
     output wire o_memWrite,
-    output wire o_branch,
+    output wire [1:0] o_branch,
     output wire o_memToReg,
     output wire o_halt,
     output wire [1:0] o_loadStoreType,
@@ -53,7 +53,7 @@ reg zero;
 reg regWrite;
 reg memRead;
 reg memWrite;
-reg branch;
+reg [1:0] branch;
 reg memToReg;
 reg halt;
 reg [1:0] r_loadStoreType;

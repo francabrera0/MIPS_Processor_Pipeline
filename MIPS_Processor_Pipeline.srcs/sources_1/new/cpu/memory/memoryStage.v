@@ -9,7 +9,7 @@ module memoryStage#(
     //Control inputs
     input wire i_memRead,
     input wire i_memWrite,
-    input wire i_branch,
+    input wire [1:0] i_branch,
     input wire i_zero,
     input wire [4:0] i_memoryAddress,
     input wire [1:0] i_loadStoreType,

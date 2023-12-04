@@ -71,7 +71,7 @@ initial begin
     //Load: Guarda en el register[31] el contenido de la direcci�n apuntada por register[0]+inmediato
     i_instructionToWrite = {6'b100011, 5'b00000, 5'b11111, 16'b0000000000000110};
     #20;
-    //Beq: Si el contenido del register[10] es igual a register[8] salta a la instrucci�n nextPC + 7 
+    //Beq: Si el contenido del register[10] es igual a register[8] salta a la instrucci�n nextPC + 16
     i_instructionToWrite = {6'b000100, 5'b01010, 5'b01000, 16'b0000000000000100};
     #20;
     //Nop: tres nop para permitir el c�lculo de direcci�n y verificaci�n de la condici�n del branch
@@ -126,6 +126,20 @@ initial begin
     #20
     //SLTI r7 <- r0 < 50
     i_instructionToWrite = 32'h28070032;
+    #20
+    //BNE: Si el contenido del register[5] es distinto al register[10] salta a la instrucci�n nextPC + 16
+    i_instructionToWrite = {6'b000101, 5'b01010, 5'b01000, 16'b0000000000000100};
+    #20;
+    //Nop: tres nop para permitir el c�lculo de direcci�n y verificaci�n de la condici�n del branch
+    i_instructionToWrite = NOP;
+    #60;
+    //OR: Esta instrucci�n se ejecuta si la condici�n del beq es falsa
+    //Guarda en register[12] = register[0] | register[5]
+    i_instructionToWrite = {6'b000000, 5'b00000, 5'b00101, 5'b01100, 5'b00000, 6'b100110};
+    #20;
+    //AND: A esta instrucci�n salta el branch si la condici�n fue verdadera 
+    //Guarda en register[12] = register[0] & register[5]
+    i_instructionToWrite = {6'b000000, 5'b00000, 5'b00101, 5'b01100, 5'b00000, 6'b100100};
     #20
     //Halt
     i_instructionToWrite = {6'b111000, 5'b00000, 5'b01000, 5'b01000, 5'b00000, 6'b000100};

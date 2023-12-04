@@ -20,7 +20,7 @@ module instructionDecodeStage
     output wire [1:0] o_aluSrc,
     output wire [1:0] o_aluOp,
     output wire [2:0] o_immediateFunct,
-    output wire o_branch,
+    output wire [1:0] o_branch,
     output wire o_regDest,
     output wire [DATA_LEN-1:0] o_readData1,
     output wire [DATA_LEN-1:0] o_readData2,
