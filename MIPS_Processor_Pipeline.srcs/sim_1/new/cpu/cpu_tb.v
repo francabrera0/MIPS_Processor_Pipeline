@@ -109,20 +109,30 @@ initial begin
     //Store Halfword: Guarda el contenido de register[28] en la direcci�n apuntada por register[0]+inmediato
     i_instructionToWrite = {6'b101001, 5'b00000, 5'b11100, 16'b0000000000010000};
     #20
+    //ADDI r1 <- [r0] + 10
+    i_instructionToWrite = 32'h2001000a;
+    #20
+    //ORI r2 <- [r0] | 5
+    i_instructionToWrite = 32'h34020005;
+    #20
+    //XORI r3 <- [r0] ^ 5
+    i_instructionToWrite = 32'h38030005;
+    #20
+    //ANDI r4 <- [r0] & 4
+    i_instructionToWrite = 32'h30040004;
+    #20
+    //LUI r6 <- 23 || 0^16
+    i_instructionToWrite = 32'h3c060017;
+    #20
+    //SLTI r7 <- r0 < 50
+    i_instructionToWrite = 32'h28070032;
+    #20
     //Halt
     i_instructionToWrite = {6'b111000, 5'b00000, 5'b01000, 5'b01000, 5'b00000, 6'b000100};
     #20;
     i_writeInstruction = 1'b0;
     #60;
     i_enable = 1'b1;
-
-    #500;
-
-    for(i=0; i<32; i=i+1) begin
-        i_regMemAddress = i;
-        #10;
-    end
-
 end
 
 endmodule

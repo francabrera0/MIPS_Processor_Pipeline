@@ -94,7 +94,7 @@ always @(*) begin
             r_memRead = 1'b0;
             r_memWrite = 1'b0;
             r_regWrite = 1'b1;
-            r_memToReg = 1'b1;
+            r_memToReg = 1'b0;
             r_halt = 1'b0;
             r_loadStoreType = 2'b11;
             r_unsigned = 1'b0;
@@ -108,7 +108,7 @@ always @(*) begin
             r_memRead = 1'b0;
             r_memWrite = 1'b0;
             r_regWrite = 1'b1;
-            r_memToReg = 1'b1;
+            r_memToReg = 1'b0;
             r_halt = 1'b0;
             r_loadStoreType = 2'b11;
             r_unsigned = 1'b0;
