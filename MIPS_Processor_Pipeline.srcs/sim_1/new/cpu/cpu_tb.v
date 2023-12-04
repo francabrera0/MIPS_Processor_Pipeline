@@ -141,6 +141,12 @@ initial begin
     //Guarda en register[12] = register[0] & register[5]
     i_instructionToWrite = {6'b000000, 5'b00000, 5'b00101, 5'b01100, 5'b00000, 6'b100100};
     #20
+    //Jump to PC=0x0
+    i_instructionToWrite = 32'h08000000;
+    #20
+    //Nop: tres nop para permitir el jump
+    i_instructionToWrite = NOP;
+    #60;
     //Halt
     i_instructionToWrite = {6'b111000, 5'b00000, 5'b01000, 5'b01000, 5'b00000, 6'b000100};
     #20;
