@@ -31,6 +31,8 @@ module ALU #(
     
     localparam SLT = 6'b101010;
     
+    localparam SET_UPPER = 6'b001111;
+    
     reg [DATA_LEN-1 : 0] tempResult;
     
     //Alu out
@@ -60,6 +62,8 @@ module ALU #(
                 SLLV: tempResult = i_operandB << i_operandA;
                 
                 SLT: tempResult = $signed(i_operandA) < $signed(i_operandB);
+                
+                SET_UPPER: tempResult = {i_operandB[DATA_LEN-1],i_operandB[14:0],{16{1'b0}}};
                 
                 default : tempResult = {DATA_LEN {1'b1}};
             endcase
