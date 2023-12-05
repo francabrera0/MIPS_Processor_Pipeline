@@ -28,6 +28,8 @@ wire [DATA_LEN-1:0] w_instructionIF;
 wire w_programCounterSrcM;
 wire [DATA_LEN-1:0] w_pcBranch;
 
+wire w_stall;
+
 instructionFetchStage#(
     .DATA_LEN(DATA_LEN),
     .PC_LEN(PC_LEN),
@@ -38,7 +40,7 @@ instructionFetchStage#(
     .i_clk(i_clk),
     .i_reset(i_reset),
     .i_programCounterBranch(w_pcBranch),
-    .i_enable(i_enable),
+    .i_enable(i_enable & !w_stall),
     .i_programCounterSrc(w_programCounterSrcM),
     .i_instructionToWrite(i_instructionToWrite),
     .i_writeInstruction(i_writeInstruction),
@@ -63,7 +65,7 @@ fetchDecodeBuffer#(
     .i_reset(i_reset),
     .i_instruction(w_instructionIF),
     .i_incrementedPC(w_incrementedPCIF),
-    .i_enable(i_enable),
+    .i_enable(i_enable & !w_stall),
 
     //Outputs
     .o_incrementedPC(w_incrementedPCID),
@@ -107,6 +109,7 @@ instructionDecodeStage#(
     //Inputs
     .i_clk(i_clk),
     .i_reset(i_reset),
+    .i_stall(w_stall),
     .i_instruction(w_instructionID),
     .i_regWrite(w_regWriteWB),
     .i_writeRegister(w_writeRegisterWB),
@@ -424,6 +427,21 @@ fowardingUnit #(
     //Control outputs
     .o_operandACtl(w_operandACtl),
     .o_operandBCtl(w_operandBCtl)
+);
+
+////////////////////Hazard Detector////////////////////////////////////////
+hazardDetector #(
+    .DATA_LEN(DATA_LEN),
+    .REGISTER_BITS(REGISTER_BITS)
+)hazardDetector(
+    //Data inputs
+    .i_rsID(w_rsID),
+    .i_rtID(w_rtID),
+    .i_rtE(w_rtE),
+    //Control inputs
+    .i_memRead(w_memReadE),
+    //Control outputs
+    .o_stall(w_stall)
 );
 
 assign o_regMemValue = i_regMemCtrl ?  w_memoryValue : w_registerValue ;

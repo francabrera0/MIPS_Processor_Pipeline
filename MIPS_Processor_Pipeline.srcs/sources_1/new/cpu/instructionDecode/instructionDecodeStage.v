@@ -9,6 +9,7 @@ module instructionDecodeStage
     //Inputs
     input wire i_clk,
     input wire i_reset,
+    input wire i_stall,
     input wire [DATA_LEN-1:0] i_instruction,
     input wire i_regWrite,
     input wire [REGISTER_BITS-1:0] i_writeRegister,
@@ -40,13 +41,24 @@ module instructionDecodeStage
     output wire [DATA_LEN-1:0] o_registerValue
 );
 
+wire [DATA_LEN-1:0] w_instruction;
+
+//Mux to select ALU first operand
+mux2to1 #(
+    .DATA_LEN(DATA_LEN)
+) MUXD1(
+    .i_muxInputA(i_instruction),
+    .i_muxInputB(32'hffffffff),
+    .i_muxSelector(i_stall),
+    .o_muxOutput(w_instruction)
+);
 
 controlUnit#(
     .DATA_LEN(DATA_LEN),
     .OPCODE_LEN(OPCODE_LEN)
 ) controlUnit 
 (
-    .i_instruction(i_instruction),
+    .i_instruction(w_instruction),
     .o_regWrite(o_regWrite),
     .o_aluSrc(o_aluSrc),
     .o_aluOp(o_aluOp),
