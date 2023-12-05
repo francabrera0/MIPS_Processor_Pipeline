@@ -16,7 +16,7 @@ module decodeExecutionBuffer
     input wire [1:0] i_aluOp,
     input wire [2:0] i_immediateFunct,
     input wire [1:0] i_branch,
-    input wire i_regDest,
+    input wire [1:0] i_regDest,
     input wire [DATA_LEN-1:0] i_readData1,
     input wire [DATA_LEN-1:0] i_readData2,
     input wire [DATA_LEN-1:0] i_immediateExtendValue,
@@ -25,7 +25,7 @@ module decodeExecutionBuffer
     input wire [25:0] i_instrIndex,
     input wire i_memRead,
     input wire i_memWrite,
-    input wire i_memToReg,
+    input wire [1:0] i_memToReg,
     input wire [DATA_LEN-1:0] i_shamt,
     input wire i_halt,
     input wire [1:0] i_loadStoreType,
@@ -38,7 +38,7 @@ module decodeExecutionBuffer
     output wire [1:0] o_aluOp,
     output wire [2:0] o_immediateFunct,
     output wire [1:0] o_branch,
-    output wire o_regDest,
+    output wire [1:0] o_regDest,
     output wire [DATA_LEN-1:0] o_readData1,
     output wire [DATA_LEN-1:0] o_readData2,
     output wire [DATA_LEN-1:0] o_immediateExtendValue,
@@ -47,7 +47,7 @@ module decodeExecutionBuffer
     output wire [25:0] o_instrIndex,
     output wire o_memRead,
     output wire o_memWrite,
-    output wire o_memToReg,
+    output wire [1:0] o_memToReg,
     output wire [DATA_LEN-1:0] o_shamt,
     output wire o_halt,
     output wire [1:0] o_loadStoreType,
@@ -60,7 +60,7 @@ reg [1:0] r_aluSrc;
 reg [1:0] r_aluOp;
 reg [2:0] r_immediateFunct;
 reg [1:0] r_branch;
-reg r_regDest;
+reg [1:0] r_regDest;
 reg [DATA_LEN-1:0] r_readData1;
 reg [DATA_LEN-1:0] r_readData2;
 reg [DATA_LEN-1:0] r_immediateExtendValue;
@@ -69,7 +69,7 @@ reg [REGISTER_BITS-1:0] r_rd;
 reg [25:0] r_instrIndex;
 reg r_memRead;
 reg r_memWrite;
-reg r_memToReg;
+reg [1:0] r_memToReg;
 reg [DATA_LEN-1:0] r_shamt;
 reg r_halt;
 reg [1:0] r_loadStoreType;
