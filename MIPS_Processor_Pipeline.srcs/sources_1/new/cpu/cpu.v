@@ -229,6 +229,7 @@ wire [DATA_LEN-1:0] w_returnPCE;
 wire [DATA_LEN-1:0] w_aluResultE;
 wire [REGISTER_BITS-1:0] w_writeRegisterE;
 
+wire [DATA_LEN-1:0] w_aluResultM;
 wire [1:0] w_operandACtl;
 wire [1:0] w_operandBCtl;
 
@@ -247,6 +248,8 @@ executionStage#(
     .i_rt(w_rtE),
     .i_rd(w_rdE),
     .i_instrIndex(w_instrIndexE),
+    .i_aluResultM(w_aluResultM),
+    .i_aluResultWB(w_writeDataWB),
     //Control inputs
     .i_aluSrc(w_aluSrcE),
     .i_aluOP(w_aluOpE),
@@ -267,7 +270,6 @@ executionStage#(
 
 ////////////////////Ex-Mem Buffer////////////////////////////////////////
 wire [DATA_LEN-1:0] w_readData2M;
-wire [DATA_LEN-1:0] w_aluResultM;
 wire [REGISTER_BITS-1:0] w_writeRegisterM;
 wire [DATA_LEN-1:0] w_pcBranchM;
 wire [DATA_LEN-1:0] w_pcJumpM;
