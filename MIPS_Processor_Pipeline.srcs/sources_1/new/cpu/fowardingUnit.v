@@ -5,10 +5,10 @@ module fowardingUnit #(
     parameter REGISTER_BITS = 5
 )(
     //Data inputs
-    input wire [DATA_LEN-1:0] i_rs,
-    input wire [DATA_LEN-1:0] i_rt,
-    input wire [DATA_LEN-1:0] i_rdM,
-    input wire [DATA_LEN-1:0] i_rdWB,
+    input wire [REGISTER_BITS-1:0] i_rs,
+    input wire [REGISTER_BITS-1:0] i_rt,
+    input wire [REGISTER_BITS-1:0] i_rdM,
+    input wire [REGISTER_BITS-1:0] i_rdWB,
     //Control inputs
     input wire i_regWriteM,
     input wire i_regWriteWB,

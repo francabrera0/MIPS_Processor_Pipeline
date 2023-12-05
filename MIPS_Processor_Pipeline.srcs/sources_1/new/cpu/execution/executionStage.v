@@ -20,6 +20,8 @@ module executionStage #(
     input wire [2:0] i_immediateFunct,
     input wire [1:0] i_regDst,
     input wire i_jumpType,
+    input wire [1:0] i_operandACtl,
+    input wire [1:0] i_operandBCtl,
     //Data outputs
     output wire [DATA_LEN-1:0] o_branchPC,
     output wire [DATA_LEN-1:0] o_jumpPC,
