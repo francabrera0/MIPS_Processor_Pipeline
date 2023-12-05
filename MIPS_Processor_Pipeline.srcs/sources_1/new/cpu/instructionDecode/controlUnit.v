@@ -13,6 +13,7 @@ module controlUnit
     output wire [1:0] o_aluOp,
     output wire [2:0] o_immediateFunct,
     output wire [1:0] o_branch,
+    output wire o_jumpType,
     output wire [1:0] o_regDest,
     output wire o_memRead,
     output wire o_memWrite,
@@ -58,6 +59,7 @@ reg [1:0] r_aluSrc;
 reg [1:0] r_aluOp;
 reg [2:0] r_immediateFunct;
 reg [1:0] r_branch;
+reg r_jumpType;
 reg [1:0] r_regDest;
 reg r_memRead;
 reg r_memWrite;
@@ -79,7 +81,8 @@ always @(*) begin
             r_aluOp = 2'b10;
             r_immediateFunct = 3'b000;
             r_aluSrc = (r_isShamt) ? 2'b10 : 2'b00;
-            r_branch = r_opCode[1]? 2'b10: 2'b00;
+            r_branch = r_opCode[1] | (!r_opCode[1] & i_instruction[3])? 2'b10 : 2'b00;
+            r_jumpType = !r_opCode[1];
             r_memRead = 1'b0;
             r_memWrite = 1'b0;
             r_regWrite = !(r_opCode[1] ^ r_opCode[0]);
@@ -188,6 +191,7 @@ always @(*) begin
             r_immediateFunct = 3'b000;
             r_aluSrc = 2'b00;
             r_branch =  2'b00;
+            r_jumpType = 1'b0;
             r_memRead = 1'b0;
             r_memWrite = 1'b0;
             r_regWrite = 1'b0;
@@ -202,6 +206,7 @@ always @(*) begin
             r_immediateFunct = 3'b000;
             r_aluSrc = 2'b00;
             r_branch =  2'b00;
+            r_jumpType = 1'b0;
             r_memRead = 1'b0;
             r_memWrite = 1'b0;
             r_regWrite = 1'b0;
@@ -218,6 +223,7 @@ assign o_aluSrc = r_aluSrc;
 assign o_aluOp = r_aluOp;
 assign o_immediateFunct = r_immediateFunct;
 assign o_branch = r_branch;
+assign o_jumpType = r_jumpType;
 assign o_regDest = r_regDest;
 assign o_memRead = r_memRead;
 assign o_memWrite = r_memWrite;

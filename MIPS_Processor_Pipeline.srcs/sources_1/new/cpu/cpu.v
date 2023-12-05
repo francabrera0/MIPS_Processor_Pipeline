@@ -76,6 +76,7 @@ wire [1:0] w_aluSrcID;
 wire [1:0] w_aluOpID;
 wire [2:0] w_immediateFunctID;
 wire [1:0] w_branchID;
+wire w_jumpTypeID;
 wire [1:0] w_regDestID;
 wire [DATA_LEN-1:0] w_readData1ID;
 wire [DATA_LEN-1:0] w_readData2ID;
@@ -117,6 +118,7 @@ instructionDecodeStage#(
     .o_aluOp(w_aluOpID),
     .o_immediateFunct(w_immediateFunctID),
     .o_branch(w_branchID),
+    .o_jumpType(w_jumpTypeID),
     .o_regDest(w_regDestID),
     .o_readData1(w_readData1ID),
     .o_readData2(w_readData2ID),
@@ -148,6 +150,7 @@ wire [1:0] w_aluSrcE;
 wire [1:0] w_aluOpE;
 wire [2:0] w_immediateFunctE;
 wire [1:0] w_branchE;
+wire w_jumpTypeE;
 wire [1:0] w_regDestE;
 wire w_memReadE;
 wire w_memWriteE;
@@ -172,6 +175,7 @@ decodeExecutionBuffer#(
     .i_aluOp(w_aluOpID),
     .i_immediateFunct(w_immediateFunctID),
     .i_branch(w_branchID),
+    .i_jumpType(w_jumpTypeID),
     .i_regDest(w_regDestID),
     .i_readData1(w_readData1ID),
     .i_readData2(w_readData2ID),
@@ -194,6 +198,7 @@ decodeExecutionBuffer#(
     .o_aluOp(w_aluOpE),
     .o_immediateFunct(w_immediateFunctE),
     .o_branch(w_branchE),
+    .o_jumpType(w_jumpTypeE),
     .o_regDest(w_regDestE),
     .o_readData1(w_readData1E),
     .o_readData2(w_readData2E),
@@ -239,6 +244,7 @@ executionStage#(
     .i_aluOP(w_aluOpE),
     .i_immediateFunct(w_immediateFunctE),
     .i_regDst(w_regDestE),
+    .i_jumpType(w_jumpTypeE),
     //Data outputs
     .o_branchPC(w_branchPCE),
     .o_jumpPC(w_jumpPCE),

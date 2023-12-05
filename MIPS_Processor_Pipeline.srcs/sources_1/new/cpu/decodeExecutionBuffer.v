@@ -16,6 +16,7 @@ module decodeExecutionBuffer
     input wire [1:0] i_aluOp,
     input wire [2:0] i_immediateFunct,
     input wire [1:0] i_branch,
+    input wire i_jumpType,
     input wire [1:0] i_regDest,
     input wire [DATA_LEN-1:0] i_readData1,
     input wire [DATA_LEN-1:0] i_readData2,
@@ -38,6 +39,7 @@ module decodeExecutionBuffer
     output wire [1:0] o_aluOp,
     output wire [2:0] o_immediateFunct,
     output wire [1:0] o_branch,
+    output wire o_jumpType,
     output wire [1:0] o_regDest,
     output wire [DATA_LEN-1:0] o_readData1,
     output wire [DATA_LEN-1:0] o_readData2,
@@ -60,6 +62,7 @@ reg [1:0] r_aluSrc;
 reg [1:0] r_aluOp;
 reg [2:0] r_immediateFunct;
 reg [1:0] r_branch;
+reg r_jumpType;
 reg [1:0] r_regDest;
 reg [DATA_LEN-1:0] r_readData1;
 reg [DATA_LEN-1:0] r_readData2;
@@ -83,6 +86,7 @@ always @(posedge i_clk) begin
         r_aluOp <= 0;
         r_immediateFunct <= 0;
         r_branch <= 0;
+        r_jumpType <= 0;
         r_regDest <= 0;
         r_readData1 <= 0;
         r_readData2 <= 0;
@@ -105,6 +109,7 @@ always @(posedge i_clk) begin
         r_aluOp <= i_aluOp;
         r_immediateFunct <= i_immediateFunct;
         r_branch <= i_branch;
+        r_jumpType <= i_jumpType;
         r_regDest <= i_regDest;
         r_readData1 <= i_readData1;
         r_readData2 <= i_readData2;
@@ -129,6 +134,7 @@ assign o_aluSrc = r_aluSrc;
 assign o_aluOp = r_aluOp;
 assign o_immediateFunct = r_immediateFunct;
 assign o_branch = r_branch;
+assign o_jumpType = r_jumpType;
 assign o_regDest = r_regDest;
 assign o_readData1 = r_readData1;
 assign o_readData2 = r_readData2;

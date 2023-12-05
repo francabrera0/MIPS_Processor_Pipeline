@@ -13,8 +13,6 @@ module branchControl #(
     output reg [DATA_LEN-1:0] o_pcBranch
 );
 
-//Bit bajo de branch indica si es instruccion de branch
-//Bit alto indica si es equal o not equal
 always @(*) begin
     case(i_branch)
         2'b10: begin
@@ -22,6 +20,8 @@ always @(*) begin
             o_pcBranch = i_pcJump;
         end
         default: begin 
+            //Bit bajo de branch indica si es instruccion de branch
+            //Bit alto indica si es equal o not equal
             o_PCSrc = i_branch[0] & (i_branch[1] ^ i_zero);       
             o_pcBranch = i_pcBranch;
         end

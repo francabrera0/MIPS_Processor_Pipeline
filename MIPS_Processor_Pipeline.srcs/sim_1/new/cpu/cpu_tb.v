@@ -141,8 +141,8 @@ initial begin
     //Guarda en register[12] = register[0] & register[5]
     i_instructionToWrite = {6'b000000, 5'b00000, 5'b00101, 5'b01100, 5'b00000, 6'b100100};
     #20
-    //Jump And Link to PC=0x0
-    i_instructionToWrite = 32'h0c000000;
+    //Jump Register 8 to PC=0x28
+    i_instructionToWrite = 32'h01000008;
     #20
     //Nop: tres nop para permitir el jump
     i_instructionToWrite = NOP;

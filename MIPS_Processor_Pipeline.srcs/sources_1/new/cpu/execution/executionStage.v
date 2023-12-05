@@ -19,6 +19,7 @@ module executionStage #(
     input wire [1:0] i_aluOP,
     input wire [2:0] i_immediateFunct,
     input wire [1:0] i_regDst,
+    input wire i_jumpType,
     //Data outputs
     output wire [DATA_LEN-1:0] o_branchPC,
     output wire [DATA_LEN-1:0] o_jumpPC,
@@ -34,7 +35,10 @@ module executionStage #(
     //Calculates branch program counter
     assign o_branchPC = i_immediateExtendValue[DATA_LEN-1]? i_incrementedPC - shiftedImmediate: i_incrementedPC + shiftedImmediate;
     
-    assign o_jumpPC = {i_incrementedPC[DATA_LEN-1:DATA_LEN-4], i_instrIndex, 2'b00};
+    wire [DATA_LEN-1:0]  literalJump = {i_incrementedPC[DATA_LEN-1:DATA_LEN-4], i_instrIndex, 2'b00};
+    
+    //Select jump source (rs register or literal)
+    assign o_jumpPC = i_jumpType? i_readData1 : literalJump;
     
     assign o_returnPC = i_incrementedPC + 4;
     
