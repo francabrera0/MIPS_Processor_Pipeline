@@ -57,15 +57,13 @@ module executionStage #(
     );
     
     //Mux to select ALU second operand
-    mux4to1 #(
+    mux2to1 #(
         .DATA_LEN(DATA_LEN)
     )MUXD2
     (
         .i_muxInputA(i_readData2),
         .i_muxInputB(i_immediateExtendValue),
-        .i_muxInputC(0),
-        .i_muxInputD(0),
-        .i_muxSelector({1'b0,i_aluSrc[0]}),
+        .i_muxSelector(i_aluSrc[0]),
         .o_muxOutput(aluOperand2)
     );
     
