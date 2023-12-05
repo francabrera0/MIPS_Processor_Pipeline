@@ -225,16 +225,16 @@ decodeExecutionBuffer#(
 
 ///////////////////Execution stage////////////////////////////////
 
-wire w_zeroE;
 wire [DATA_LEN-1:0] w_branchPCE;
-wire [DATA_LEN-1:0] w_jumpPCE;
 wire [DATA_LEN-1:0] w_returnPCE;
 wire [DATA_LEN-1:0] w_aluResultE;
 wire [REGISTER_BITS-1:0] w_writeRegisterE;
+wire w_pcSrcE;
 
 wire [DATA_LEN-1:0] w_aluResultM;
 wire [1:0] w_operandACtl;
 wire [1:0] w_operandBCtl;
+
 
 executionStage#(
     .DATA_LEN(DATA_LEN),
@@ -261,21 +261,19 @@ executionStage#(
     .i_jumpType(w_jumpTypeE),
     .i_operandACtl(w_operandACtl),
     .i_operandBCtl(w_operandBCtl),
+    .i_branch(w_branchE),
     //Data outputs
-    .o_branchPC(w_branchPCE),
-    .o_jumpPC(w_jumpPCE),
+    .o_pcBranch(w_branchPCE),
     .o_returnPC(w_returnPCE),
     .o_aluResult(w_aluResultE),
     .o_writeRegister(w_writeRegisterE),
     //Control outputs
-    .o_zero(w_zeroE)
+    .o_PCSrc(w_pcSrcE)
 );
 
 ////////////////////Ex-Mem Buffer////////////////////////////////////////
 wire [DATA_LEN-1:0] w_readData2M;
 wire [REGISTER_BITS-1:0] w_writeRegisterM;
-wire [DATA_LEN-1:0] w_pcBranchM;
-wire [DATA_LEN-1:0] w_pcJumpM;
 wire [DATA_LEN-1:0] w_returnPCM;
 wire w_zeroM;
 wire w_regWriteM;
@@ -297,38 +295,34 @@ executionMemoryBuffer#(
     .i_enable(i_enable),
     //Data inputs
     .i_pcBranch(w_branchPCE),
-    .i_pcJump(w_jumpPCE),
     .i_returnPC(w_returnPCE),
     .i_readData2(w_readData2E),
     .i_aluResult(w_aluResultE),
     .i_writeRegister(w_writeRegisterE),
     //Control inputs
-    .i_zero(w_zeroE),
     .i_regWrite(w_regWriteE),
     .i_memRead(w_memReadE),
     .i_memWrite(w_memWriteE),
-    .i_branch(w_branchE),
     .i_memToReg(w_memToRegE),
     .i_halt(w_haltE),
     .i_loadStoreType(w_loadStoreTypeE),
     .i_unsigned(w_unsignedE),
+    .i_pcSrc(w_pcSrcE),
     //Data outputs
-    .o_pcBranch(w_pcBranchM),
-    .o_pcJump(w_pcJumpM),
+    .o_pcBranch(w_pcBranch),
     .o_returnPC(w_returnPCM),
     .o_readData2(w_readData2M),
     .o_aluResult(w_aluResultM),
     .o_writeRegister(w_writeRegisterM),
     //Control outputs
-    .o_zero(w_zeroM),
     .o_regWrite(w_regWriteM),
     .o_memRead(w_memReadM),
     .o_memWrite(w_memWriteM),
-    .o_branch(w_branchM),
     .o_memToReg(w_memToRegM),
     .o_halt(w_haltM),
     .o_loadStoreType(w_loadStoreTypeM),
-    .o_unsigned(w_unsignedM)
+    .o_unsigned(w_unsignedM),
+    .o_pcSrc(w_programCounterSrcM)
 );
 
 ///////////////////Memory stage////////////////////////////////
@@ -343,22 +337,15 @@ memoryStage#(
     //Data inputs
     .i_address(w_aluResultM),
     .i_writeData(w_readData2M),
-    .i_pcBranch(w_pcBranchM),
-    .i_pcJump(w_pcJumpM),
     //Control inputs
     .i_memRead(w_memReadM),
     .i_memWrite(w_memWriteM),
-    .i_branch(w_branchM),
-    .i_zero(w_zeroM),
     .i_memoryAddress(i_regMemAddress),
     .i_loadStoreType(w_loadStoreTypeM),
     .i_unsigned(w_unsignedM),
     //Data outputs
     .o_readData(w_readDataM),
-    .o_memoryValue(w_memoryValue),
-    .o_pcBranch(w_pcBranch),
-    //Control outputs
-    .o_PCSrc(w_programCounterSrcM)
+    .o_memoryValue(w_memoryValue)
 );
 
 ////////////////////Mem-WB Buffer////////////////////////////////////////
@@ -434,12 +421,15 @@ hazardDetector #(
     .DATA_LEN(DATA_LEN),
     .REGISTER_BITS(REGISTER_BITS)
 )hazardDetector(
+    .i_clk(i_clk),
+    .i_reset(i_reset),
     //Data inputs
     .i_rsID(w_rsID),
     .i_rtID(w_rtID),
     .i_rtE(w_rtE),
     //Control inputs
     .i_memRead(w_memReadE),
+    .i_branch(w_pcSrcE),
     //Control outputs
     .o_stall(w_stall)
 );

@@ -68,6 +68,18 @@ initial begin
     //ADDI 10 to r3
     i_instructionToWrite = 32'h2063000a;
     #20
+    //BNE si r3 != r0 salta a SALTO
+    i_instructionToWrite = 32'h14030002;
+    #20
+    //ADDU r0 = r0 + r8
+    i_instructionToWrite = 32'h00080021;
+    #20
+    //ADDI r4 = r3 + 10
+    i_instructionToWrite = 32'h2064000a;
+    #20
+    //SALTO: ADDU r5 = r2 + r8
+    i_instructionToWrite = 32'h00482821;
+    #20
     //Halt
     i_instructionToWrite = {6'b111000, 5'b00000, 5'b01000, 5'b01000, 5'b00000, 6'b000100};
     #20;

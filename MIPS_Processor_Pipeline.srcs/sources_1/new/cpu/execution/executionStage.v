@@ -24,33 +24,35 @@ module executionStage #(
     input wire i_jumpType,
     input wire [1:0] i_operandACtl,
     input wire [1:0] i_operandBCtl,
+    input wire [1:0] i_branch,
     //Data outputs
-    output wire [DATA_LEN-1:0] o_branchPC,
-    output wire [DATA_LEN-1:0] o_jumpPC,
     output wire [DATA_LEN-1:0] o_returnPC,
     output wire [DATA_LEN-1:0] o_aluResult,
     output wire [REGISTER_BITS-1:0] o_writeRegister,
+    output wire [DATA_LEN-1:0] o_pcBranch, 
     //Control outputs
-    output wire o_zero
+    output wire o_PCSrc
 );
+
+    assign o_returnPC = i_incrementedPC + 4;
 
     wire[DATA_LEN-1:0] shiftedImmediate = {1'b0, i_immediateExtendValue[DATA_LEN-2:0] << 2};
 
     //Calculates branch program counter
-    assign o_branchPC = i_immediateExtendValue[DATA_LEN-1]? i_incrementedPC - shiftedImmediate: i_incrementedPC + shiftedImmediate;
+    wire[DATA_LEN-1:0] w_branchPC = i_immediateExtendValue[DATA_LEN-1]? i_incrementedPC - shiftedImmediate: i_incrementedPC + shiftedImmediate;
     
     wire [DATA_LEN-1:0]  literalJump = {i_incrementedPC[DATA_LEN-1:DATA_LEN-4], i_instrIndex, 2'b00};
     
     //Select jump source (rs register or literal)
-    assign o_jumpPC = i_jumpType? i_readData1 : literalJump;
-    
-    assign o_returnPC = i_incrementedPC + 4;
+    wire[DATA_LEN-1:0] w_jumpPC = i_jumpType? i_readData1 : literalJump;
     
     wire [DATA_LEN-1:0] readData1;
     wire [DATA_LEN-1:0] readData2;
     
     wire [DATA_LEN-1:0] aluOperand1;
     wire [DATA_LEN-1:0] aluOperand2;
+    
+    wire w_zero;
     
     //Mux to select readData1 fowarding
     mux4to1 #(
@@ -118,7 +120,7 @@ module executionStage #(
         .i_operandB(aluOperand2),
         .i_opSelector(aluCtlTOALU),
         .o_aluResult(o_aluResult),
-        .o_zero(o_zero)
+        .o_zero(w_zero)
     );
     
     //Mux to select write register
@@ -132,6 +134,15 @@ module executionStage #(
         .i_muxInputD(5'h1f), //Registro 31
         .i_muxSelector(i_regDst),
         .o_muxOutput(o_writeRegister)
+    );
+    
+    branchControl branchControl(
+        .i_branch(i_branch),
+        .i_zero(w_zero),
+        .i_pcBranch(w_branchPC),
+        .i_pcJump(w_jumpPC),
+        .o_PCSrc(o_PCSrc),
+        .o_pcBranch(o_pcBranch)
     );
 
 endmodule

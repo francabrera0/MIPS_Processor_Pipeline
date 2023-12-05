@@ -6,32 +6,16 @@ module memoryStage#(
     //Data inputs
     input wire [DATA_LEN-1:0] i_address,
     input wire [DATA_LEN-1:0] i_writeData,
-    input wire [DATA_LEN-1:0] i_pcBranch,
-    input wire [DATA_LEN-1:0] i_pcJump,
     //Control inputs
     input wire i_memRead,
     input wire i_memWrite,
-    input wire [1:0] i_branch,
-    input wire i_zero,
     input wire [4:0] i_memoryAddress,
     input wire [1:0] i_loadStoreType,
     input wire i_unsigned,
     //Data outputs
     output wire [DATA_LEN-1:0] o_readData,
-    output wire [DATA_LEN-1:0] o_memoryValue,
-    output wire [DATA_LEN-1:0] o_pcBranch,
-    //Control outputs
-    output wire o_PCSrc
+    output wire [DATA_LEN-1:0] o_memoryValue
 );
-    
-    branchControl branchControl(
-        .i_branch(i_branch),
-        .i_zero(i_zero),
-        .i_pcBranch(i_pcBranch),
-        .i_pcJump(i_pcJump),
-        .o_PCSrc(o_PCSrc),
-        .o_pcBranch(o_pcBranch)
-    );
     
     dataMemory #(
         .DATA_LEN(DATA_LEN)
