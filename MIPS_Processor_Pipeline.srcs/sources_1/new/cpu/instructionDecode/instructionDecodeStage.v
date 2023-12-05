@@ -21,16 +21,18 @@ module instructionDecodeStage
     output wire [1:0] o_aluOp,
     output wire [2:0] o_immediateFunct,
     output wire [1:0] o_branch,
-    output wire o_regDest,
+    output wire o_jumpType,
+    output wire [1:0] o_regDest,
     output wire [DATA_LEN-1:0] o_readData1,
     output wire [DATA_LEN-1:0] o_readData2,
     output wire [DATA_LEN-1:0] o_immediateExtendValue,
     output wire [REGISTER_BITS-1:0] o_rt,
     output wire [REGISTER_BITS-1:0] o_rd,
+    output wire [25:0] o_instrIndex,
     output wire [DATA_LEN-1:0] o_shamt,
     output wire o_memRead,
     output wire o_memWrite,
-    output wire o_memToReg,
+    output wire [1:0] o_memToReg,
     output wire o_halt,
     output wire [1:0] o_loadStoreType,
     output wire o_unsigned,
@@ -49,6 +51,7 @@ controlUnit#(
     .o_aluOp(o_aluOp),
     .o_immediateFunct(o_immediateFunct),
     .o_branch(o_branch),
+    .o_jumpType(o_jumpType),
     .o_regDest(o_regDest),
     .o_memRead(o_memRead),
     .o_memWrite(o_memWrite),
@@ -88,5 +91,6 @@ signExtend#(
 assign o_rt = i_instruction[20:16];
 assign o_rd = i_instruction[15:11];
 assign o_shamt = {{DATA_LEN-5{1'b0}}, i_instruction[10:6]};
+assign o_instrIndex = i_instruction[25:0];
 
 endmodule
