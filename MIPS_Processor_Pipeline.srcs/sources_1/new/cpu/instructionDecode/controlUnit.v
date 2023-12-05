@@ -70,10 +70,12 @@ reg r_unsigned;
 
 reg [OPCODE_LEN-1:0] r_opCode;
 reg r_isShamt;
+reg r_isNotJR;
 
 always @(*) begin
     r_opCode = i_instruction[DATA_LEN-1:DATA_LEN-OPCODE_LEN];
     r_isShamt = ~(i_instruction[2] || i_instruction[5]);
+    r_isNotJR = (i_instruction[5:0] != 6'b001000); 
 
     case (r_opCode[OPCODE_LEN-1:2])
         RTYPE[OPCODE_LEN-1:2]: begin
@@ -85,7 +87,7 @@ always @(*) begin
             r_jumpType = !r_opCode[1];
             r_memRead = 1'b0;
             r_memWrite = 1'b0;
-            r_regWrite = !(r_opCode[1] ^ r_opCode[0]);
+            r_regWrite = (!(r_opCode[1] | r_opCode[0]))? r_isNotJR : r_opCode[0]; //Si es R-TYPE escribe en registro en todos los casos menos JR, si no es R-TYPE escribe solo en JAL
             r_memToReg = {r_opCode[0], 1'b0};
             r_halt = 1'b0;
             r_loadStoreType = 2'b11;
