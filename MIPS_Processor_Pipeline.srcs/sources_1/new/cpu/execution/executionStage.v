@@ -51,7 +51,7 @@ module executionStage #(
     ) MUXD1
     (
         .i_muxInputA(i_readData1),
-        .i_muxInputB(i_readData2),
+        .i_muxInputB(i_shamt),
         .i_muxSelector(i_aluSrc[1]),
         .o_muxOutput(aluOperand1)
     );
@@ -63,9 +63,9 @@ module executionStage #(
     (
         .i_muxInputA(i_readData2),
         .i_muxInputB(i_immediateExtendValue),
-        .i_muxInputC(i_shamt),
+        .i_muxInputC(0),
         .i_muxInputD(0),
-        .i_muxSelector(i_aluSrc),
+        .i_muxSelector({1'b0,i_aluSrc[0]}),
         .o_muxOutput(aluOperand2)
     );
     
