@@ -17,21 +17,44 @@ module fowardingUnit #(
     output reg [1:0] o_operandBCtl
 );
 
+wire rsHazardM = (i_rdM == i_rs);
+wire rtHazardM = (i_rdM == i_rt);
+
+wire rsHazardWB = (i_rdWB == i_rs);
+wire rtHazardWB = (i_rdWB == i_rt);
+
 always @(*) begin
-    if(i_regWriteM) begin
-        if(i_rdM == i_rs) o_operandACtl = 2'b10;
-        if(i_rdM == i_rt) o_operandBCtl = 2'b10;
-    end else begin
-        o_operandACtl = 2'b00;
-        o_operandBCtl = 2'b00;
-    end
-    if(i_regWriteWB) begin
-        if(i_rdWB == i_rs & ((i_rdM != i_rs) | !i_regWriteM)) o_operandACtl = 2'b01;
-        if(i_rdWB == i_rt & ((i_rdM != i_rt) | !i_regWriteM)) o_operandBCtl = 2'b01;
-    end else begin
-        o_operandACtl = 2'b00;
-        o_operandBCtl = 2'b00;
-    end
+    case({i_regWriteM,i_regWriteWB})
+        2'b00: begin
+            o_operandACtl = 2'b00;
+            o_operandBCtl = 2'b00;
+        end
+        2'b01: begin
+            o_operandACtl = rsHazardWB? 2'b01 : 2'b00;
+            o_operandBCtl = rtHazardWB? 2'b01 : 2'b00;
+        end
+        2'b10: begin
+            o_operandACtl = rsHazardM? 2'b10 : 2'b00;
+            o_operandBCtl = rtHazardM? 2'b10 : 2'b00;
+        end
+        2'b11: begin  
+            if(rsHazardM) begin
+                o_operandACtl = 2'b10;
+            end else if(rsHazardWB) begin
+                o_operandACtl = 2'b01;
+            end else begin
+                o_operandACtl = 2'b00;
+            end
+        
+            if(rtHazardM) begin
+                o_operandBCtl = 2'b10;
+            end else if(rtHazardWB) begin
+                o_operandBCtl = 2'b01;
+            end else begin
+                o_operandBCtl = 2'b00;
+            end
+        end
+    endcase
 end
 
 endmodule
