@@ -1,0 +1,12 @@
+ADDU r10, r0, r5
+SW r20, r0, 6
+LW  r31, r0, 6
+BEQ r8, r10, SALTO
+NOP
+NOP
+NOP
+OR r11, r0, r5
+SALTO: AND r11, r0, r5
+SLL r20, r20, 2
+SLLV r8, r8, r0
+HALT
