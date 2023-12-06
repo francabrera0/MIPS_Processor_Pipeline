@@ -59,6 +59,7 @@ always @(*)
                         XORI: o_opSelector = XOR;
                         SLTI: o_opSelector = SLT;
                         LUI: o_opSelector = SET_UPPER;
+                        default: o_opSelector  = 0;
                     endcase
                 end 
                 default : o_opSelector = 0;

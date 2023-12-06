@@ -39,7 +39,7 @@ always @(*) begin
                 i_unsigned & halfWordShifted[HALFWORD_SIZE-1], 
                 halfWordShifted[HALFWORD_SIZE-2:0]};
         end
-        WORD: begin
+        default: begin
             o_readData = i_readData;
         end
     endcase

@@ -9,8 +9,7 @@ module ALU #(
     input wire  [DATA_LEN-1 : 0] i_operandA,
     input wire  [DATA_LEN-1 : 0] i_operandB,
     input wire    [OP_LEN-1 : 0] i_opSelector,
-    output wire [DATA_LEN-1 : 0] o_aluResult,
-    output wire                  o_zero
+    output wire [DATA_LEN-1 : 0] o_aluResult
 ); 
 
     localparam ADD = 6'b100000;
@@ -38,9 +37,6 @@ module ALU #(
     
     //Alu out
     assign o_aluResult = tempResult;
-    
-    //Zero flag
-    assign o_zero = & (~ o_aluResult);   
    
     //Calculation
     always @(*)

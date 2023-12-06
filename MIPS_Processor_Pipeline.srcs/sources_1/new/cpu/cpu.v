@@ -254,7 +254,6 @@ executionStage#(
 wire [DATA_LEN-1:0] w_readData2M;
 wire [REGISTER_BITS-1:0] w_writeRegisterM;
 wire [DATA_LEN-1:0] w_returnPCM;
-wire w_zeroM;
 wire w_regWriteM;
 wire w_memReadM;
 wire w_memWriteM;

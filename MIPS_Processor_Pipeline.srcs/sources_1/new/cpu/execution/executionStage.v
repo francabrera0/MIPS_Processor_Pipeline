@@ -13,7 +13,6 @@ module executionStage #(
     input wire [DATA_LEN-1:0] i_shamt,
     input wire [REGISTER_BITS-1:0] i_rt,
     input wire [REGISTER_BITS-1:0] i_rd,
-    input wire [25:0] i_instrIndex,
     input wire [DATA_LEN-1:0] i_aluResultM,
     input wire [DATA_LEN-1:0] i_aluResultWB,
     //Control inputs
@@ -21,10 +20,8 @@ module executionStage #(
     input wire [1:0] i_aluOP,
     input wire [2:0] i_immediateFunct,
     input wire [1:0] i_regDst,
-    input wire i_jumpType,
     input wire [1:0] i_operandACtl,
     input wire [1:0] i_operandBCtl,
-    input wire [1:0] i_branch,
     //Data outputs
     output wire [DATA_LEN-1:0] o_returnPC,
     output wire [DATA_LEN-1:0] o_aluResult,
@@ -38,8 +35,6 @@ module executionStage #(
     
     wire [DATA_LEN-1:0] aluOperand1;
     wire [DATA_LEN-1:0] aluOperand2;
-    
-    wire w_zero;
     
     //Mux to select readData1 fowarding
     mux4to1 #(
@@ -106,8 +101,7 @@ module executionStage #(
         .i_operandA(aluOperand1),
         .i_operandB(aluOperand2),
         .i_opSelector(aluCtlTOALU),
-        .o_aluResult(o_aluResult),
-        .o_zero(w_zero)
+        .o_aluResult(o_aluResult)
     );
     
     //Mux to select write register

@@ -34,11 +34,6 @@ reg [DATA_LEN-1:0] r_readData;
 wire[BYTE_SIZE-1:0] byteSigned = {i_writeData[DATA_LEN-1], i_writeData[BYTE_SIZE-2:0]};
 wire[HALFWORD_SIZE-1:0] halfWordSigned = {i_writeData[DATA_LEN-1], i_writeData[HALFWORD_SIZE-2:0]};
 
-initial begin
-    memoryBlock[0] = 32'hffaaffaa;
-    memoryBlock[31] = 32'hffaaffaa;
-end
-
     memoryMask #(
         .DATA_LEN(DATA_LEN)
     )memoryMask (
@@ -75,7 +70,7 @@ always @(*) begin
                     memoryBlock[alingnedAddress][HALFWORD_SIZE-1:0] = halfWordSigned;
                 end
             end
-            WORD: begin
+            default: begin
                 memoryBlock[alingnedAddress] = i_writeData;
             end
         endcase
