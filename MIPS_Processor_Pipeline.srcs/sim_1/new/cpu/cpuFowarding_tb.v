@@ -62,10 +62,12 @@ initial begin
     i_reset = 1'b0;
     
     i_writeInstruction = 1'b1;
-    //ADDI 10 to r3 3 veces
+    //ADDI 10 to r3 2 veces
     i_instructionToWrite = 32'h2063000a;
-    #60
-    
+    #40
+    //ADDI -5 to r3
+    i_instructionToWrite = 32'h20638005;
+    #20
     //Add: Suma el contenido de register[5] + register[8] y lo guarda en register[3]
     i_instructionToWrite = 32'h00a81821;
     #20;
