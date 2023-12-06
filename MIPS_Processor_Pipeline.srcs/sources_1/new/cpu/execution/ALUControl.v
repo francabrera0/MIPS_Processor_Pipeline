@@ -47,8 +47,6 @@ always @(*)
             case(i_aluOP)
                 //Load or store instruction ALU should add 
                 LOAD_STORE: o_opSelector = ADDU;
-                //Branch equal instruction ALU should substract                
-                BRANCH: o_opSelector = SUBU;
                 //R-type instruction
                 R_TYPE: o_opSelector = i_funct;
                 //Immediate instruction
