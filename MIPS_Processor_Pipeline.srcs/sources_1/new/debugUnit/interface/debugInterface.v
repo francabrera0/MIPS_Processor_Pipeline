@@ -87,6 +87,7 @@ always @(*) begin
 
     case (r_state)
         IDLE: begin
+            r_byteCounterNext = 2'b00;
             r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
             r_dataToWrite = 0;
             if(~i_rxEmpty) 
@@ -139,13 +140,15 @@ always @(*) begin
                 r_waitNext = FETCH_INSTRUCTION;
             end
             else begin
-                r_instructionToWrite = r_instructionToWrite | (i_dataToRead << (r_byteCounter * 8));
-                                
+                if(r_byteCounter == 2'b00) r_instructionToWrite[7:0] = i_dataToRead;
+                else if (r_byteCounter == 2'b01) r_instructionToWrite[15:8] = i_dataToRead;
+                else if (r_byteCounter == 2'b10) r_instructionToWrite[23:16] = i_dataToRead;                            
+                else if (r_byteCounter == 2'b11) r_instructionToWrite[31:24] = i_dataToRead;
+                
                 if(r_byteCounter == 2'b11) begin
                     r_byteCounterNext = 2'b00;
                     r_stateNext = WRITE_INSTRUCTION;
-                end
-                else begin
+                end else begin
                     r_byteCounterNext = r_byteCounter + 1;
                     r_stateNext = FETCH_INSTRUCTION;
                 end
