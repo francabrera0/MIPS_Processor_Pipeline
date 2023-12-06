@@ -9,26 +9,26 @@ module instructionDecodeStage
     //Inputs
     input wire i_clk,
     input wire i_reset,
+    input wire i_stall,
     input wire [DATA_LEN-1:0] i_instruction,
     input wire i_regWrite,
     input wire [REGISTER_BITS-1:0] i_writeRegister,
     input wire [DATA_LEN-1:0] i_writeData,
     input wire [REGISTER_BITS-1:0] i_registerAddress,
+    input wire [DATA_LEN-1:0] i_incrementedPC,
 
     //Outputs
     output wire o_regWrite,
     output wire [1:0] o_aluSrc,
     output wire [1:0] o_aluOp,
     output wire [2:0] o_immediateFunct,
-    output wire [1:0] o_branch,
-    output wire o_jumpType,
     output wire [1:0] o_regDest,
     output wire [DATA_LEN-1:0] o_readData1,
     output wire [DATA_LEN-1:0] o_readData2,
     output wire [DATA_LEN-1:0] o_immediateExtendValue,
+    output wire [REGISTER_BITS-1:0] o_rs,
     output wire [REGISTER_BITS-1:0] o_rt,
     output wire [REGISTER_BITS-1:0] o_rd,
-    output wire [25:0] o_instrIndex,
     output wire [DATA_LEN-1:0] o_shamt,
     output wire o_memRead,
     output wire o_memWrite,
@@ -36,22 +36,38 @@ module instructionDecodeStage
     output wire o_halt,
     output wire [1:0] o_loadStoreType,
     output wire o_unsigned,
-    output wire [DATA_LEN-1:0] o_registerValue
+    output wire [DATA_LEN-1:0] o_registerValue,
+    output wire o_PCSrc,
+    output wire [DATA_LEN-1:0] o_pcBranch
 );
 
+wire [DATA_LEN-1:0] w_instruction;
+
+wire [1:0] w_branch;
+wire w_jumpType;
+
+//Mux to stall o select instruction
+mux2to1 #(
+    .DATA_LEN(DATA_LEN)
+) MUXD1(
+    .i_muxInputA(i_instruction),
+    .i_muxInputB(32'hffffffff),
+    .i_muxSelector(i_stall),
+    .o_muxOutput(w_instruction)
+);
 
 controlUnit#(
     .DATA_LEN(DATA_LEN),
     .OPCODE_LEN(OPCODE_LEN)
 ) controlUnit 
 (
-    .i_instruction(i_instruction),
+    .i_instruction(w_instruction),
     .o_regWrite(o_regWrite),
     .o_aluSrc(o_aluSrc),
     .o_aluOp(o_aluOp),
     .o_immediateFunct(o_immediateFunct),
-    .o_branch(o_branch),
-    .o_jumpType(o_jumpType),
+    .o_branch(w_branch),
+    .o_jumpType(w_jumpType),
     .o_regDest(o_regDest),
     .o_memRead(o_memRead),
     .o_memWrite(o_memWrite),
@@ -88,9 +104,24 @@ signExtend#(
     .o_immediateExtendValue(o_immediateExtendValue)
 );
 
+branchControl branchControl(
+    //Data inputs
+    .i_incrementedPC(i_incrementedPC),
+    .i_immediateExtendValue(o_immediateExtendValue),
+    .i_readData1(o_readData1),
+    .i_readData2(o_readData2),
+    .i_instrIndex(i_instruction[25:0]),
+    //Control inputs
+    .i_branch(w_branch),
+    .i_jumpType(w_jumpType),
+    //Control outputs
+    .o_PCSrc(o_PCSrc),
+    .o_pcBranch(o_pcBranch)
+);
+
+assign o_rs = i_instruction[25:21];
 assign o_rt = i_instruction[20:16];
 assign o_rd = i_instruction[15:11];
 assign o_shamt = {{DATA_LEN-5{1'b0}}, i_instruction[10:6]};
-assign o_instrIndex = i_instruction[25:0];
 
 endmodule
