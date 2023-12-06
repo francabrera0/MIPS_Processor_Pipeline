@@ -22,10 +22,6 @@ module registers
 
 reg [DATA_LEN-1:0] r_registers [(2**REGISTER_BITS)-1:0];
 
-initial begin
-    r_registers[1] = 32'hfadd3355;
-end
-
 always @(*) begin
     if(i_regWrite) begin
         r_registers[i_writeRegister] = i_writeData;
