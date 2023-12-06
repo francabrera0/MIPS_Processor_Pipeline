@@ -94,7 +94,6 @@ always @(*) begin
         end
         
         WAIT_RECEPTION: begin
-            r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
             r_dataToWrite = 0;
             
             if(~i_rxEmpty)
@@ -103,7 +102,6 @@ always @(*) begin
 
         WAIT_SEND: begin
             r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
-            r_dataToWrite = 0;
             
             if(~i_txFull) 
                 r_stateNext = r_wait;
@@ -155,7 +153,6 @@ always @(*) begin
         end
 
         WRITE_INSTRUCTION: begin
-            r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
             r_dataToWrite = 0;
             r_stateNext = IDLE;
         end
@@ -184,7 +181,6 @@ always @(*) begin
             if(i_txFull) begin
                 r_stateNext = WAIT_SEND;
                 r_waitNext = SEND_VALUES;
-                r_dataToWrite = 0;
             end
             else begin
                 r_dataToWrite = (i_regMemValue >> (r_byteCounter*8) & 32'hff);
@@ -207,7 +203,6 @@ always @(*) begin
             if(i_txFull) begin
                 r_stateNext = WAIT_SEND;
                 r_waitNext = SEND_PC;
-                r_dataToWrite = 0;
             end
             else begin
                 r_dataToWrite = (i_programCounter >> (r_byteCounter*8) & 32'hff);
@@ -324,6 +319,5 @@ assign o_regMemCtrl = r_regMemAddress[5];
 assign o_readUart = r_readUart;
 assign o_writeUart = r_writeUart;
 assign o_dataToWrite = r_dataToWrite;
-
 
 endmodule

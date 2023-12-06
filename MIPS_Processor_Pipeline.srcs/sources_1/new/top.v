@@ -15,7 +15,8 @@ module top #(
     input wire i_clk,
     input wire i_reset,
     input wire i_rx,
-    output wire o_tx
+    output wire o_tx,
+    output wire [15:0] o_instruction
 );
 
 wire w_enable;
@@ -52,7 +53,6 @@ debugUnit#(
     .o_instructionToWrite(w_instructionToWrite),
     .o_regMemAddress(w_regMemAddress),
     .o_regMemCtrl(w_regMemCtrl)
-
 );
 
 
@@ -75,7 +75,8 @@ cpu#(
     .i_regMemCtrl(w_regMemCtrl),
     .o_regMemValue(w_regMemValue),
     .o_halt(w_halt),
-    .o_programCounter(w_programCounter)
+    .o_programCounter(w_programCounter),
+    .o_instruction(o_instruction)
 );
 
 clk_wiz_0 clkWiz (

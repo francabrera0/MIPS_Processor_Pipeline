@@ -21,7 +21,8 @@ module debugUnit
     output wire o_writeInstruction,
     output wire [CPU_DATA_LEN-1:0] o_instructionToWrite,
     output wire [REGISTER_BITS-1:0] o_regMemAddress,
-    output wire o_regMemCtrl
+    output wire o_regMemCtrl,
+    output wire [3:0] o_state
 );
 
 

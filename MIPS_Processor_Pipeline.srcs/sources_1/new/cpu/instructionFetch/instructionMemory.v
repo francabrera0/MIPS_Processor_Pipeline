@@ -19,6 +19,11 @@ module instructionMemory
 
 reg [DATA_LEN-1:0] r_memoryBlock [(2**MEM_SIZE_ADDRESS_BITS)-1: 0];
 
+initial begin
+    r_memoryBlock[0] = 32'h20000005;
+    r_memoryBlock[1] = 32'he3ffffff;
+end
+
 reg [MEM_SIZE_ADDRESS_BITS-1:0] r_writePtr, r_writePtrNext, r_writePtrSucc;
 
 

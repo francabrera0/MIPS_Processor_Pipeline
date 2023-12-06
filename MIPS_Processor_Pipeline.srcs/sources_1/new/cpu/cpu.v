@@ -19,6 +19,7 @@ module cpu
     input wire i_regMemCtrl,
     output wire [DATA_LEN-1:0] o_regMemValue,
     output wire [PC_LEN-1:0] o_programCounter,
+    output wire [15:0] o_instruction,
     output wire o_halt
 );
 
@@ -403,6 +404,7 @@ hazardDetector #(
     .o_stall(w_stall)
 );
 
-assign o_regMemValue = i_regMemCtrl ?  w_memoryValue : w_registerValue ;
+assign o_regMemValue = i_regMemCtrl ?  w_memoryValue : w_registerValue;
+assign o_instruction = w_instructionIF[31:16];
 
 endmodule
