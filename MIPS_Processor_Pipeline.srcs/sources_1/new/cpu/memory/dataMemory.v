@@ -78,7 +78,7 @@ always @(*) begin
     
     if(i_memRead) begin
         r_readData = memoryBlock[alingnedAddress];
-    end
+    end else r_readData = 0;
 
     o_memoryValue = memoryBlock[i_memoryAddress];
     

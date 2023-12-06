@@ -101,6 +101,7 @@ always @(*) begin
             r_immediateFunct = r_opCode[2:0];
             r_aluSrc = 2'b01;
             r_branch = 2'b00;
+            r_jumpType = 1'b0;
             r_memRead = 1'b0;
             r_memWrite = 1'b0;
             r_regWrite = 1'b1;
@@ -115,6 +116,7 @@ always @(*) begin
             r_immediateFunct = r_opCode[2:0];
             r_aluSrc = 2'b01;
             r_branch = 2'b00;
+            r_jumpType = 1'b0;
             r_memRead = 1'b0;
             r_memWrite = 1'b0;
             r_regWrite = 1'b1;
@@ -129,6 +131,7 @@ always @(*) begin
             r_immediateFunct = 3'b000;
             r_aluSrc = 2'b01;
             r_branch = 2'b00;
+            r_jumpType = 1'b0;
             r_memRead = 1'b1;
             r_memWrite = 1'b0;
             r_regWrite = 1'b1;
@@ -143,6 +146,7 @@ always @(*) begin
             r_aluOp = 2'b00;
             r_aluSrc = 2'b01;
             r_branch = 2'b00;
+            r_jumpType = 1'b0;
             r_memRead = 1'b1;
             r_memWrite = 1'b0;
             r_regWrite = 1'b1;
@@ -152,25 +156,31 @@ always @(*) begin
             r_unsigned = 1'b1;
         end
         SW[OPCODE_LEN-1:2]: begin
+            r_regDest = 2'b00;
             r_aluOp = 2'b00;
             r_immediateFunct = 3'b000;
             r_aluSrc = 2'b01;
             r_branch = 2'b00;
+            r_jumpType = 1'b0;
             r_memRead = 1'b0;
             r_memWrite = 1'b1;
             r_regWrite = 1'b0;
+            r_memToReg = 2'b00;
             r_halt = 1'b0;
             r_loadStoreType = r_opCode[1:0];
             r_unsigned = 0;
         end
         BEQ[OPCODE_LEN-1:2]: begin
+            r_regDest = 2'b00;
             r_aluOp = 2'b01;
             r_immediateFunct = 3'b000;
             r_aluSrc = 2'b00;
             r_branch = {r_opCode[0],1'b1};
+            r_jumpType = 1'b0;
             r_memRead = 1'b0;
             r_memWrite = 1'b0;
             r_regWrite = 1'b0;
+            r_memToReg = 2'b00;
             r_halt = 1'b0;
             r_loadStoreType = 2'b11;
             r_unsigned = 0;
@@ -181,6 +191,7 @@ always @(*) begin
             r_immediateFunct = 3'b000;
             r_aluSrc = 2'b00;
             r_branch = 2'b00;
+            r_jumpType = 1'b0;
             r_memRead = 1'b0;
             r_memWrite = 1'b0;
             r_regWrite = 1'b0;

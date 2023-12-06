@@ -25,11 +25,7 @@ reg [DATA_LEN-1:0] r_registers [(2**REGISTER_BITS)-1:0];
 integer i;
 
 always @(*) begin
-    if(i_reset) begin
-        for(i=0; i<(2**REGISTER_BITS); i=i+1) begin
-            r_registers[i] <= 0;            
-        end
-    end else if(i_regWrite) begin
+    if(i_regWrite) begin
         r_registers[i_writeRegister] = i_writeData;
     end
 end

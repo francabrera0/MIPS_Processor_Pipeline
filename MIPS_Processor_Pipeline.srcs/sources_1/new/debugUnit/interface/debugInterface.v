@@ -43,7 +43,6 @@ localparam [3:0] STEP              = 4'b0110;
 localparam [3:0] RUN               = 4'b0111;
 localparam [3:0] SEND_VALUES       = 4'b1000;
 localparam [3:0] SEND_PC           = 4'b1001;
-localparam [3:0] HALT              = 4'b1010;
 
 localparam [UART_DATA_LEN-1:0] PROGRAM_CODE = 8'h23;
 localparam [UART_DATA_LEN-1:0] STEP_CODE= 8'h12;
@@ -63,23 +62,13 @@ reg [CPU_DATA_LEN-1:0] r_instructionToWrite;
 reg [1:0] r_byteCounter, r_byteCounterNext;
 reg [5:0] r_regMemAddress, r_regMemAddressNext;
 
-reg r_halt;
-
 //Finite State Machine with Data (State and Data registers)
 always @(posedge i_clk) begin
     if(i_reset) begin
         r_state <= IDLE;
-        r_readUart <= 1'b0;
-        r_writeUart <= 1'b0;
-        r_dataToWrite <= {UART_DATA_LEN{1'b0}};
-        r_enable <= 1'b0;
-        r_writeInstruction <= 1'b0;
-        r_instructionToWrite <= {CPU_DATA_LEN{1'b0}};
         r_byteCounter <= 2'b00;
         r_wait <= 3'b000;
         r_regMemAddress <= 6'b00000;
-        r_halt = 1'b0;
-
     end
     else begin
         r_state <= r_stateNext;
@@ -98,21 +87,32 @@ always @(*) begin
 
     case (r_state)
         IDLE: begin
+            r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
+            r_dataToWrite = 0;
             if(~i_rxEmpty) 
                 r_stateNext = DECODE;
         end
         
         WAIT_RECEPTION: begin
+            r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
+            r_dataToWrite = 0;
+            
             if(~i_rxEmpty)
                 r_stateNext = r_wait;
         end
 
         WAIT_SEND: begin
+            r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
+            r_dataToWrite = 0;
+            
             if(~i_txFull) 
                 r_stateNext = r_wait;
         end
 
         DECODE: begin
+            r_dataToWrite = 0;
+            r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
+            
             if(i_rxEmpty) begin
                 r_stateNext = WAIT_RECEPTION;
                 r_waitNext = DECODE;
@@ -120,7 +120,6 @@ always @(*) begin
             else begin
                 if(i_dataToRead == PROGRAM_CODE) begin
                     r_stateNext = FETCH_INSTRUCTION;
-                    r_instructionToWrite = 32'b0;
                 end
                 else if(i_dataToRead == STEP_CODE) begin
                     r_stateNext = STEP;
@@ -135,6 +134,8 @@ always @(*) begin
         end
 
         FETCH_INSTRUCTION: begin
+            r_dataToWrite = 0;
+            
             if(i_rxEmpty) begin
                 r_stateNext = WAIT_RECEPTION;
                 r_waitNext = FETCH_INSTRUCTION;
@@ -154,26 +155,36 @@ always @(*) begin
         end
 
         WRITE_INSTRUCTION: begin
+            r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
+            r_dataToWrite = 0;
             r_stateNext = IDLE;
         end
 
         STEP: begin
-            r_stateNext = SEND_VALUES;
+            r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
+            r_dataToWrite = 0;
             if(i_halt) 
-                r_stateNext = HALT;
+                r_stateNext = IDLE;
+            else
+                r_stateNext = SEND_VALUES;
         end
 
         RUN: begin
+            r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
+            r_dataToWrite = 0;
+            
             if(i_halt) begin
                 r_stateNext = SEND_VALUES;
-                r_halt = 1;
             end
         end
 
         SEND_VALUES: begin
+            r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
+        
             if(i_txFull) begin
                 r_stateNext = WAIT_SEND;
                 r_waitNext = SEND_VALUES;
+                r_dataToWrite = 0;
             end
             else begin
                 r_dataToWrite = (i_regMemValue >> (r_byteCounter*8) & 32'hff);
@@ -191,29 +202,28 @@ always @(*) begin
         end
 
         SEND_PC: begin
+            r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
+        
             if(i_txFull) begin
                 r_stateNext = WAIT_SEND;
                 r_waitNext = SEND_PC;
+                r_dataToWrite = 0;
             end
             else begin
                 r_dataToWrite = (i_programCounter >> (r_byteCounter*8) & 32'hff);
                 r_stateNext = SEND_PC;
     
                 if(r_byteCounter == 2'b11) begin
-                    if(r_halt)
-                        r_stateNext = HALT;
-                    else
-                        r_stateNext = IDLE;
+                    r_stateNext = IDLE;
                 end
                 r_byteCounterNext = r_byteCounter + 1;
             end
         end
         
-        HALT: begin
-            //Logic
-        end
 
         default: begin
+            r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
+            r_dataToWrite = 0;
             r_byteCounterNext = 2'b00;     
         end
     endcase
@@ -228,58 +238,75 @@ always @(*) begin
             r_writeUart = 1'b0;
             r_writeInstruction = 1'b0;
             r_readUart = 1'b0;
+            r_enable = 1'b0;
         end
         
         WAIT_RECEPTION: begin
+            r_writeUart = 1'b0;
+            r_writeInstruction = 1'b0;
             r_readUart = 1'b0;
+            r_enable = 1'b0;
         end
 
         WAIT_SEND: begin
+            r_writeInstruction = 1'b0;
             r_writeUart = 1'b0;
+            r_readUart = 1'b0;
+            r_enable = 1'b0;
         end
 
         DECODE: begin
+            r_writeUart = 1'b0;
+            r_writeInstruction = 1'b0;
             r_readUart = 1'b1;
+            r_enable = 1'b0;
         end
 
         FETCH_INSTRUCTION: begin
+            r_writeInstruction = 1'b0;
             r_readUart = 1'b1;
+            r_writeUart = 1'b0;
             r_enable = 1'b0;
         end
 
         WRITE_INSTRUCTION: begin
             r_writeInstruction = 1'b1;
+            r_writeUart = 1'b0;
+            r_readUart = 1'b0;
+            r_enable = 1'b0;
         end
 
         STEP: begin
+            r_writeInstruction = 1'b0;
             r_readUart = 1'b0;
+            r_writeUart = 1'b0;
             r_enable = 1'b1;
         end
 
         RUN: begin
+            r_writeInstruction = 1'b0;
             r_readUart = 1'b0;
+            r_writeUart = 1'b0;
             r_enable = 1'b1;
         end
 
         SEND_VALUES: begin
+            r_writeInstruction = 1'b0;        
             r_writeUart = 1'b1;
             r_enable = 1'b0;
             r_readUart = 1'b0;
         end
 
         SEND_PC: begin
+            r_writeInstruction = 1'b0;
             r_writeUart = 1'b1;
-            r_enable = 1'b0;
-            r_readUart = 1'b0;
-        end
-        
-        HALT: begin
-            r_writeUart = 1'b0;
             r_enable = 1'b0;
             r_readUart = 1'b0;
         end
 
         default: begin
+            r_writeInstruction = 1'b0;
+            r_writeUart = 1'b0;
             r_writeUart = 1'b0;
             r_enable = 1'b0;
             r_readUart = 1'b0;
