@@ -22,6 +22,7 @@ localparam XORI = 3'b110;
 localparam SLTI = 3'b010;
 localparam LUI = 3'b111;
 
+localparam ADD = 6'b100000;
 localparam ADDU = 6'b100001;
 localparam SUBU = 6'b100011;
     
@@ -46,13 +47,13 @@ always @(*)
         begin
             case(i_aluOP)
                 //Load or store instruction ALU should add 
-                LOAD_STORE: o_opSelector = ADDU;
+                LOAD_STORE: o_opSelector = ADD;
                 //R-type instruction
                 R_TYPE: o_opSelector = i_funct;
                 //Immediate instruction
                 IMMEDIATE: begin
                     case(i_immediateFunct)
-                        ADDI: o_opSelector = ADDU;
+                        ADDI: o_opSelector = ADD;
                         ANDI: o_opSelector = AND;
                         ORI: o_opSelector = OR;
                         XORI: o_opSelector = XOR;
