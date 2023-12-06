@@ -77,8 +77,6 @@ wire w_regWriteID;
 wire [1:0] w_aluSrcID;
 wire [1:0] w_aluOpID;
 wire [2:0] w_immediateFunctID;
-wire [1:0] w_branchID;
-wire w_jumpTypeID;
 wire [1:0] w_regDestID;
 wire [DATA_LEN-1:0] w_readData1ID;
 wire [DATA_LEN-1:0] w_readData2ID;
@@ -87,7 +85,6 @@ wire [DATA_LEN-1:0] w_shamtID;
 wire [REGISTER_BITS-1:0] w_rsID;
 wire [REGISTER_BITS-1:0] w_rtID;
 wire [REGISTER_BITS-1:0] w_rdID;
-wire [25:0] w_instrIndexID;
 wire w_memReadID;
 wire w_memWriteID;
 wire [1:0] w_memToRegID;
@@ -115,14 +112,13 @@ instructionDecodeStage#(
     .i_writeRegister(w_writeRegisterWB),
     .i_writeData(w_writeDataWB),
     .i_registerAddress(i_regMemAddress),
+    .i_incrementedPC(w_incrementedPCID),
 
     //Outputs
     .o_regWrite(w_regWriteID),
     .o_aluSrc(w_aluSrcID),
     .o_aluOp(w_aluOpID),
     .o_immediateFunct(w_immediateFunctID),
-    .o_branch(w_branchID),
-    .o_jumpType(w_jumpTypeID),
     .o_regDest(w_regDestID),
     .o_readData1(w_readData1ID),
     .o_readData2(w_readData2ID),
@@ -131,14 +127,15 @@ instructionDecodeStage#(
     .o_rs(w_rsID),
     .o_rt(w_rtID),
     .o_rd(w_rdID),
-    .o_instrIndex(w_instrIndexID),
     .o_memRead(w_memReadID),
     .o_memWrite(w_memWriteID),
     .o_memToReg(w_memToRegID),
     .o_registerValue(w_registerValue),
     .o_halt(w_haltID),
     .o_loadStoreType(w_loadStoreTypeID),
-    .o_unsigned(w_unsignedID)
+    .o_unsigned(w_unsignedID),
+    .o_pcBranch(w_pcBranch),
+    .o_PCSrc(w_programCounterSrcM)
 );
 
 ////////////////////ID-Ex Buffer////////////////////////////////////////
@@ -150,13 +147,10 @@ wire [DATA_LEN-1:0] w_shamtE;
 wire [REGISTER_BITS-1:0] w_rsE;
 wire [REGISTER_BITS-1:0] w_rtE;
 wire [REGISTER_BITS-1:0] w_rdE;
-wire [25:0] w_instrIndexE;
 wire w_regWriteE;
 wire [1:0] w_aluSrcE;
 wire [1:0] w_aluOpE;
 wire [2:0] w_immediateFunctE;
-wire [1:0] w_branchE;
-wire w_jumpTypeE;
 wire [1:0] w_regDestE;
 wire w_memReadE;
 wire w_memWriteE;
@@ -180,8 +174,6 @@ decodeExecutionBuffer#(
     .i_aluSrc(w_aluSrcID),
     .i_aluOp(w_aluOpID),
     .i_immediateFunct(w_immediateFunctID),
-    .i_branch(w_branchID),
-    .i_jumpType(w_jumpTypeID),
     .i_regDest(w_regDestID),
     .i_readData1(w_readData1ID),
     .i_readData2(w_readData2ID),
@@ -190,7 +182,6 @@ decodeExecutionBuffer#(
     .i_rs(w_rsID),
     .i_rt(w_rtID),
     .i_rd(w_rdID),
-    .i_instrIndex(w_instrIndexID),
     .i_memRead(w_memReadID),
     .i_memWrite(w_memWriteID),
     .i_memToReg(w_memToRegID),
@@ -204,8 +195,6 @@ decodeExecutionBuffer#(
     .o_aluSrc(w_aluSrcE),
     .o_aluOp(w_aluOpE),
     .o_immediateFunct(w_immediateFunctE),
-    .o_branch(w_branchE),
-    .o_jumpType(w_jumpTypeE),
     .o_regDest(w_regDestE),
     .o_readData1(w_readData1E),
     .o_readData2(w_readData2E),
@@ -214,7 +203,6 @@ decodeExecutionBuffer#(
     .o_rs(w_rsE),
     .o_rt(w_rtE),
     .o_rd(w_rdE),
-    .o_instrIndex(w_instrIndexE),
     .o_memRead(w_memReadE),
     .o_memWrite(w_memWriteE),
     .o_memToReg(w_memToRegE),
@@ -247,7 +235,6 @@ executionStage#(
     .i_shamt(w_shamtE),
     .i_rt(w_rtE),
     .i_rd(w_rdE),
-    .i_instrIndex(w_instrIndexE),
     .i_aluResultM(w_aluResultM),
     .i_aluResultWB(w_writeDataWB),
     //Control inputs
@@ -255,17 +242,12 @@ executionStage#(
     .i_aluOP(w_aluOpE),
     .i_immediateFunct(w_immediateFunctE),
     .i_regDst(w_regDestE),
-    .i_jumpType(w_jumpTypeE),
     .i_operandACtl(w_operandACtl),
     .i_operandBCtl(w_operandBCtl),
-    .i_branch(w_branchE),
     //Data outputs
-    .o_pcBranch(w_pcBranch),
     .o_returnPC(w_returnPCE),
     .o_aluResult(w_aluResultE),
-    .o_writeRegister(w_writeRegisterE),
-    //Control outputs
-    .o_PCSrc(w_programCounterSrcM)
+    .o_writeRegister(w_writeRegisterE)
 );
 
 ////////////////////Ex-Mem Buffer////////////////////////////////////////
@@ -276,7 +258,6 @@ wire w_zeroM;
 wire w_regWriteM;
 wire w_memReadM;
 wire w_memWriteM;
-wire [1:0] w_branchM;
 wire [1:0] w_memToRegM;
 wire w_haltM;
 wire [1:0] w_loadStoreTypeM;
@@ -414,15 +395,12 @@ hazardDetector #(
     .DATA_LEN(DATA_LEN),
     .REGISTER_BITS(REGISTER_BITS)
 )hazardDetector(
-    .i_clk(i_clk),
-    .i_reset(i_reset),
     //Data inputs
     .i_rsID(w_rsID),
     .i_rtID(w_rtID),
     .i_rtE(w_rtE),
     //Control inputs
     .i_memRead(w_memReadE),
-    .i_branch(w_programCounterSrcM),
     //Control outputs
     .o_stall(w_stall)
 );

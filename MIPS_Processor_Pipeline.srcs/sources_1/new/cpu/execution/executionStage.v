@@ -28,23 +28,10 @@ module executionStage #(
     //Data outputs
     output wire [DATA_LEN-1:0] o_returnPC,
     output wire [DATA_LEN-1:0] o_aluResult,
-    output wire [REGISTER_BITS-1:0] o_writeRegister,
-    output wire [DATA_LEN-1:0] o_pcBranch, 
-    //Control outputs
-    output wire o_PCSrc
+    output wire [REGISTER_BITS-1:0] o_writeRegister
 );
 
     assign o_returnPC = i_incrementedPC + 4;
-
-    wire[DATA_LEN-1:0] shiftedImmediate = {1'b0, i_immediateExtendValue[DATA_LEN-2:0] << 2};
-
-    //Calculates branch program counter
-    wire[DATA_LEN-1:0] w_branchPC = i_immediateExtendValue[DATA_LEN-1]? i_incrementedPC - shiftedImmediate: i_incrementedPC + shiftedImmediate;
-    
-    wire [DATA_LEN-1:0]  literalJump = {i_incrementedPC[DATA_LEN-1:DATA_LEN-4], i_instrIndex, 2'b00};
-    
-    //Select jump source (rs register or literal)
-    wire[DATA_LEN-1:0] w_jumpPC = i_jumpType? i_readData1 : literalJump;
     
     wire [DATA_LEN-1:0] readData1;
     wire [DATA_LEN-1:0] readData2;
@@ -135,14 +122,4 @@ module executionStage #(
         .i_muxSelector(i_regDst),
         .o_muxOutput(o_writeRegister)
     );
-    
-    branchControl branchControl(
-        .i_branch(i_branch),
-        .i_zero(w_zero),
-        .i_pcBranch(w_branchPC),
-        .i_pcJump(w_jumpPC),
-        .o_PCSrc(o_PCSrc),
-        .o_pcBranch(o_pcBranch)
-    );
-
 endmodule
