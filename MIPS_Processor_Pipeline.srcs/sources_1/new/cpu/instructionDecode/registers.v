@@ -5,7 +5,6 @@ module registers
 )
 (
     //Inputs
-    input wire i_clk,
     input wire i_reset,
     input wire [REGISTER_BITS-1:0] i_readRegister1,
     input wire [REGISTER_BITS-1:0] i_readRegister2,
@@ -25,16 +24,12 @@ reg [DATA_LEN-1:0] r_registers [(2**REGISTER_BITS)-1:0];
 
 integer i;
 
-always @(posedge i_clk) begin
+always @(*) begin
     if(i_reset) begin
         for(i=0; i<(2**REGISTER_BITS); i=i+1) begin
             r_registers[i] <= 0;            
         end
-    end
-end
-
-always @(*) begin
-    if(i_regWrite) begin
+    end else if(i_regWrite) begin
         r_registers[i_writeRegister] = i_writeData;
     end
 end
