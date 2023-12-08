@@ -62,17 +62,38 @@ initial begin
     i_reset = 1'b0;
     
     i_writeInstruction = 1'b1;
+    //Set up
+    //ADDI 5 to r10
+    i_instructionToWrite = 32'h200a0005;
+    #20
+    //Store r10 to posicion 2
+    i_instructionToWrite = 32'hac0a0008;
+    #20
+    //ADDI 10 to r1
+    i_instructionToWrite = 32'h2001000a;
+    #20
+    //ADDI 8 to r5
+    i_instructionToWrite = 32'h20050008;
+    #20
+    //ADDI a to r8
+    i_instructionToWrite = 32'h2008000a;
+    #20
+    
+    
     //Load en r3 lo que esta en la posicion de memoria 2
-    i_instructionToWrite = 32'h8c230000;
+    i_instructionToWrite = 32'h8c030008;
+    #20
+    //ADDI 5 to r3
+    i_instructionToWrite = 32'h20630005;
     #20
     //ADDI 10 to r3
-    i_instructionToWrite = 32'h2063000a;
+    i_instructionToWrite = 32'h20630005;
     #20
     //BNE si r3 != r0 salta a SALTO
-    i_instructionToWrite = 32'h14030002;
+    i_instructionToWrite = 32'h14230002;
     #20
-    //ADDU r0 = r0 + r8
-    i_instructionToWrite = 32'h00080021;
+    //ADDU r1 = r1 + r8
+    i_instructionToWrite = 32'h00280821;
     #20
     //ADDI r4 = r3 + 10
     i_instructionToWrite = 32'h2064000a;
