@@ -62,6 +62,17 @@ initial begin
     i_reset = 1'b0;
     
     i_writeInstruction = 1'b1;
+    //Set Up
+    //ADDI 2 to r0
+    i_instructionToWrite = 32'h20600002;
+    #20
+    //ADDI 8 to r5
+    i_instructionToWrite = 32'h20650008;
+    #20
+    //ADDI a to r8
+    i_instructionToWrite = 32'h2068000a;
+    #20
+    //Test
     //ADDI 10 to r3 2 veces
     i_instructionToWrite = 32'h2063000a;
     #40
