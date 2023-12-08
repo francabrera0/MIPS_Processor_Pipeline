@@ -1,5 +1,5 @@
 import sys
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QTextEdit, QTableWidget, QPushButton, QGridLayout, QTableWidgetItem
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QTextEdit, QTableWidget, QPushButton, QGridLayout, QTableWidgetItem, QFileDialog
 from PySide6.QtGui import QColor
 
 from assembler.assemblyParser import assemblyParser
@@ -14,7 +14,7 @@ class mipsIDE(QMainWindow):
     assemblyCode = None
     parser = assemblyParser(instructionTable, registerTable, 4)
     programValid = False
-    serialComPort = serial.Serial("/dev/pts/1", 115200)
+    serialComPort = serial.Serial("/dev/pts/2", 115200, timeout=2)
 
     def __init__(self):
         super().__init__()
@@ -28,7 +28,6 @@ class mipsIDE(QMainWindow):
         self.setCentralWidget(centralWidget)
 
         self.codeEditor = QTextEdit()
-        self.codeEditor.setText("ADDU r10, r0, r5 \nSW r20, r0, 6 \nLW  r31, r0, 6 \nBEQ r8, r10, SALTO \nNOP \nNOP \nNOP \nOR r11, r0, r5 \nSALTO: AND r11, r0, r5 \nSLL r20, r20, 2 \nSLLV r8, r8, r0 \nHALT")
         
         self.codeEditor.setMinimumWidth(600)
         self.codeEditor.setMinimumHeight(300)
@@ -56,21 +55,28 @@ class mipsIDE(QMainWindow):
         stepButton.clicked.connect(self.handleStep)
         runButton = QPushButton("Run")
         runButton.clicked.connect(self.handleRun)
+        saveButton = QPushButton("Save")
+        saveButton.clicked.connect(self.saveSourceCode)
+        openButton = QPushButton("Open")
+        openButton.clicked.connect(self.openFile)
 
         layout = QGridLayout()
         centralWidget.setLayout(layout)
 
-        layout.addWidget(self.codeEditor, 0, 0, 3, 2)
-        layout.addWidget(self.assemblyCode, 3, 0, 2, 2)
-        layout.addWidget(self.registerTable, 0, 3, 5, 1)
-        layout.addWidget(self.memoryTable, 0, 4, 5, 1)
-        layout.addWidget(self.programCounter, 0, 5, 5, 1)
-        
+        layout.addWidget(saveButton, 0, 0, 1, 1)
+        layout.addWidget(openButton, 0, 1, 1, 1)
+        layout.addWidget(self.codeEditor, 1, 0, 4, 2)
+        layout.addWidget(self.assemblyCode, 5, 0, 4, 2)
 
-        layout.addWidget(buildButton, 0, 2)
-        layout.addWidget(programButton, 2, 2)
-        layout.addWidget(stepButton, 3, 2)
-        layout.addWidget(runButton, 4, 2)
+        layout.addWidget(buildButton, 1, 2, 1, 1)
+        layout.addWidget(programButton, 3, 2, 1, 1)
+        layout.addWidget(stepButton, 5, 2, 1, 1)
+        layout.addWidget(runButton, 7, 2, 1, 1)
+        
+        layout.addWidget(self.registerTable, 0, 3, 9, 1)
+        layout.addWidget(self.memoryTable, 0, 4, 9, 1)
+        layout.addWidget(self.programCounter, 0, 5, 5, 1)
+    
 
         self.showMaximized()
 
@@ -117,11 +123,14 @@ class mipsIDE(QMainWindow):
 
     def updateTables(self):
         data = self.serialComPort.read(260)
-
+        
         if len(data) == 260:
             self.updateTable(data, self.registerTable, 0, 32)
             self.updateTable(data, self.memoryTable, 32, 64)
             self.updateTable(data, self.programCounter, 64, 65)
+        else:
+            print("Time out")
+        
 
     def updateTable(self, data, table, startIndex, endIndex):
         for i in range(startIndex, endIndex):
@@ -140,6 +149,25 @@ class mipsIDE(QMainWindow):
 
             table.setItem(itemIndex, 0, item)
 
+    def saveSourceCode(self):
+        fileDialog = QFileDialog()
+        fileDialog.setFileMode(QFileDialog.AnyFile)
+        fileDialog.setAcceptMode(QFileDialog.AcceptSave)
+        fileDialog.setNameFilter("*.asm")
+        if fileDialog.exec():
+            filePath = fileDialog.selectedFiles()[0]
+            with open(filePath, 'w') as file:
+                file.write(self.codeEditor.toPlainText())
+
+    def openFile(self):
+        fileDialog = QFileDialog()
+        fileDialog.setFileMode(QFileDialog.ExistingFile)
+        fileDialog.setNameFilter("*.asm")
+        if fileDialog.exec():
+            filePath = fileDialog.selectedFiles()[0]
+            with open(filePath, 'r') as file:
+                content = file.read()
+                self.codeEditor.setPlainText(content)
 
 def main():
     app = QApplication(sys.argv)
