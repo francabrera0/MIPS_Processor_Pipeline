@@ -65,8 +65,11 @@ initial begin
     //ADDI 10 to r3 2 veces
     i_instructionToWrite = 32'h2063000a;
     #40
-    //ADDI -5 to r3
-    i_instructionToWrite = 32'h20638005;
+    //Store r3 en direccion r[0]+0
+    i_instructionToWrite = 32'hac030000;
+    #20
+    //ADDI 5 to r3
+    i_instructionToWrite = 32'h20630005;
     #20
     //Add: Suma el contenido de register[5] + register[8] y lo guarda en register[3]
     i_instructionToWrite = 32'h00a81821;
