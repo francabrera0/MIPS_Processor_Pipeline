@@ -2,7 +2,7 @@
 
 module dataMemory #(
     DATA_LEN = 32,   
-    SIZE_BITS = 8
+    SIZE_BITS = 5
 )(
     //Data inputs
     input wire [DATA_LEN-1:0] i_address,

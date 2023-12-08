@@ -26,7 +26,7 @@ module executionStage #(
     output wire [DATA_LEN-1:0] o_returnPC,
     output wire [DATA_LEN-1:0] o_aluResult,
     output wire [REGISTER_BITS-1:0] o_writeRegister,
-    output wire [DATA_LEN-1:0] o_readData2
+    output wire [DATA_LEN-1:0] o_readData2Fowarded
 );
 
     assign o_returnPC = i_incrementedPC + 4;
@@ -34,7 +34,7 @@ module executionStage #(
     wire [DATA_LEN-1:0] readData1;
     wire [DATA_LEN-1:0] readData2;
     
-    assign o_readData2 = readData2;
+    assign o_readData2Fowarded = readData2;
     
     wire [DATA_LEN-1:0] aluOperand1;
     wire [DATA_LEN-1:0] aluOperand2;

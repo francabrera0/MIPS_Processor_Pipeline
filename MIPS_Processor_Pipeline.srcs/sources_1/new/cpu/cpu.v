@@ -215,7 +215,7 @@ decodeExecutionBuffer#(
 wire [DATA_LEN-1:0] w_returnPCE;
 wire [DATA_LEN-1:0] w_aluResultE;
 wire [REGISTER_BITS-1:0] w_writeRegisterE;
-wire [DATA_LEN-1:0] w_readData2FowardedE;
+wire [DATA_LEN-1:0] o_readData2FowardedE;
 
 wire [DATA_LEN-1:0] w_aluResultM;
 wire [1:0] w_operandACtl;
@@ -249,7 +249,7 @@ executionStage#(
     .o_returnPC(w_returnPCE),
     .o_aluResult(w_aluResultE),
     .o_writeRegister(w_writeRegisterE),
-    .o_readData2(w_readData2FowardedE)
+    .o_readData2Fowarded(o_readData2FowardedE)
 );
 
 ////////////////////Ex-Mem Buffer////////////////////////////////////////
@@ -274,7 +274,7 @@ executionMemoryBuffer#(
     .i_enable(i_enable),
     //Data inputs
     .i_returnPC(w_returnPCE),
-    .i_readData2(w_readData2FowardedE),
+    .i_readData2(o_readData2FowardedE),
     .i_aluResult(w_aluResultE),
     .i_writeRegister(w_writeRegisterE),
     //Control inputs
