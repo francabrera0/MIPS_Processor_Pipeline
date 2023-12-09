@@ -92,7 +92,7 @@ initial begin
     //NOP
     i_instructionToWrite = 32'hffffffff;
     #20
-    //ADDI 10 to r3
+    //ADDI 5 to r3
     i_instructionToWrite = 32'h20630005;
     #20
     //BNE si r3 != r1 salta a SALTO - DEBERIA SALTAR

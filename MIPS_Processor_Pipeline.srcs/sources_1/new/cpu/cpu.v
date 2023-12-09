@@ -97,6 +97,11 @@ wire w_regWriteWB;
 wire [DATA_LEN-1:0] w_writeDataWB;
 wire [DATA_LEN-1:0] w_registerValue;
 
+wire [DATA_LEN-1:0] w_aluResultE;
+wire [DATA_LEN-1:0] w_aluResultM;
+wire [1:0] w_operandACtl;
+wire [1:0] w_operandBCtl;
+
 instructionDecodeStage#(
     .DATA_LEN(DATA_LEN),
     .OPCODE_LEN(OPCODE_LEN), 
@@ -113,6 +118,10 @@ instructionDecodeStage#(
     .i_writeData(w_writeDataWB),
     .i_registerAddress(i_regMemAddress),
     .i_incrementedPC(w_incrementedPCID),
+    .i_aluResultE(w_aluResultE),
+    .i_aluResultM(w_aluResultM),
+    .i_operandACtl(w_operandACtl),
+    .i_operandBCtl(w_operandBCtl),
 
     //Outputs
     .o_regWrite(w_regWriteID),
@@ -213,14 +222,7 @@ decodeExecutionBuffer#(
 
 ///////////////////Execution stage////////////////////////////////
 wire [DATA_LEN-1:0] w_returnPCE;
-wire [DATA_LEN-1:0] w_aluResultE;
 wire [REGISTER_BITS-1:0] w_writeRegisterE;
-wire [DATA_LEN-1:0] o_readData2FowardedE;
-
-wire [DATA_LEN-1:0] w_aluResultM;
-wire [1:0] w_operandACtl;
-wire [1:0] w_operandBCtl;
-
 
 executionStage#(
     .DATA_LEN(DATA_LEN),
@@ -236,20 +238,15 @@ executionStage#(
     .i_shamt(w_shamtE),
     .i_rt(w_rtE),
     .i_rd(w_rdE),
-    .i_aluResultM(w_aluResultM),
-    .i_aluResultWB(w_writeDataWB),
     //Control inputs
     .i_aluSrc(w_aluSrcE),
     .i_aluOP(w_aluOpE),
     .i_immediateFunct(w_immediateFunctE),
     .i_regDst(w_regDestE),
-    .i_operandACtl(w_operandACtl),
-    .i_operandBCtl(w_operandBCtl),
     //Data outputs
     .o_returnPC(w_returnPCE),
     .o_aluResult(w_aluResultE),
-    .o_writeRegister(w_writeRegisterE),
-    .o_readData2Fowarded(o_readData2FowardedE)
+    .o_writeRegister(w_writeRegisterE)
 );
 
 ////////////////////Ex-Mem Buffer////////////////////////////////////////
@@ -274,7 +271,7 @@ executionMemoryBuffer#(
     .i_enable(i_enable),
     //Data inputs
     .i_returnPC(w_returnPCE),
-    .i_readData2(o_readData2FowardedE),
+    .i_readData2(w_readData2E),
     .i_aluResult(w_aluResultE),
     .i_writeRegister(w_writeRegisterE),
     //Control inputs
@@ -379,13 +376,13 @@ fowardingUnit #(
     .REGISTER_BITS(REGISTER_BITS)
 )fowardingUnit(
     //Data inputs
-    .i_rs(w_rsE),
-    .i_rt(w_rtE),
+    .i_rs(w_rsID),
+    .i_rt(w_rtID),
+    .i_rdE(w_writeRegisterE),
     .i_rdM(w_writeRegisterM),
-    .i_rdWB(w_writeRegisterWB),
     //Control inputs
+    .i_regWriteE(w_regWriteE),
     .i_regWriteM(w_regWriteM),
-    .i_regWriteWB(w_regWriteWB),
     //Control outputs
     .o_operandACtl(w_operandACtl),
     .o_operandBCtl(w_operandBCtl)
@@ -400,8 +397,10 @@ hazardDetector #(
     .i_rsID(w_rsID),
     .i_rtID(w_rtID),
     .i_rtE(w_rtE),
+    .i_rtM(w_writeRegisterM),
     //Control inputs
     .i_memReadE(w_memReadE),
+    .i_memReadM(w_memReadM),
     //Control outputs
     .o_stall(w_stall)
 );

@@ -15,6 +15,10 @@ module instructionDecodeStage
     input wire [DATA_LEN-1:0] i_writeData,
     input wire [REGISTER_BITS-1:0] i_registerAddress,
     input wire [DATA_LEN-1:0] i_incrementedPC,
+    input wire [DATA_LEN-1:0] i_aluResultE,
+    input wire [DATA_LEN-1:0] i_aluResultM,
+    input wire [1:0] i_operandACtl,
+    input wire [1:0] i_operandBCtl,
 
     //Outputs
     output wire o_regWrite,
@@ -40,6 +44,8 @@ module instructionDecodeStage
     output wire [DATA_LEN-1:0] o_pcBranch
 );
 
+wire [DATA_LEN-1:0] w_readData1;
+wire [DATA_LEN-1:0] w_readData2;
 wire [DATA_LEN-1:0] w_instruction;
 
 wire [1:0] w_branch;
@@ -88,8 +94,8 @@ registers#(
     .i_writeData(i_writeData),
     .i_regWrite(i_regWrite),
     .i_registerAddress(i_registerAddress),
-    .o_readData1(o_readData1),
-    .o_readData2(o_readData2),
+    .o_readData1(w_readData1),
+    .o_readData2(w_readData2),
     .o_registerValue(o_registerValue)
 );
 
@@ -100,6 +106,32 @@ signExtend#(
 (
     .i_immediateValue(i_instruction[15:0]),
     .o_immediateExtendValue(o_immediateExtendValue)
+);
+
+//Mux to select readData1 fowarding
+mux4to1 #(
+    .DATA_LEN(DATA_LEN)
+) MUXD1F
+(
+    .i_muxInputA(w_readData1),
+    .i_muxInputB(0),
+    .i_muxInputC(i_aluResultM),
+    .i_muxInputD(i_aluResultE),
+    .i_muxSelector(i_operandACtl),
+    .o_muxOutput(o_readData1)
+);
+
+//Mux to select readData2 fowarding
+mux4to1 #(
+    .DATA_LEN(DATA_LEN)
+) MUXD2F
+(
+    .i_muxInputA(w_readData2),
+    .i_muxInputB(0),
+    .i_muxInputC(i_aluResultM),
+    .i_muxInputD(i_aluResultE),
+    .i_muxSelector(i_operandBCtl),
+    .o_muxOutput(o_readData2)
 );
 
 branchControl branchControl(
