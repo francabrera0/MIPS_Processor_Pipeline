@@ -8,6 +8,7 @@ module instructionDecodeStage
 (
     //Inputs
     input wire i_reset,
+    input wire i_clk,
     input wire i_stall,
     input wire [DATA_LEN-1:0] i_instruction,
     input wire i_regWrite,
@@ -88,6 +89,7 @@ registers#(
     .REGISTER_BITS(REGISTER_BITS)
 ) registers
 (
+    .i_clk(i_clk),
     .i_reset(i_reset),
     .i_readRegister1(i_instruction[25:21]),
     .i_readRegister2(i_instruction[20:16]),

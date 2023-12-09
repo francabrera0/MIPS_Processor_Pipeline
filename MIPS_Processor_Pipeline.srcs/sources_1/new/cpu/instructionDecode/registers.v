@@ -6,6 +6,7 @@ module registers
 (
     //Inputs
     input wire i_reset,
+    input wire i_clk,
     input wire [REGISTER_BITS-1:0] i_readRegister1,
     input wire [REGISTER_BITS-1:0] i_readRegister2,
     input wire [REGISTER_BITS-1:0] i_writeRegister,
@@ -26,7 +27,7 @@ initial begin
     r_registers[0] = 0;
 end
 
-always @(*) begin
+always @(negedge i_clk) begin
     if(i_reset)
         r_registers[0] = 0;
     else if(i_regWrite)

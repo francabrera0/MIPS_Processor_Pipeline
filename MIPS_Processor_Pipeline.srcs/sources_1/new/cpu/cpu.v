@@ -110,6 +110,7 @@ instructionDecodeStage#(
 ) instructionDecodeStage
 (
     //Inputs
+    .i_clk(i_clk),
     .i_reset(i_reset),
     .i_stall(w_stall),
     .i_instruction(w_instructionID),
