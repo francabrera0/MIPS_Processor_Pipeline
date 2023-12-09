@@ -4,18 +4,18 @@ module dataMemory #(
     DATA_LEN = 32,   
     SIZE_BITS = 5
 )(
+    input wire i_clk,
     //Data inputs
     input wire [DATA_LEN-1:0] i_address,
     input wire [DATA_LEN-1:0] i_writeData,
     //Control inputs
-    input wire i_memRead,
     input wire i_memWrite,
     input wire [4:0] i_memoryAddress,
     input wire [1:0] i_loadStoreType,
     input wire i_unsigned,
     //Data outputs
     output wire [DATA_LEN-1:0] o_readData,
-    output reg [DATA_LEN-1:0] o_memoryValue
+    output wire [DATA_LEN-1:0] o_memoryValue
 );
 
 localparam BYTE = 2'b00;
@@ -29,22 +29,22 @@ reg [DATA_LEN-1:0] memoryBlock [(2**SIZE_BITS)-1: 0];
 
 wire [DATA_LEN-3:0] alingnedAddress = i_address[DATA_LEN-1:2];
 
-reg [DATA_LEN-1:0] r_readData;
+wire [DATA_LEN-1:0] w_readData;
 
 wire[BYTE_SIZE-1:0] byteSigned = {i_writeData[DATA_LEN-1], i_writeData[BYTE_SIZE-2:0]};
 wire[HALFWORD_SIZE-1:0] halfWordSigned = {i_writeData[DATA_LEN-1], i_writeData[HALFWORD_SIZE-2:0]};
 
-    memoryMask #(
-        .DATA_LEN(DATA_LEN)
-    )memoryMask (
-        .i_readData(r_readData),
-        .i_loadStoreType(i_loadStoreType),
-        .i_unsigned(i_unsigned),
-        .i_address(i_address[1:0]),
-        .o_readData(o_readData)
-    );
+memoryMask #(
+    .DATA_LEN(DATA_LEN)
+)memoryMask (
+    .i_readData(w_readData),
+    .i_loadStoreType(i_loadStoreType),
+    .i_unsigned(i_unsigned),
+    .i_address(i_address[1:0]),
+    .o_readData(o_readData)
+);
 
-always @(*) begin
+always @(posedge i_clk) begin
     if(i_memWrite) begin
         case(i_loadStoreType)
             BYTE: begin
@@ -74,14 +74,10 @@ always @(*) begin
                 memoryBlock[alingnedAddress] = i_writeData;
             end
         endcase
-    end
-    
-    if(i_memRead) begin
-        r_readData = memoryBlock[alingnedAddress];
-    end else r_readData = 0;
-
-    o_memoryValue = memoryBlock[i_memoryAddress];
-    
+    end    
 end
+
+assign o_memoryValue = memoryBlock[i_memoryAddress];
+assign w_readData = memoryBlock[alingnedAddress];
 
 endmodule

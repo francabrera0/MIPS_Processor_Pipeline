@@ -306,12 +306,12 @@ wire [DATA_LEN-1:0] w_memoryValue;
 memoryStage#(
     .DATA_LEN(DATA_LEN)
 ) memoryStage
-(
+(   
+    .i_clk(i_clk),
     //Data inputs
     .i_address(w_aluResultM),
     .i_writeData(w_readData2M),
     //Control inputs
-    .i_memRead(w_memReadM),
     .i_memWrite(w_memWriteM),
     .i_memoryAddress(i_regMemAddress),
     .i_loadStoreType(w_loadStoreTypeM),
