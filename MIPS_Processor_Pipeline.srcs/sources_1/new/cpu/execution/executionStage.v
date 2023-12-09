@@ -78,7 +78,7 @@ module executionStage #(
     (
         .i_muxInputA(i_rt),
         .i_muxInputB(i_rd),
-        .i_muxInputC(0),
+        .i_muxInputC(5'b00000),
         .i_muxInputD(5'h1f), //Registro 31
         .i_muxSelector(i_regDst),
         .o_muxOutput(o_writeRegister)
