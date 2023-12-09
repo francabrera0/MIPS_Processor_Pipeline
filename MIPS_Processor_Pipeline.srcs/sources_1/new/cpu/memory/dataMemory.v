@@ -6,11 +6,11 @@ module dataMemory #(
 )(
     input wire i_clk,
     //Data inputs
-    input wire [DATA_LEN-1:0] i_address,
+    input wire [SIZE_BITS+1:0] i_address,
     input wire [DATA_LEN-1:0] i_writeData,
     //Control inputs
     input wire i_memWrite,
-    input wire [4:0] i_memoryAddress,
+    input wire [SIZE_BITS-1:0] i_memoryAddress,
     input wire [1:0] i_loadStoreType,
     input wire i_unsigned,
     //Data outputs
@@ -27,7 +27,7 @@ localparam HALFWORD_SIZE = DATA_LEN / 2;
 
 reg [DATA_LEN-1:0] memoryBlock [(2**SIZE_BITS)-1: 0];
 
-wire [DATA_LEN-3:0] alingnedAddress = i_address[DATA_LEN-1:2];
+wire [SIZE_BITS-1:0] alingnedAddress = i_address[SIZE_BITS+1:2];
 
 wire [DATA_LEN-1:0] w_readData;
 

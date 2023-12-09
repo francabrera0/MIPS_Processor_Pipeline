@@ -3,6 +3,7 @@ module cpu
     parameter DATA_LEN = 32,
     parameter PC_LEN = 32,
     parameter MEM_SIZE_ADDRESS_BITS = 10, //Bits to address instruction memory,
+    parameter MEMORY_SIZE_BITS = 5,
     parameter OPCODE_LEN = 6, 
     parameter REGISTER_BITS = 5, //Cantidad de bits que direccionan registros
     parameter IMMEDIATE_LEN = 16,
@@ -304,12 +305,13 @@ wire [DATA_LEN-1:0] w_readDataM;
 wire [DATA_LEN-1:0] w_memoryValue;
 
 memoryStage#(
-    .DATA_LEN(DATA_LEN)
+    .DATA_LEN(DATA_LEN),
+    .SIZE_BITS(MEMORY_SIZE_BITS)
 ) memoryStage
 (   
     .i_clk(i_clk),
     //Data inputs
-    .i_address(w_aluResultM),
+    .i_address(w_aluResultM[MEMORY_SIZE_BITS+1:0]),
     .i_writeData(w_readData2M),
     //Control inputs
     .i_memWrite(w_memWriteM),
