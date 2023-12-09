@@ -66,7 +66,8 @@ controlUnit#(
     .OPCODE_LEN(OPCODE_LEN)
 ) controlUnit 
 (
-    .i_instruction(w_instruction),
+    .i_opCode(w_instruction[DATA_LEN-1:DATA_LEN-OPCODE_LEN]),
+    .i_funct(w_instruction[OPCODE_LEN-1:0]),
     .o_regWrite(o_regWrite),
     .o_aluSrc(o_aluSrc),
     .o_aluOp(o_aluOp),

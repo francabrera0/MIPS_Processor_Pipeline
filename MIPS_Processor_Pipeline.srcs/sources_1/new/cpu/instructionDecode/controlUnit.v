@@ -5,7 +5,8 @@ module controlUnit
 )
 (
     //Inputs
-    input wire [DATA_LEN-1:0] i_instruction,
+    input wire [OPCODE_LEN-1:0] i_opCode,
+    input wire [OPCODE_LEN-1:0] i_funct,
 
     //Outputs
     output wire o_regWrite,
@@ -68,29 +69,27 @@ reg r_halt;
 reg [1:0] r_loadStoreType;
 reg r_unsigned;
 
-reg [OPCODE_LEN-1:0] r_opCode;
 reg r_isShamt;
 reg r_isNotJR;
 reg r_isJARL;
 
 always @(*) begin
-    r_opCode = i_instruction[DATA_LEN-1:DATA_LEN-OPCODE_LEN];
-    r_isShamt = ~(i_instruction[2] || i_instruction[5]);
-    r_isNotJR = (i_instruction[5:0] != 6'b001000); 
-    r_isJARL = i_instruction[3] & i_instruction[0];
+    r_isShamt = ~(i_funct[2] || i_funct[5]);
+    r_isNotJR = (i_funct[5:0] != 6'b001000); 
+    r_isJARL = i_funct[3] & i_funct[0];
 
-    case (r_opCode[OPCODE_LEN-1:2])
+    case (i_opCode[OPCODE_LEN-1:2])
         RTYPE[OPCODE_LEN-1:2]: begin
-            r_regDest = {r_opCode[0], 1'b1};
+            r_regDest = {i_opCode[0], 1'b1};
             r_aluOp = 2'b10;
             r_immediateFunct = 3'b000;
             r_aluSrc = (r_isShamt) ? 2'b10 : 2'b00;
-            r_branch = r_opCode[1] | (!r_opCode[1] & i_instruction[3])? 2'b10 : 2'b00;
-            r_jumpType = !r_opCode[1];
+            r_branch = i_opCode[1] | (!i_opCode[1] & i_funct[3])? 2'b10 : 2'b00;
+            r_jumpType = !i_opCode[1];
             r_memRead = 1'b0;
             r_memWrite = 1'b0;
-            r_regWrite = (!(r_opCode[1] | r_opCode[0]))? r_isNotJR : r_opCode[0]; //Si es R-TYPE escribe en registro en todos los casos menos JR, si no es R-TYPE escribe solo en JAL
-            r_memToReg = {r_opCode[0] | r_isJARL, 1'b0}; //Si es JL o JARL write return address
+            r_regWrite = (!(i_opCode[1] | i_opCode[0]))? r_isNotJR : i_opCode[0]; //Si es R-TYPE escribe en registro en todos los casos menos JR, si no es R-TYPE escribe solo en JAL
+            r_memToReg = {i_opCode[0] | r_isJARL, 1'b0}; //Si es JL o JARL write return address
             r_halt = 1'b0;
             r_loadStoreType = 2'b11;
             r_unsigned = 0;
@@ -98,7 +97,7 @@ always @(*) begin
         ADDI[OPCODE_LEN-1:2]: begin
             r_regDest = 2'b00;
             r_aluOp = 2'b11;
-            r_immediateFunct = r_opCode[2:0];
+            r_immediateFunct = i_opCode[2:0];
             r_aluSrc = 2'b01;
             r_branch = 2'b00;
             r_jumpType = 1'b0;
@@ -113,7 +112,7 @@ always @(*) begin
         ANDI[OPCODE_LEN-1:2]: begin
             r_regDest = 2'b00;
             r_aluOp = 2'b11;
-            r_immediateFunct = r_opCode[2:0];
+            r_immediateFunct = i_opCode[2:0];
             r_aluSrc = 2'b01;
             r_branch = 2'b00;
             r_jumpType = 1'b0;
@@ -137,7 +136,7 @@ always @(*) begin
             r_regWrite = 1'b1;
             r_memToReg = 2'b01;
             r_halt = 1'b0;
-            r_loadStoreType = r_opCode[1:0];
+            r_loadStoreType = i_opCode[1:0];
             r_unsigned = 1'b0;
         end
         LWU[OPCODE_LEN-1:2]: begin
@@ -152,7 +151,7 @@ always @(*) begin
             r_regWrite = 1'b1;
             r_memToReg = 2'b01;
             r_halt = 1'b0;
-            r_loadStoreType = r_opCode[1:0];
+            r_loadStoreType = i_opCode[1:0];
             r_unsigned = 1'b1;
         end
         SW[OPCODE_LEN-1:2]: begin
@@ -167,7 +166,7 @@ always @(*) begin
             r_regWrite = 1'b0;
             r_memToReg = 2'b00;
             r_halt = 1'b0;
-            r_loadStoreType = r_opCode[1:0];
+            r_loadStoreType = i_opCode[1:0];
             r_unsigned = 0;
         end
         BEQ[OPCODE_LEN-1:2]: begin
@@ -175,7 +174,7 @@ always @(*) begin
             r_aluOp = 2'b01;
             r_immediateFunct = 3'b000;
             r_aluSrc = 2'b00;
-            r_branch = {r_opCode[0],1'b1};
+            r_branch = {i_opCode[0],1'b1};
             r_jumpType = 1'b0;
             r_memRead = 1'b0;
             r_memWrite = 1'b0;

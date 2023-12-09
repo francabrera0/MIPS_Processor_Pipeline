@@ -78,6 +78,9 @@ initial begin
     //ADDI a to r8
     i_instructionToWrite = 32'h2008000a;
     #20
+    //ADDI 3 to r2
+    i_instructionToWrite = 32'h20020003;
+    #20
     
     
     //Load en r3 lo que esta en la posicion de memoria 2

@@ -22,18 +22,15 @@ module registers
 
 reg [DATA_LEN-1:0] r_registers [(2**REGISTER_BITS)-1:0];
 
-reg [REGISTER_BITS:0] i;
-
 initial begin
-    for(i = 0;i < 2**REGISTER_BITS; i = i+1) begin
-        r_registers[i] = 0;
-    end
+    r_registers[0] = 0;
 end
 
 always @(*) begin
-    if(i_regWrite) begin
+    if(i_reset)
+        r_registers[0] = 0;
+    else if(i_regWrite)
         r_registers[i_writeRegister] = i_writeData;
-    end
 end
 
 
