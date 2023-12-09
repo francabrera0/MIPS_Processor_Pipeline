@@ -9,11 +9,9 @@ module fowardingUnit #(
     input wire [REGISTER_BITS-1:0] i_rt,
     input wire [REGISTER_BITS-1:0] i_rdE,
     input wire [REGISTER_BITS-1:0] i_rdM,
-    input wire [REGISTER_BITS-1:0] i_rdWB,
     //Control inputs
     input wire i_regWriteE,
     input wire i_regWriteM,
-    input wire i_regWriteWB,
     //Control outputs
     output reg [1:0] o_operandACtl,
     output reg [1:0] o_operandBCtl
@@ -25,16 +23,11 @@ wire rtHazardE = (i_rdE == i_rt);
 wire rsHazardM = (i_rdM == i_rs);
 wire rtHazardM = (i_rdM == i_rt);
 
-wire rsHazardWB = (i_rdWB == i_rs);
-wire rtHazardWB = (i_rdWB == i_rt);
-
 always @(*) begin
     if(rsHazardE & i_regWriteE)
         o_operandACtl = 2'b11;
     else if(rsHazardM & i_regWriteM)
         o_operandACtl = 2'b10;
-    else if(rsHazardWB & i_regWriteWB)
-        o_operandACtl = 2'b01;
     else
         o_operandACtl = 2'b00;
         
@@ -42,8 +35,6 @@ always @(*) begin
         o_operandBCtl = 2'b11;
     else if(rtHazardM & i_regWriteM)
         o_operandBCtl = 2'b10;
-    else if(rtHazardWB & i_regWriteWB)
-        o_operandBCtl = 2'b01;
     else
         o_operandBCtl = 2'b00;
 end

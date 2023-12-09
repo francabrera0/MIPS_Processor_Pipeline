@@ -401,7 +401,7 @@ hazardDetector #(
     .i_rtID(w_rtID),
     .i_rtE(w_rtE),
     //Control inputs
-    .i_memRead(w_memReadE),
+    .i_memReadE(w_memReadE),
     //Control outputs
     .o_stall(w_stall)
 );
