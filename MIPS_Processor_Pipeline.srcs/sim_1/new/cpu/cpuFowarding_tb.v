@@ -63,19 +63,20 @@ initial begin
     
     i_writeInstruction = 1'b1;
     //Set Up
-    //ADDI 2 to r0
-    i_instructionToWrite = 32'h20600002;
-    #20
     //ADDI 8 to r5
-    i_instructionToWrite = 32'h20650008;
+    i_instructionToWrite = 32'h20050008;
     #20
     //ADDI a to r8
-    i_instructionToWrite = 32'h2068000a;
+    i_instructionToWrite = 32'h2008000a;
     #20
+    
     //Test
-    //ADDI 10 to r3 2 veces
-    i_instructionToWrite = 32'h2063000a;
-    #40
+    //ADDI 10 to r3
+    i_instructionToWrite = 32'h2003000a;
+    #20
+    //ADDI 10 to r3
+    i_instructionToWrite = 32'h2063000f;
+    #20
     //Store r3 en direccion r[0]+0
     i_instructionToWrite = 32'hac030000;
     #20
