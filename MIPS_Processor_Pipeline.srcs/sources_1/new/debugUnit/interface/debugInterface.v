@@ -53,7 +53,7 @@ reg [3:0] r_wait, r_waitNext;
 
 reg r_readUart;
 reg r_writeUart;
-reg [UART_DATA_LEN-1:0] r_dataToWrite;
+reg [UART_DATA_LEN-1:0] r_dataToWrite, r_dataToWriteNext;
 
 reg r_enable;
 reg r_writeInstruction;
@@ -69,12 +69,14 @@ always @(posedge i_clk) begin
         r_byteCounter <= 2'b00;
         r_wait <= 3'b000;
         r_regMemAddress <= 6'b00000;
+        r_dataToWrite <= 0;
     end
     else begin
         r_state <= r_stateNext;
         r_byteCounter <= r_byteCounterNext;
         r_wait <= r_waitNext;
         r_regMemAddress <= r_regMemAddressNext;
+        r_dataToWrite <= r_dataToWriteNext;
     end
 end
 
@@ -84,19 +86,17 @@ always @(*) begin
     r_byteCounterNext = r_byteCounter;
     r_waitNext = r_wait;
     r_regMemAddressNext = r_regMemAddress;
+    r_dataToWriteNext = r_dataToWrite;
 
     case (r_state)
         IDLE: begin
             r_byteCounterNext = 2'b00;
             r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
-            r_dataToWrite = 0;
             if(~i_rxEmpty) 
                 r_stateNext = DECODE;
         end
         
-        WAIT_RECEPTION: begin
-            r_dataToWrite = 0;
-            
+        WAIT_RECEPTION: begin       
             if(~i_rxEmpty)
                 r_stateNext = r_wait;
         end
@@ -109,7 +109,6 @@ always @(*) begin
         end
 
         DECODE: begin
-            r_dataToWrite = 0;
             r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
             
             if(i_rxEmpty) begin
@@ -132,9 +131,7 @@ always @(*) begin
             end
         end
 
-        FETCH_INSTRUCTION: begin
-            r_dataToWrite = 0;
-            
+        FETCH_INSTRUCTION: begin           
             if(i_rxEmpty) begin
                 r_stateNext = WAIT_RECEPTION;
                 r_waitNext = FETCH_INSTRUCTION;
@@ -156,13 +153,12 @@ always @(*) begin
         end
 
         WRITE_INSTRUCTION: begin
-            r_dataToWrite = 0;
             r_stateNext = IDLE;
         end
 
         STEP: begin
             r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
-            r_dataToWrite = 0;
+
             if(i_halt) 
                 r_stateNext = IDLE;
             else
@@ -171,7 +167,6 @@ always @(*) begin
 
         RUN: begin
             r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
-            r_dataToWrite = 0;
             
             if(i_halt) begin
                 r_stateNext = SEND_VALUES;
@@ -186,7 +181,7 @@ always @(*) begin
                 r_waitNext = SEND_VALUES;
             end
             else begin
-                r_dataToWrite = (i_regMemValue >> (r_byteCounter*8) & 32'hff);
+                r_dataToWriteNext = (i_regMemValue >> (r_byteCounter*8) & 32'hff);
                 r_stateNext = SEND_VALUES;
                 
                 if(r_byteCounter == 2'b11) begin
@@ -208,7 +203,7 @@ always @(*) begin
                 r_waitNext = SEND_PC;
             end
             else begin
-                r_dataToWrite = (i_programCounter >> (r_byteCounter*8) & 32'hff);
+                r_dataToWriteNext = (i_programCounter >> (r_byteCounter*8) & 32'hff);
                 r_stateNext = SEND_PC;
     
                 if(r_byteCounter == 2'b11) begin
@@ -221,7 +216,7 @@ always @(*) begin
 
         default: begin
             r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
-            r_dataToWrite = 0;
+            r_dataToWriteNext = 0;
             r_byteCounterNext = 2'b00;     
         end
     endcase
