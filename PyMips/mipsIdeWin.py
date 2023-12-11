@@ -144,6 +144,8 @@ class mipsIDE(QMainWindow):
             currentItem = table.item(itemIndex, 0)
             if (currentItem is not None and currentItem.text() != item.text()):
                 item.setBackground(QColor(255, 165, 0))
+            elif(currentItem is None and value != 0):
+                item.setBackground(QColor(255, 165, 0))
             else:
                 item.setBackground(QColor(0, 0, 0, 0))
 
