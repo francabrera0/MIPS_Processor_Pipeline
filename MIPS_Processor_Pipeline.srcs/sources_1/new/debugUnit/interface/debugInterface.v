@@ -138,10 +138,7 @@ always @(*) begin
                 r_waitNext = FETCH_INSTRUCTION;
             end
             else begin
-                if(r_byteCounter == 2'b00) r_instructionToWriteNext[7:0] = i_dataToRead;
-                else if (r_byteCounter == 2'b01) r_instructionToWriteNext[15:8] = i_dataToRead;
-                else if (r_byteCounter == 2'b10) r_instructionToWriteNext[23:16] = i_dataToRead;                            
-                else if (r_byteCounter == 2'b11) r_instructionToWriteNext[31:24] = i_dataToRead;
+                r_instructionToWriteNext = r_instructionToWrite | ({{24{1'b0}},i_dataToRead} << (r_byteCounter * 8));
                 
                 if(r_byteCounter == 2'b11) begin
                     r_byteCounterNext = 2'b00;
