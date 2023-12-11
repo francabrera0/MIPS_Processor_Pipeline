@@ -57,7 +57,7 @@ reg [UART_DATA_LEN-1:0] r_dataToWrite, r_dataToWriteNext;
 
 reg r_enable;
 reg r_writeInstruction;
-reg [CPU_DATA_LEN-1:0] r_instructionToWrite;
+reg [CPU_DATA_LEN-1:0] r_instructionToWrite, r_instructionToWriteNext;
 
 reg [1:0] r_byteCounter, r_byteCounterNext;
 reg [5:0] r_regMemAddress, r_regMemAddressNext;
@@ -69,7 +69,8 @@ always @(posedge i_clk) begin
         r_byteCounter <= 2'b00;
         r_wait <= 3'b000;
         r_regMemAddress <= 6'b00000;
-        r_dataToWrite <= 0;
+        r_dataToWrite <= {UART_DATA_LEN{1'b0}};
+        r_instructionToWrite <= {CPU_DATA_LEN{1'b0}};
     end
     else begin
         r_state <= r_stateNext;
@@ -77,6 +78,7 @@ always @(posedge i_clk) begin
         r_wait <= r_waitNext;
         r_regMemAddress <= r_regMemAddressNext;
         r_dataToWrite <= r_dataToWriteNext;
+        r_instructionToWrite <= r_instructionToWriteNext;
     end
 end
 
@@ -87,11 +89,12 @@ always @(*) begin
     r_waitNext = r_wait;
     r_regMemAddressNext = r_regMemAddress;
     r_dataToWriteNext = r_dataToWrite;
+    r_instructionToWriteNext = r_instructionToWrite;
 
     case (r_state)
         IDLE: begin
             r_byteCounterNext = 2'b00;
-            r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
+            
             if(~i_rxEmpty) 
                 r_stateNext = DECODE;
         end
@@ -101,15 +104,13 @@ always @(*) begin
                 r_stateNext = r_wait;
         end
 
-        WAIT_SEND: begin
-            r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
-            
+        WAIT_SEND: begin          
             if(~i_txFull) 
                 r_stateNext = r_wait;
         end
 
         DECODE: begin
-            r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
+            r_instructionToWriteNext = {CPU_DATA_LEN{1'b0}};
             
             if(i_rxEmpty) begin
                 r_stateNext = WAIT_RECEPTION;
@@ -137,10 +138,10 @@ always @(*) begin
                 r_waitNext = FETCH_INSTRUCTION;
             end
             else begin
-                if(r_byteCounter == 2'b00) r_instructionToWrite[7:0] = i_dataToRead;
-                else if (r_byteCounter == 2'b01) r_instructionToWrite[15:8] = i_dataToRead;
-                else if (r_byteCounter == 2'b10) r_instructionToWrite[23:16] = i_dataToRead;                            
-                else if (r_byteCounter == 2'b11) r_instructionToWrite[31:24] = i_dataToRead;
+                if(r_byteCounter == 2'b00) r_instructionToWriteNext[7:0] = i_dataToRead;
+                else if (r_byteCounter == 2'b01) r_instructionToWriteNext[15:8] = i_dataToRead;
+                else if (r_byteCounter == 2'b10) r_instructionToWriteNext[23:16] = i_dataToRead;                            
+                else if (r_byteCounter == 2'b11) r_instructionToWriteNext[31:24] = i_dataToRead;
                 
                 if(r_byteCounter == 2'b11) begin
                     r_byteCounterNext = 2'b00;
@@ -157,8 +158,6 @@ always @(*) begin
         end
 
         STEP: begin
-            r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
-
             if(i_halt) 
                 r_stateNext = IDLE;
             else
@@ -166,16 +165,12 @@ always @(*) begin
         end
 
         RUN: begin
-            r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
-            
             if(i_halt) begin
                 r_stateNext = SEND_VALUES;
             end
         end
 
-        SEND_VALUES: begin
-            r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
-        
+        SEND_VALUES: begin 
             if(i_txFull) begin
                 r_stateNext = WAIT_SEND;
                 r_waitNext = SEND_VALUES;
@@ -195,9 +190,7 @@ always @(*) begin
             end
         end
 
-        SEND_PC: begin
-            r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
-        
+        SEND_PC: begin    
             if(i_txFull) begin
                 r_stateNext = WAIT_SEND;
                 r_waitNext = SEND_PC;
@@ -215,7 +208,7 @@ always @(*) begin
         
 
         default: begin
-            r_instructionToWrite = {CPU_DATA_LEN{1'b0}};
+            r_instructionToWriteNext = {CPU_DATA_LEN{1'b0}};
             r_dataToWriteNext = 0;
             r_byteCounterNext = 2'b00;     
         end
