@@ -21,7 +21,6 @@ reg [DATA_LEN-1:0] r_memoryBlock [(2**MEM_SIZE_ADDRESS_BITS)-1: 0];
 
 reg [MEM_SIZE_ADDRESS_BITS-1:0] r_writePtr, r_writePtrNext, r_writePtrSucc;
 
-
 always @(posedge i_clk) begin
     if(i_write) begin
         r_memoryBlock[r_writePtr] <= i_dataToWrite;

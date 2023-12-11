@@ -41,8 +41,10 @@ localparam [3:0] FETCH_INSTRUCTION = 4'b0100;
 localparam [3:0] WRITE_INSTRUCTION = 4'b0101;
 localparam [3:0] STEP              = 4'b0110;
 localparam [3:0] RUN               = 4'b0111;
-localparam [3:0] SEND_VALUES       = 4'b1000;
-localparam [3:0] SEND_PC           = 4'b1001;
+localparam [3:0] PREPARE_SEND      = 4'b1000;
+localparam [3:0] SEND_VALUES       = 4'b1001;
+localparam [3:0] SEND_PC           = 4'b1010;
+localparam [3:0] FINISH_SEND       = 4'b1011;
 
 localparam [UART_DATA_LEN-1:0] PROGRAM_CODE = 8'h23;
 localparam [UART_DATA_LEN-1:0] STEP_CODE= 8'h12;
@@ -158,11 +160,22 @@ always @(*) begin
             if(i_halt) 
                 r_stateNext = IDLE;
             else
-                r_stateNext = SEND_VALUES;
+                r_stateNext = PREPARE_SEND;
         end
 
         RUN: begin
             if(i_halt) begin
+                r_stateNext = PREPARE_SEND;
+            end
+        end
+        
+        PREPARE_SEND: begin
+            if(i_txFull) begin
+                r_stateNext = WAIT_SEND;
+                r_waitNext = PREPARE_SEND;
+            end else begin
+                r_dataToWriteNext = i_regMemValue & 32'h000000ff;
+                r_byteCounterNext = r_byteCounter + 1;
                 r_stateNext = SEND_VALUES;
             end
         end
@@ -197,12 +210,22 @@ always @(*) begin
                 r_stateNext = SEND_PC;
     
                 if(r_byteCounter == 2'b11) begin
-                    r_stateNext = IDLE;
+                    r_stateNext = FINISH_SEND;
                 end
                 r_byteCounterNext = r_byteCounter + 1;
             end
         end
         
+        FINISH_SEND: begin
+            if(i_txFull) begin
+                r_stateNext = WAIT_SEND;
+                r_waitNext = FINISH_SEND;
+            end
+            if(r_byteCounter == 2'b01) begin
+                r_stateNext = IDLE;
+            end
+            r_byteCounterNext = r_byteCounter + 1;
+        end
 
         default: begin
             r_instructionToWriteNext = {CPU_DATA_LEN{1'b0}};
@@ -272,6 +295,13 @@ always @(*) begin
             r_writeUart = 1'b0;
             r_enable = 1'b1;
         end
+        
+        PREPARE_SEND: begin
+            r_writeInstruction = 1'b0;        
+            r_writeUart = 1'b0;
+            r_enable = 1'b0;
+            r_readUart = 1'b0;
+        end
 
         SEND_VALUES: begin
             r_writeInstruction = 1'b0;        
@@ -281,6 +311,13 @@ always @(*) begin
         end
 
         SEND_PC: begin
+            r_writeInstruction = 1'b0;
+            r_writeUart = 1'b1;
+            r_enable = 1'b0;
+            r_readUart = 1'b0;
+        end
+        
+        FINISH_SEND: begin
             r_writeInstruction = 1'b0;
             r_writeUart = 1'b1;
             r_enable = 1'b0;
