@@ -173,7 +173,7 @@ always @(*) begin
                 r_waitNext = SEND_VALUES;
             end
             else begin
-                r_dataToWriteNext = (i_regMemValue >> (r_byteCounter*8) & 32'hff);
+                r_dataToWriteNext = (i_regMemValue >> (r_byteCounter*8)) & 32'h000000ff;
                 r_stateNext = SEND_VALUES;
                 
                 if(r_byteCounter == 2'b11) begin
@@ -193,7 +193,7 @@ always @(*) begin
                 r_waitNext = SEND_PC;
             end
             else begin
-                r_dataToWriteNext = (i_programCounter >> (r_byteCounter*8) & 32'hff);
+                r_dataToWriteNext = (i_programCounter >> (r_byteCounter*8)) & 32'h000000ff;
                 r_stateNext = SEND_PC;
     
                 if(r_byteCounter == 2'b11) begin
