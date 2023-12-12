@@ -7,7 +7,9 @@
 
 ADDI r5, r0, 10 #Max en 10
 ADDI r3, r0, 1  #Valor actual en 1
-ADDI r7,r0, 1 #1
+ADDI r1,r0, 0 #0 en r1
+ADDI r2,r0, 0 #0 en r2
+ADDI r7,r0, 1 #1 en r7
 
 FIBONACCI: BEQ r1, r5, END
 ADDI r1, r1, 1 #Aumento el contador
