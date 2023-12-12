@@ -14,7 +14,7 @@ class mipsIDE(QMainWindow):
     assemblyCode = None
     parser = assemblyParser(instructionTable, registerTable, 4)
     programValid = False
-    serialComPort = serial.Serial("/dev/pts/3", 115200, timeout=2)
+    serialComPort = serial.Serial("/dev/pts/2", 115200, timeout=2)
 
     def __init__(self):
         super().__init__()
@@ -58,6 +58,8 @@ class mipsIDE(QMainWindow):
         stepButton.clicked.connect(self.handleStep)
         runButton = QPushButton("Run")
         runButton.clicked.connect(self.handleRun)
+        resetButton = QPushButton("Reset")
+        resetButton.clicked.connect(self.handleReset)
         saveButton = QPushButton("Save")
         saveButton.clicked.connect(self.saveSourceCode)
         openButton = QPushButton("Open")
@@ -72,7 +74,8 @@ class mipsIDE(QMainWindow):
         layout.addWidget(self.assemblyCode, 5, 0, 4, 2)
 
         layout.addWidget(buildButton, 1, 2, 1, 1)
-        layout.addWidget(programButton, 3, 2, 1, 1)
+        layout.addWidget(programButton, 2, 2, 1, 1)
+        layout.addWidget(resetButton, 3, 2, 1, 1)
         layout.addWidget(stepButton, 5, 2, 1, 1)
         layout.addWidget(runButton, 7, 2, 1, 1)
         
@@ -101,6 +104,11 @@ class mipsIDE(QMainWindow):
     def handleStep(self):
         self.serialComPort.write(bytes.fromhex('12'))
         self.updateTables()
+
+    # Send a reset command
+    def handleReset(self):
+        self.serialComPort.write(bytes.fromhex('69'))
+
 
     # Send a run command
     def handleRun(self):
