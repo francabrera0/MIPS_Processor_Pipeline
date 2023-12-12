@@ -59,7 +59,6 @@ debugInterface# (
 ) debugInterface
 (
     .i_clk(i_clk),
-    .i_reset(i_reset),
 
     //Signals from uart
     .i_txFull(w_txFull),

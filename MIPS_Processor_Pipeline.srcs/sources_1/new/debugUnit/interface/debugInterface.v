@@ -7,7 +7,6 @@ module debugInterface
 )
 (
     input wire i_clk,
-    input wire i_reset,
 
     //Signals from uart
     input wire i_txFull,
@@ -64,24 +63,18 @@ reg [CPU_DATA_LEN-1:0] r_instructionToWrite, r_instructionToWriteNext;
 reg [1:0] r_byteCounter, r_byteCounterNext;
 reg [5:0] r_regMemAddress, r_regMemAddressNext;
 
+initial begin
+    r_state = IDLE;
+end
+
 //Finite State Machine with Data (State and Data registers)
 always @(posedge i_clk) begin
-    if(i_reset) begin
-        r_state <= IDLE;
-        r_byteCounter <= 2'b00;
-        r_wait <= 3'b000;
-        r_regMemAddress <= 6'b00000;
-        r_dataToWrite <= {UART_DATA_LEN{1'b0}};
-        r_instructionToWrite <= {CPU_DATA_LEN{1'b0}};
-    end
-    else begin
-        r_state <= r_stateNext;
-        r_byteCounter <= r_byteCounterNext;
-        r_wait <= r_waitNext;
-        r_regMemAddress <= r_regMemAddressNext;
-        r_dataToWrite <= r_dataToWriteNext;
-        r_instructionToWrite <= r_instructionToWriteNext;
-    end
+    r_state <= r_stateNext;
+    r_byteCounter <= r_byteCounterNext;
+    r_wait <= r_waitNext;
+    r_regMemAddress <= r_regMemAddressNext;
+    r_dataToWrite <= r_dataToWriteNext;
+    r_instructionToWrite <= r_instructionToWriteNext;
 end
 
 //Finiste State Machine with Data (Next logic state)
