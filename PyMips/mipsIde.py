@@ -14,7 +14,7 @@ class mipsIDE(QMainWindow):
     assemblyCode = None
     parser = assemblyParser(instructionTable, registerTable, 4)
     programValid = False
-    serialComPort = serial.Serial("/dev/pts/2", 115200, timeout=2)
+    serialComPort = serial.Serial("/dev/pts/3", 115200, timeout=2)
 
     def __init__(self):
         super().__init__()
@@ -38,14 +38,17 @@ class mipsIDE(QMainWindow):
         self.registerTable = QTableWidget(32, 1)
         self.registerTable.setHorizontalHeaderLabels(["Registros"])
         self.registerTable.setMaximumWidth(150)
-        
+        self.setTableVerticalHeader(self.registerTable, 32)
+
         self.memoryTable = QTableWidget(32, 1) 
         self.memoryTable.setHorizontalHeaderLabels(["Memoria"])
         self.memoryTable.setMaximumWidth(150)
+        self.setTableVerticalHeader(self.memoryTable, 32)
 
         self.programCounter = QTableWidget(1, 1)
         self.programCounter.setHorizontalHeaderLabels(["Program Counter"])
         self.programCounter.setMaximumWidth(150)
+        self.setTableVerticalHeader(self.programCounter, 1)
 
         buildButton = QPushButton("Build")
         buildButton.clicked.connect(self.handleBuild)
@@ -168,6 +171,13 @@ class mipsIDE(QMainWindow):
             with open(filePath, 'r') as file:
                 content = file.read()
                 self.codeEditor.setPlainText(content)
+
+    def setTableVerticalHeader(self, table, cells):
+        for i in range(cells):
+            table.setItem(i,0, QTableWidgetItem(""))
+            item = QTableWidgetItem()
+            item.setData(0,i)
+            table.setVerticalHeaderItem(i,item)
 
 def main():
     app = QApplication(sys.argv)
