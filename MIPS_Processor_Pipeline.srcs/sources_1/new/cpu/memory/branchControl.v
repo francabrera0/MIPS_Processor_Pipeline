@@ -22,7 +22,7 @@ wire[DATA_LEN-1:0] shiftedImmediate = {1'b0, i_immediateExtendValue[DATA_LEN-2:0
     //Calculates branch program counter
 wire[DATA_LEN-1:0] w_branchPC = i_immediateExtendValue[DATA_LEN-1]? i_incrementedPC - shiftedImmediate: i_incrementedPC + shiftedImmediate;
     
-wire [DATA_LEN-1:0]  literalJump = {i_incrementedPC[DATA_LEN-1:DATA_LEN-4], i_instrIndex, 2'b00};
+wire [DATA_LEN-1:0] literalJump = {i_incrementedPC[DATA_LEN-1:DATA_LEN-4], i_instrIndex, 2'b00};
     
     //Select jump source (rs register or literal)
 wire [DATA_LEN-1:0] w_jumpPC = i_jumpType? i_readData1 : literalJump;

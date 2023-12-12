@@ -178,6 +178,7 @@ class assemblyParser():
 
                 if len(args) == 3:
                     imm = hex(int(args[2], 16))
+    
 
                 elif imm == 'not_valid':
                     imm = args[1]
@@ -236,12 +237,7 @@ class assemblyParser():
             bit_string = bit_string[0: num_bits - len(bin_val)] + bin_val + bit_string[num_bits:]
 
             if tc:
-                tsubstring = bit_string[0:bit_string.rfind('1')]
-                rsubstring = bit_string[bit_string.rfind('1'):]
-                tsubstring = tsubstring.replace('1', 'X')
-                tsubstring = tsubstring.replace('0', '1')
-                tsubstring = tsubstring.replace('X', '0')
-                bit_string = tsubstring + rsubstring
+                bit_string = '1' + bit_string[1:]
 
             return bit_string
     
