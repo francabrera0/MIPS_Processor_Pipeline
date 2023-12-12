@@ -1,0 +1,3 @@
+LUI r5, 291
+ADDI r5,r5,17767
+HALT
