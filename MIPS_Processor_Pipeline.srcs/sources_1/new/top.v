@@ -27,6 +27,7 @@ wire [CPU_DATA_LEN-1:0] w_instructionToWrite;
 wire [REGISTER_BITS-1:0] w_regMemAddress;
 wire w_regMemCtrl;
 wire [PC_LEN-1:0] w_programCounter;
+wire w_reset;
 
 wire o_locked;
 wire o_clk;
@@ -52,7 +53,8 @@ debugUnit#(
     .o_writeInstruction(w_writeInstruction),
     .o_instructionToWrite(w_instructionToWrite),
     .o_regMemAddress(w_regMemAddress),
-    .o_regMemCtrl(w_regMemCtrl)
+    .o_regMemCtrl(w_regMemCtrl),
+    .o_reset(w_reset)
 );
 
 
@@ -67,7 +69,7 @@ cpu#(
 ) cpu
 (
     .i_clk(o_clk),
-    .i_reset(i_reset),
+    .i_reset(w_reset),
     .i_writeInstruction(w_writeInstruction),
     .i_enable(w_enable & o_locked),
     .i_instructionToWrite(w_instructionToWrite),

@@ -67,7 +67,7 @@ fetchDecodeBuffer#(
     .i_reset(i_reset),
     .i_instruction(w_instructionIF),
     .i_incrementedPC(w_incrementedPCIF),
-    .i_enable(i_enable & !w_stall),
+    .i_enable(i_enable & !w_stall & !w_haltID),
 
     //Outputs
     .o_incrementedPC(w_incrementedPCID),
@@ -155,7 +155,6 @@ wire [DATA_LEN-1:0] w_readData1E;
 wire [DATA_LEN-1:0] w_readData2E;
 wire [DATA_LEN-1:0] w_immediateExtendValueE;
 wire [DATA_LEN-1:0] w_shamtE;
-wire [REGISTER_BITS-1:0] w_rsE;
 wire [REGISTER_BITS-1:0] w_rtE;
 wire [REGISTER_BITS-1:0] w_rdE;
 wire w_regWriteE;
@@ -190,7 +189,6 @@ decodeExecutionBuffer#(
     .i_readData2(w_readData2ID),
     .i_immediateExtendValue(w_immediateExtendValueID),
     .i_shamt(w_shamtID),
-    .i_rs(w_rsID),
     .i_rt(w_rtID),
     .i_rd(w_rdID),
     .i_memRead(w_memReadID),
@@ -211,7 +209,6 @@ decodeExecutionBuffer#(
     .o_readData2(w_readData2E),
     .o_immediateExtendValue(w_immediateExtendValueE),
     .o_shamt(w_shamtE),
-    .o_rs(w_rsE),
     .o_rt(w_rtE),
     .o_rd(w_rdE),
     .o_memRead(w_memReadE),

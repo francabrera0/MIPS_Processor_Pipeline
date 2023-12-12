@@ -21,7 +21,8 @@ module debugUnit
     output wire o_writeInstruction,
     output wire [CPU_DATA_LEN-1:0] o_instructionToWrite,
     output wire [REGISTER_BITS-1:0] o_regMemAddress,
-    output wire o_regMemCtrl
+    output wire o_regMemCtrl,
+    output wire o_reset
 );
 
 
@@ -59,7 +60,6 @@ debugInterface# (
 ) debugInterface
 (
     .i_clk(i_clk),
-    .i_reset(i_reset),
 
     //Signals from uart
     .i_txFull(w_txFull),
@@ -81,7 +81,8 @@ debugInterface# (
     .o_writeInstruction(o_writeInstruction),
     .o_instructionToWrite(o_instructionToWrite),
     .o_regMemAddress(o_regMemAddress),
-    .o_regMemCtrl(o_regMemCtrl)
+    .o_regMemCtrl(o_regMemCtrl),
+    .o_reset(o_reset)
 );
 
 endmodule

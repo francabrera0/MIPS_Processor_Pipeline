@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module cpuFowarding_tb();
+module reset();
 
     localparam DATA_LEN = 32;
     localparam PC_LEN = 32;
@@ -60,41 +60,39 @@ initial begin
     i_regMemCtrl = 0;
     #20;
     i_reset = 1'b0;
-    
+
+    //Add: Suma el contenido de register[0] + register[5] y lo guarda en register[10]
+    i_instructionToWrite = {6'b000000, 5'b00000, 5'b00101, 5'b01010, 5'b00000, 6'b100001};
     i_writeInstruction = 1'b1;
-    //Set Up
-    //ADDI 8 to r5
-    i_instructionToWrite = 32'h20050008;
-    #20
-    //ADDI a to r8
-    i_instructionToWrite = 32'h2008000a;
-    #20
-    
-    //Test
-    //ADDI 10 to r3
-    i_instructionToWrite = 32'h2003000a;
-    #20
-    //ADDI 10 to r3
-    i_instructionToWrite = 32'h2063000f;
-    #20
-    //Store r3 en direccion r[0]+0
-    i_instructionToWrite = 32'hac030000;
-    #20
-    //ADDI 5 to r3
-    i_instructionToWrite = 32'h20630005;
-    #20
-    //Add: Suma el contenido de register[5] + register[8] y lo guarda en register[3]
-    i_instructionToWrite = 32'h00a81821;
     #20;
-    //Sub: Resta el contenido de register[3] - register[0] y lo guarda en register[4]
-    i_instructionToWrite = 32'h00602023;
-    #20
+    //Store: Guardamos en la posici�n de memoria register[0]+inmediato, el valor de register[20]
+    i_instructionToWrite = {6'b101011, 5'b00000, 5'b10100, 16'b0000000000000110};
+    #20;
+    //Load: Guarda en el register[31] el contenido de la direcci�n apuntada por register[0]+inmediato
+    i_instructionToWrite = {6'b100011, 5'b00000, 5'b11111, 16'b0000000000000110};
+    #20;
+    //Beq: Si el contenido del register[10] es igual a register[8] salta a la instrucci�n nextPC + 16
+    i_instructionToWrite = {6'b000100, 5'b01010, 5'b01000, 16'b0000000000000100};
+    #20;
+
     //Halt
     i_instructionToWrite = {6'b111000, 5'b00000, 5'b01000, 5'b01000, 5'b00000, 6'b000100};
     #20;
     i_writeInstruction = 1'b0;
     #60;
     i_enable = 1'b1;
+    #20;
+    i_enable = 1'b0;
+    i_reset = 1'b1;
+    #20;
+    i_reset = 1'b0;
+    i_enable = 1'b1;
+    #40;
+    i_enable = 1'b0;
+    i_reset = 1'b1;
+  
+
+    
 end
 
 endmodule
