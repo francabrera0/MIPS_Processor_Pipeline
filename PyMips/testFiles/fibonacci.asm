@@ -23,4 +23,3 @@ SLL r6, r6, 2
 J FIBONACCI #Hace el loop
 END: SW r3, 0(r6) 
 HALT
-NOP

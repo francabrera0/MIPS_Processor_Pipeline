@@ -67,7 +67,7 @@ fetchDecodeBuffer#(
     .i_reset(i_reset),
     .i_instruction(w_instructionIF),
     .i_incrementedPC(w_incrementedPCIF),
-    .i_enable(i_enable & !w_stall),
+    .i_enable(i_enable & !w_stall & !w_haltID),
 
     //Outputs
     .o_incrementedPC(w_incrementedPCID),
