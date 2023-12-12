@@ -155,6 +155,8 @@ class mipsIDE(QMainWindow):
             currentItem = table.item(itemIndex, 0)
             if (currentItem is not None and currentItem.text() != item.text()):
                 item.setBackground(QColor(255, 165, 0))
+            elif (currentItem is None and value != 0):
+                item.setBackground(QColor(255, 165, 0))
             else:
                 item.setBackground(QColor(0, 0, 0, 0))
 
@@ -182,7 +184,6 @@ class mipsIDE(QMainWindow):
 
     def setTableVerticalHeader(self, table, cells):
         for i in range(cells):
-            table.setItem(i,0, QTableWidgetItem(""))
             item = QTableWidgetItem()
             item.setData(0,i)
             table.setVerticalHeaderItem(i,item)
