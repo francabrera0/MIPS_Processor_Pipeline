@@ -1,3 +1,8 @@
 LUI r5, 291
 ADDI r5,r5,17767
+SW r5, 0(r0)
+LB r2, 1(r0)
+ADDI r6, r0, 133
+SW r6, 56(r0)
+LB r7, 56(r0)
 HALT
