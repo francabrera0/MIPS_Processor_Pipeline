@@ -126,3 +126,10 @@ Como puede verse en la imagen, la unidad de debug también cuenta con módulo ll
 Se desarrolló una aplicación (directorio PyMips) para la programación y uso del procesador. Para su uso, simplemente correr el archivo mipsIde.py que se encuentra en el directorio (se debe configurar el puerto com en el cual se encuentra la placa). En la ventana principal se encuentra un cuadro de texto para escribir el código fuente, un cuadro de texto que muestra el código ensamblado, tablas para mostrar el valor de los registros y memoria y diferentes botones para ensamblar, programar, reiniciar y ejecutar programas sobre el procesador.
 
 ![Alt text](./img/IDE.png)
+
+## Análisis temporal
+Se realizaron pruebas para ver la máxima frecuencia en la que puede funcionar el sistema completo (Procesador y Debug Unit). Estas pruebas dieron como resultado que la máxima frecuencia de trabajo puede ser de **79MHz**. Al generar un clock de 80MHz de frecuencia se presenta el siguiente warning:
+
+![](./img/80MHz.png)
+
+También se realizaron las pruebas únicamente sobre el procesador (sin la debug unit) obteniendo resultados diferentes. Soportó hasta un clock de 500 MHz. 
